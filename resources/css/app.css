@@ -1,0 +1,36 @@
+/* ===================== Fuentes (deben ir primero) ===================== */
+@import "@fontsource-variable/roboto/index.css";
+@import "@fontsource-variable/roboto-slab/index.css";
+/* Si quisieras limitar ejes/pesos, usa las variantes wght:
+   @import "@fontsource-variable/roboto/wght.css";
+   @import "@fontsource-variable/roboto-slab/wght.css";
+*/
+
+/* ===================== Tailwind ===================== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===================== Tu base ===================== */
+@layer base {
+  html {
+    font-family: "Roboto Variable", Roboto, system-ui, -apple-system, "Segoe UI",
+      "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    font-optical-sizing: auto; /* habilita 'opsz' si existe */
+  }
+
+  :root {
+    --brand: #0f172a;
+    --accent: #16a34a;
+  }
+
+  h1, h2, h3 {
+    font-variation-settings: "wght" 700;
+  }
+}
+
+/* (si necesitas utilidades personalizadas, colócalas en:) */
+@layer utilities {
+  /* .u-btn-gradient { ... } */
+}
