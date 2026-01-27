@@ -141,7 +141,7 @@
                   <li><a href="{{ url('/somos#trelleborg') }}" class="block rounded px-[15px] py-[10px] text-[14px] text-black hover:bg-black/5">Acerca del fabricante</a></li>
                 </ul>
               </li>
-              <li><a href="{{ url('/blog-2') }}" class="flex h-[56px] items-center px-3 text-[15.5px] font-medium tracking-[-0.7px] text-white hover:text-white/80">Blog</a></li>
+              <li><a href="{{ url('/blog') }}" class="flex h-[56px] items-center px-3 text-[15.5px] font-medium tracking-[-0.7px] text-white hover:text-white/80">Blog</a></li>
               <li><a href="{{ url('/contacto') }}" class="flex h-[56px] items-center px-3 text-[15.5px] font-medium tracking-[-0.7px] text-white hover:text-white/80">Contacto</a></li>
             </ul>
           </nav>

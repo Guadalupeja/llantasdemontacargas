@@ -378,7 +378,7 @@
       <div class="relative flex w-full flex-wrap items-center content-center p-[10px]">
         <p class="mx-auto mb-[20px] w-full text-center">
           <span class="text-white">
-            © 2025 – Todos los derechos reservados.
+            © {{ now()->year }} – Todos los derechos reservados.
             <strong class="font-semibold">
               <a
                 href="https://www.bombasellos.com.mx/"

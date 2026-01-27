@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+﻿@extends('layouts.public')
 
 @section('title', 'Llantas sólidas con aro para Montacargas | Trelleborg PS800')
 @section('meta_description', 'Precios Mayorista 2026, Crédito y Entrega inmediata. Cotiza aquí llantas con Garantía de vida 25% más. Llantas Cushion de calidad garantizada para Montacargas.')
