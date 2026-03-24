@@ -231,6 +231,7 @@
           <a
             href="{{ asset('pdfs/Trelleborg-PS800-ES.pdf') }}"
             target="_blank" rel="noopener"
+            download="{{ asset('pdfs/Trelleborg-PS800-ES.pdf') }}"
             class="inline-block rounded-[4px] bg-[#e76a3e] px-[30px] py-[15px] text-[16px] leading-[16px] font-medium text-white no-underline transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-white/40"
           >
             <span class="flex justify-center"><span class="block">Descargar Ficha</span></span>

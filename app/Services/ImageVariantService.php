@@ -14,13 +14,14 @@ class ImageVariantService
 
     public function __construct(?ImageManager $manager = null)
     {
-        // Si tienes Imagick: new ImageManager(new \Intervention\Image\Drivers\Imagick\Driver());
+        // Si tienes Imagick:
+        // $this->manager = $manager ?: new ImageManager(new \Intervention\Image\Drivers\Imagick\Driver());
         $this->manager = $manager ?: new ImageManager(new Driver());
     }
 
     /**
      * Genera variantes (anchos x formatos) bajo storage/app/public/variants/{dir}/
-     * y devuelve el arreglo de variantes listo para <x-responsive-image />:
+     * y devuelve el arreglo de variantes listo para <x-responsive-image />.
      *
      * [
      *   'avif' => [ ['w'=>320,'url'=>'/storage/variants/.../file-320.avif'], ... ],
@@ -29,10 +30,6 @@ class ImageVariantService
      *   'fallback' => ['url'=>'/storage/originals/.../file.jpg','w'=>origW],
      *   'original_dimensions' => ['w'=>origW,'h'=>origH],
      * ]
-     *
-     * @param  string $src     Ruta relativa en disk('public'), p.ej: 'originals/llantas/foto.jpg'
-     * @param  array  $widths  Anchos a generar
-     * @param  array  $formats Formatos a generar (si la lib los soporta)
      */
     public function ensureVariants(
         string $src,
@@ -69,67 +66,90 @@ class ImageVariantService
         try {
             $original = $this->manager->read($disk->path($src));
         } catch (\Throwable $e) {
-            Log::error("[ImageVariantService] Error leyendo {$src}: ".$e->getMessage());
+            Log::error("[ImageVariantService] Error leyendo {$src}: " . $e->getMessage());
             return [];
         }
 
-        $origW = $original->width();
-        $origH = $original->height();
+        $origW = (int) $original->width();
+        $origH = (int) $original->height();
 
         // Soporte simple por método disponible (Intervention Image 3)
         $supported = [
             'avif' => method_exists($original, 'toAvif'),
             'webp' => method_exists($original, 'toWebp'),
             'jpg'  => method_exists($original, 'toJpeg'),
+            'jpeg' => method_exists($original, 'toJpeg'),
             'png'  => method_exists($original, 'toPng'),
         ];
-        $formats = array_values(array_filter($formats, fn($f) => ($supported[$f] ?? false)));
+
+        // Filtra formatos realmente soportados
+        $formats = array_values(array_filter($formats, fn ($f) => ($supported[strtolower($f)] ?? false)));
+
+        // Normaliza/ordena widths
+        $widths = array_map('intval', $widths);
+        $widths = array_values(array_unique($widths));
+        sort($widths);
+
+        /**
+         * ✅ CLAVE:
+         * - Genera solo widths menores al original.
+         * - Si el original es más pequeño que TODOS (ej. 300px), genera al menos 1: $origW.
+         */
+        $validWidths = array_values(array_filter($widths, fn ($w) => $w < $origW));
+        if (empty($validWidths)) {
+            $validWidths = [$origW];
+        }
 
         $result = [];
 
         foreach ($formats as $fmt) {
-            foreach ($widths as $targetW) {
-                // Evita generar más grande que el original
-                if ($targetW >= $origW) {
-                    continue;
-                }
+            $fmt = strtolower($fmt);
 
-                // IMPORTANTe: nombre EXACTO esperado por tu helper:
-                // "{$baseDir}/{$filename}-{$w}.{$format}"
+            foreach ($validWidths as $targetW) {
+                // Nombre EXACTO esperado por tu helper: "{$baseDir}/{$filename}-{$w}.{$format}"
                 $targetRelPath = "{$baseOutputDir}/{$filename}-{$targetW}.{$fmt}";
 
                 if (!$disk->exists($targetRelPath)) {
                     try {
                         // Relee desde el original para no acumular pérdidas
-                        $img = $this->manager->read($disk->path($src))->scale(width: $targetW);
+                        // scaleDown evita upscaling si por algo targetW > origW (no debería pasar)
+                        $img = $this->manager
+                            ->read($disk->path($src))
+                            ->scaleDown(width: $targetW);
 
                         switch ($fmt) {
                             case 'avif':
-                                // Calidad 0–100 (dependiendo del driver)
                                 $img->toAvif()->save($disk->path($targetRelPath), $qualityAvif);
                                 break;
+
                             case 'webp':
                                 $img->toWebp()->save($disk->path($targetRelPath), $qualityWebp);
                                 break;
+
                             case 'jpg':
+                            case 'jpeg':
                                 $img->toJpeg()->save($disk->path($targetRelPath), $qualityJpg);
                                 break;
+
                             case 'png':
                                 $img->toPng()->save($disk->path($targetRelPath));
                                 break;
                         }
                     } catch (\Throwable $e) {
-                        Log::error("[ImageVariantService] Error {$fmt} {$targetW}px para {$src}: ".$e->getMessage());
-                        // Continúa con el siguiente tamaño/format
+                        Log::error("[ImageVariantService] Error {$fmt} {$targetW}px para {$src}: " . $e->getMessage());
                         continue;
                     }
                 }
 
-                // Agrega al resultado con URL pública
                 $result[$fmt][] = [
                     'w'   => $targetW,
                     'url' => Storage::url($targetRelPath),
                 ];
+            }
+
+            // Orden por seguridad (por si algo raro en filesystem)
+            if (!empty($result[$fmt])) {
+                usort($result[$fmt], fn ($a, $b) => $a['w'] <=> $b['w']);
             }
         }
 
@@ -138,7 +158,11 @@ class ImageVariantService
             'url' => Storage::url($src),
             'w'   => $origW,
         ];
-        $result['original_dimensions'] = ['w' => $origW, 'h' => $origH];
+
+        $result['original_dimensions'] = [
+            'w' => $origW,
+            'h' => $origH,
+        ];
 
         return $result;
     }
