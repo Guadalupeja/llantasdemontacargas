@@ -237,7 +237,7 @@
             <button
               type="button"
               class="flex w-full items-center gap-2 px-5 py-[15px] font-roboto font-semibold text-[#e76a3e] leading-4"
-              aria-expanded="false"
+              aria-expanded="true"
               aria-controls="toc-panel"
               id="toc-button"
             >
@@ -250,7 +250,6 @@
               role="region"
               aria-labelledby="toc-button"
               class="border-t border-[#d5d8dc] px-5 py-[15px] font-roboto text-[#7a7a7a]"
-              hidden
             >
               <ol class="mb-2.5 mt-0 list-decimal list-inside space-y-1">
                 <li><a class="text-white hover:text-[#e76a3e]" href="{{ url('/llantas-para-montacargas') }}">Llantas para Montacargas</a></li>
@@ -413,7 +412,7 @@
             </article>
 
             <article class="flex flex-col rounded-none">
-              <a href="{{ url('/llantas-para-montacargas/trelleborg-elite-xp') }}" class="block no-underline">
+              <a href="{{ url('/llantas-solidas') }}" class="block no-underline">
                 <div class="w-full overflow-hidden rounded-none">
                   <div class="mx-auto w-[160px] sm:w-[220px] md:w-full md:max-w-none aspect-square">
                     <x-responsive-image
@@ -461,12 +460,12 @@
             </article>
 
             <article class="flex flex-col">
-              <a href="{{ url('/llantas-para-minicargadores/brawler-hd-solidflex/') }}" class="block no-underline">
+              <a href="{{ url('/llantas-solidas-con-arillo') }}" class="block no-underline">
                 <div class="w-full overflow-hidden">
                   <div class="mx-auto w-[160px] sm:w-[220px] md:w-full md:max-w-none aspect-square">
                     <x-responsive-image
                       :variants="$imgLlantaPs1000"
-                      alt="Llanta sólida rellena para minicargador Brawler HD SolidFlex"
+                      alt="Llantas solidas con arillo"
                       sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
                       class="h-full w-full object-contain"
                       width="170" height="170"
@@ -521,7 +520,7 @@
             </article>
 
             <article class="flex flex-col rounded-none">
-              <a href="{{ url('/llantas-para-montacargas/trelleborg-elite-xp') }}" class="block no-underline">
+              <a href="{{ url('/llantas-neumaticas') }}" class="block no-underline">
                 <div class="w-full overflow-hidden rounded-none">
                   <div class="mx-auto w-[160px] sm:w-[220px] md:w-full md:max-w-none aspect-square">
                     <x-responsive-image
@@ -569,7 +568,7 @@
             </article>
 
             <article class="flex flex-col">
-              <a href="{{ url('/llantas-para-minicargadores/brawler-hd-solidflex/') }}" class="block no-underline">
+              <a href="{{ url('/llantas-neumaticas') }}" class="block no-underline">
                 <div class="w-full overflow-hidden">
                   <div class="mx-auto w-[160px] sm:w-[220px] md:w-full md:max-w-none aspect-square">
                     <x-responsive-image
