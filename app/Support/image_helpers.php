@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -8,94 +7,128 @@ use Illuminate\Support\Str;
  * - ['avif'|'webp'|'jpg'] => [ ['w'=>int,'url'=>string], ... ]
  * - ['fallback'] => ['url'=>string,'w'=>null]
  *
- * $src es la RUTA RELATIVA dentro del disco 'public', por ej:
+ * $src es la ruta relativa dentro de /storage, por ej:
  *   originals/llantas/mi-foto.jpg
  */
 function image_variants(
     string $src,
     array $widths  = [320, 480, 640, 768, 960, 1024, 1280],
     array $formats = ['avif', 'webp', 'jpg'],
-    string $disk   = 'public',
     string $variantsRoot = 'variants'
 ): array {
-    $diskFs = Storage::disk($disk);
-
-    // Normaliza separadores (Windows ↔ Linux)
-    $src = Str::of($src)->replace('\\', '/')->value();
+    // Normaliza separadores
+    $src = Str::of($src)->replace('\\', '/')->trim('/')->value();
 
     // Datos del original
-    $dir      = trim(pathinfo($src, PATHINFO_DIRNAME) ?: '', '/');   // "originals/llantas"
-    $filename = pathinfo($src, PATHINFO_FILENAME) ?: 'image';        // "mi-foto"
-    $ext      = strtolower(pathinfo($src, PATHINFO_EXTENSION) ?: ''); // "jpg"
+    $dir      = trim(pathinfo($src, PATHINFO_DIRNAME) ?: '', '/');
+    $filename = pathinfo($src, PATHINFO_FILENAME) ?: 'image';
+    $ext      = strtolower(pathinfo($src, PATHINFO_EXTENSION) ?: '');
 
-    // URL del original como fallback (si existe)
-    $fallbackUrl = $diskFs->exists($src) ? Storage::url($src) : '';
+    /**
+     * Rutas físicas posibles:
+     * 1) flujo típico Laravel: storage/app/public/...
+     * 2) tu despliegue actual: public/storage/...
+     */
+    $storageAppPublic = storage_path('app/public');
+    $publicStorage    = public_path('storage');
 
-    // Directorio donde deberían vivir las variantes
-    // variants/originals/llantas/mi-foto-640.webp
-    $baseDir = $dir ? "{$variantsRoot}/{$dir}" : $variantsRoot;
-
-    // Siempre define fallback
-    $out = [
-        'fallback' => ['url' => $fallbackUrl, 'w' => null],
+    // Original físico posible en ambos lugares
+    $originalCandidates = [
+        $storageAppPublic . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $src),
+        $publicStorage . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $src),
     ];
 
-    // Helper interno para agregar candidate y evitar duplicados por width
-    $pushCandidate = function (&$arr, int $w, string $path) {
+    // Fallback: SIEMPRE construimos la URL pública
+    $fallbackUrl = asset('storage/' . $src);
+
+    $out = [
+        'fallback' => [
+            'url' => $fallbackUrl,
+            'w'   => null,
+        ],
+    ];
+
+    $pushCandidate = function (&$arr, int $w, string $relativePublicPath) {
         $arr[$w] = [
             'w'   => $w,
-            'url' => Storage::url($path),
+            'url' => asset('storage/' . ltrim(str_replace('\\', '/', $relativePublicPath), '/')),
         ];
     };
+
+    // Directorio relativo de variantes, ejemplo: variants/originals/llantas
+    $baseDir = $dir ? "{$variantsRoot}/{$dir}" : $variantsRoot;
 
     foreach ($formats as $format) {
         $format = strtolower($format);
         $byWidth = [];
 
-        // 1) Intento normal: usar los widths configurados
+        // Directorios físicos posibles donde podrían vivir variantes
+        $variantBaseCandidates = [
+            $storageAppPublic . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $baseDir),
+            $publicStorage . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $baseDir),
+        ];
+
+        /**
+         * 1) Busca por widths conocidos
+         */
         foreach ($widths as $w) {
             $w = (int) $w;
-            if ($w <= 0) continue;
+            if ($w <= 0) {
+                continue;
+            }
 
-            $variantPath = "{$baseDir}/{$filename}-{$w}.{$format}";
-            if ($diskFs->exists($variantPath)) {
-                $pushCandidate($byWidth, $w, $variantPath);
+            $relativeVariantPath = "{$baseDir}/{$filename}-{$w}.{$format}";
+
+            foreach ($variantBaseCandidates as $baseFsDir) {
+                $fullVariantPath = dirname($baseFsDir . DIRECTORY_SEPARATOR . "{$filename}-{$w}.{$format}")
+                    . DIRECTORY_SEPARATOR
+                    . basename("{$filename}-{$w}.{$format}");
+
+                if (is_file($fullVariantPath)) {
+                    $pushCandidate($byWidth, $w, $relativeVariantPath);
+                    break;
+                }
             }
         }
 
         /**
-         * 2) Si no encontró nada y el directorio existe,
-         *    escanea el folder para detectar variantes con regex:
-         *    {filename}-{numero}.{format}
-         *
-         * Esto cubre casos como:
-         * - original 300px => variante -300.jpg
-         * - widths no incluye 300
-         * - o nombres raros donde se generó 480w por error, etc.
+         * 2) Si no encontró nada, escanea el folder de variantes con regex
          */
-        if (empty($byWidth) && $diskFs->exists($baseDir)) {
-            try {
-                $files = $diskFs->files($baseDir);
+        if (empty($byWidth)) {
+            $pattern = '/^' . preg_quote($filename, '/') . '-(\d+)\.' . preg_quote($format, '/') . '$/i';
 
-                // Regex: empieza con filename-, captura el ancho y termina con .format
-                $pattern = '/^' . preg_quote($filename, '/') . '-(\d+)\.' . preg_quote($format, '/') . '$/i';
+            foreach ($variantBaseCandidates as $baseFsDir) {
+                if (!is_dir($baseFsDir)) {
+                    continue;
+                }
 
-                foreach ($files as $p) {
-                    $base = basename($p);
-                    if (preg_match($pattern, $base, $m)) {
-                        $w = (int) $m[1];
-                        if ($w > 0) {
-                            $pushCandidate($byWidth, $w, $p);
+                try {
+                    $files = scandir($baseFsDir);
+
+                    if ($files === false) {
+                        continue;
+                    }
+
+                    foreach ($files as $file) {
+                        if ($file === '.' || $file === '..') {
+                            continue;
+                        }
+
+                        if (preg_match($pattern, $file, $m)) {
+                            $w = (int) $m[1];
+                            if ($w > 0) {
+                                $relativeVariantPath = "{$baseDir}/{$file}";
+                                $pushCandidate($byWidth, $w, $relativeVariantPath);
+                            }
                         }
                     }
+                } catch (\Throwable $e) {
+                    // No rompemos la página si algo falla al leer FS
                 }
-            } catch (\Throwable $e) {
-                // Si el FS falla por permisos o algo, no rompemos la página.
             }
         }
 
         if (!empty($byWidth)) {
-            // Ordena por width asc y normaliza a lista
             ksort($byWidth);
             $out[$format] = array_values($byWidth);
         }
