@@ -60,12 +60,41 @@
   <meta property="og:description" content="@yield('meta_description','Llantas sólidas y neumáticas para montacargas y minicargadores. Asesoría, stock y envíos en México.')">
   <meta property="og:url" content="{{ url()->current() }}">
 
-  <script
-    type="text/javascript"
-    id="hs-script-loader"
-    async
-    defer
-    src="//js.hs-scripts.com/7547674.js">
+  <script>
+    (function (w, d) {
+      var loaded = false;
+
+      function loadHubSpot() {
+        if (loaded) return;
+        if (d.getElementById('hs-script-loader')) {
+          loaded = true;
+          return;
+        }
+
+        loaded = true;
+
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.id = 'hs-script-loader';
+        s.async = true;
+        s.defer = true;
+        s.src = 'https://js.hs-scripts.com/7547674.js';
+        d.head.appendChild(s);
+      }
+
+      // Carga automática diferida
+      setTimeout(loadHubSpot, 6000);
+
+      // Carga antes si el usuario interactúa
+      ['scroll', 'click', 'touchstart', 'keydown'].forEach(function (evt) {
+        w.addEventListener(evt, loadHubSpot, { once: true, passive: true });
+      });
+
+      // Si el navegador soporta idle, aprovecha
+      if ('requestIdleCallback' in w) {
+        requestIdleCallback(loadHubSpot, { timeout: 7000 });
+      }
+    })(window, document);
   </script>
 
   @vite(['resources/css/app.css','resources/js/app.js'])

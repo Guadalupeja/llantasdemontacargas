@@ -15,12 +15,41 @@
   <link rel="preconnect" href="https://fonts.bunny.net">
   <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-  <script
-    type="text/javascript"
-    id="hs-script-loader"
-    async
-    defer
-    src="//js.hs-scripts.com/7547674.js">
+  <script>
+    (function (w, d) {
+      var loaded = false;
+
+      function loadHubSpot() {
+        if (loaded) return;
+        if (d.getElementById('hs-script-loader')) {
+          loaded = true;
+          return;
+        }
+
+        loaded = true;
+
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.id = 'hs-script-loader';
+        s.async = true;
+        s.defer = true;
+        s.src = 'https://js.hs-scripts.com/7547674.js';
+        d.head.appendChild(s);
+      }
+
+      // Carga automática diferida
+      setTimeout(loadHubSpot, 6000);
+
+      // Carga antes si hay interacción
+      ['scroll', 'click', 'touchstart', 'keydown'].forEach(function (evt) {
+        w.addEventListener(evt, loadHubSpot, { once: true, passive: true });
+      });
+
+      // Si el navegador soporta idle, aprovecha
+      if ('requestIdleCallback' in w) {
+        requestIdleCallback(loadHubSpot, { timeout: 7000 });
+      }
+    })(window, document);
   </script>
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -73,7 +102,6 @@
 
           <div class="z-10 w-full mb-5">
             <div data-hs-forms-root="true">
-              {{-- Shell async + defer y creación del form cuando la librería esté cargada --}}
               <script async defer charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/shell.js"></script>
               <script>
                 window.addEventListener('load', function () {
@@ -97,7 +125,6 @@
     </div>
   </section>
 
-  {{-- Ajuste responsive: en <=768px usa variante más chica (corrige selector a #contacto) --}}
   <style>
     @media (max-width: 768px) {
       #contacto {
