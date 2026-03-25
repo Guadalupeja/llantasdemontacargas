@@ -14,7 +14,7 @@
   $heroTopWebp = $heroTop['webp'] ?? null;
   $heroTopJpg  = $heroTop['jpg'] ?? null;
 
-  $shopBanner = image_variants('originals/venta-de-llantas-para-montacargas-1.jpg');
+  $shopBanner = image_variants('originals/venta-de-llantas-para-montacargas-1.webp');
   $aboutHero  = image_variants('originals/llantas-para-Montacargas-y-Cargadores.jpg');
 
   $imgMontaSolidas           = image_variants('originals/montacargas-con-llantas-solidas.png');

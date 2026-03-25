@@ -15,14 +15,21 @@
   <link rel="preconnect" href="https://fonts.bunny.net">
   <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+  <script
+    type="text/javascript"
+    id="hs-script-loader"
+    async
+    defer
+    src="//js.hs-scripts.com/7547674.js">
+  </script>
+
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @stack('head')
-   @include('partials.header')
+  @include('partials.header')
 </head>
 
 <body class="font-sans antialiased">
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-  
 
     @hasSection('header')
       <header class="bg-white dark:bg-gray-800 shadow">
@@ -37,79 +44,75 @@
     </main>
   </div>
 
-
-
-{{-- Hero cotización PS: usa variantes con image-set --}}
-<section
-  id="contacto"
-  class="relative box-border block bg-black bg-no-repeat bg-center bg-cover transition-[background,border,border-radius,box-shadow] duration-300"
-  style="
-    background-image:url('{{ asset('storage/originals/heros/venta-de-llantas-para-montacargas.jpg') }}');
-    background-image: image-set(
-      url('{{ asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-1024.avif') }}') type('image/avif') 1x,
-      url('{{ asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-1024.webp') }}') type('image/webp') 1x,
-      url('{{ asset('storage/originals/heros/venta-de-llantas-para-montacargas.jpg') }}') type('image/jpeg') 1x
-    );
-  "
-  role="region" aria-label="Formulario de cotización"
->
-  <div class="relative mx-auto flex max-w-[1140px]">
-    <div class="relative box-border flex min-h-px w-full">
-      <div class="relative box-border flex w-full flex-wrap content-start p-2.5">
-        <div class="pointer-events-none absolute inset-0 bg-black/35" aria-hidden="true"></div>
-
-        <div class="w-full"><div class="h-[104px]"></div></div>
-
-        <div class="z-10 w-full text-center mb-5">
-          <div class="m-0 p-0 font-['Roboto',sans-serif] text-white lg:text-[42px] text-[22px] leading-[42px] font-semibold">
-            COTIZA EN LINEA O SOLICITA UNA ASESORIA:
-          </div>
-        </div>
-
-        <div class="z-10 w-full mb-5">
-          <div data-hs-forms-root="true">
-            {{-- Shell async + defer y creación del form cuando la librería esté cargada --}}
-            <script async defer charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/shell.js"></script>
-            <script>
-              window.addEventListener('load', function () {
-                if (window.hbspt && hbspt.forms && hbspt.forms.create) {
-                  hbspt.forms.create({
-                    portalId: "7547674",
-                    formId: "26f426a7-e620-42df-98a3-43e10a899b6c"
-                  });
-                }
-              });
-            </script>
-            <noscript>
-              <p style="color:#fff;">Activa JavaScript para ver el formulario de cotización.</p>
-            </noscript>
-          </div>
-        </div>
-
-        <div class="w-full"><div class="h-[104px]"></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-{{-- Ajuste responsive: en <=768px usa variante más chica (corrige selector a #contacto) --}}
-<style>
-  @media (max-width: 768px) {
-    #contacto {
-      background-image: url('{{ asset('storage/originals/heros/venta-de-llantas-para-montacargas.jpg') }}');
+  {{-- Hero cotización PS: usa variantes con image-set --}}
+  <section
+    id="contacto"
+    class="relative box-border block bg-black bg-no-repeat bg-center bg-cover transition-[background,border,border-radius,box-shadow] duration-300"
+    style="
+      background-image:url('{{ asset('storage/originals/heros/venta-de-llantas-para-montacargas.jpg') }}');
       background-image: image-set(
-        url('{{ asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-960.avif') }}') type('image/avif') 1x,
-        url('{{ asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-960.webp') }}') type('image/webp') 1x,
+        url('{{ asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-1024.avif') }}') type('image/avif') 1x,
+        url('{{ asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-1024.webp') }}') type('image/webp') 1x,
         url('{{ asset('storage/originals/heros/venta-de-llantas-para-montacargas.jpg') }}') type('image/jpeg') 1x
       );
+    "
+    role="region" aria-label="Formulario de cotización"
+  >
+    <div class="relative mx-auto flex max-w-[1140px]">
+      <div class="relative box-border flex min-h-px w-full">
+        <div class="relative box-border flex w-full flex-wrap content-start p-2.5">
+          <div class="pointer-events-none absolute inset-0 bg-black/35" aria-hidden="true"></div>
+
+          <div class="w-full"><div class="h-[104px]"></div></div>
+
+          <div class="z-10 w-full text-center mb-5">
+            <div class="m-0 p-0 font-['Roboto',sans-serif] text-white lg:text-[42px] text-[22px] leading-[42px] font-semibold">
+              COTIZA EN LINEA O SOLICITA UNA ASESORIA:
+            </div>
+          </div>
+
+          <div class="z-10 w-full mb-5">
+            <div data-hs-forms-root="true">
+              {{-- Shell async + defer y creación del form cuando la librería esté cargada --}}
+              <script async defer charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/shell.js"></script>
+              <script>
+                window.addEventListener('load', function () {
+                  if (window.hbspt && hbspt.forms && hbspt.forms.create) {
+                    hbspt.forms.create({
+                      portalId: "7547674",
+                      formId: "26f426a7-e620-42df-98a3-43e10a899b6c"
+                    });
+                  }
+                });
+              </script>
+              <noscript>
+                <p style="color:#fff;">Activa JavaScript para ver el formulario de cotización.</p>
+              </noscript>
+            </div>
+          </div>
+
+          <div class="w-full"><div class="h-[104px]"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{-- Ajuste responsive: en <=768px usa variante más chica (corrige selector a #contacto) --}}
+  <style>
+    @media (max-width: 768px) {
+      #contacto {
+        background-image: url('{{ asset('storage/originals/heros/venta-de-llantas-para-montacargas.jpg') }}');
+        background-image: image-set(
+          url('{{ asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-960.avif') }}') type('image/avif') 1x,
+          url('{{ asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-960.webp') }}') type('image/webp') 1x,
+          url('{{ asset('storage/originals/heros/venta-de-llantas-para-montacargas.jpg') }}') type('image/jpeg') 1x
+        );
+      }
     }
-  }
-</style>
-
-
+  </style>
 
   @stack('scripts')
-    @include('partials.footer')
-<x-whatsapp-widget />
+  @include('partials.footer')
+  <x-whatsapp-widget />
 </body>
 </html>

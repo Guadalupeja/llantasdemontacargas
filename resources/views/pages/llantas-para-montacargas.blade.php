@@ -428,7 +428,7 @@
           'url' => url('llantas-para-montacargas/trelleborg-itl-press-on'),
           'title' => 'Trelleborg ITL Press On',
           'alt' => 'Trelleborg itl ps on',
-          'image' => $makeImage('originals/Llanta-PREMIUM-solida-con-anillo-para-montacargas-de-uso-rudo.jpg'),
+          'image' => $makeImage('originals/Llanta-PREMIUM-solida-con-anillo-para-montacargas-de-uso-rudo.webp'),
           'box' => 'p-7',
           'items' => [
               'Llanta PREMIUM sólida con arillo para montacargas de <strong>uso rudo.</strong>',
@@ -439,7 +439,7 @@
           'url' => url('llantas-para-montacargas/trelleborg-ps800-con-arillo'),
           'title' => 'Trelleborg PS800',
           'alt' => 'Trelleborg PS800',
-          'image' => $makeImage('originals/PS800.png'),
+          'image' => $makeImage('originals/PS800.webp'),
           'box' => 'p-7',
           'items' => [
               'Nuevo bandaje para aplicaciones de intensidad media.',

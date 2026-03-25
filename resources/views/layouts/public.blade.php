@@ -60,6 +60,14 @@
   <meta property="og:description" content="@yield('meta_description','Llantas sólidas y neumáticas para montacargas y minicargadores. Asesoría, stock y envíos en México.')">
   <meta property="og:url" content="{{ url()->current() }}">
 
+  <script
+    type="text/javascript"
+    id="hs-script-loader"
+    async
+    defer
+    src="//js.hs-scripts.com/7547674.js">
+  </script>
+
   @vite(['resources/css/app.css','resources/js/app.js'])
   @stack('styles')
   @yield('structured-data')

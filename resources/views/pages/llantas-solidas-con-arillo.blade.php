@@ -19,19 +19,19 @@
     [
       'url' => url('/llantas-para-montacargas/trelleborg-press-on'),
       'title' => 'Trelleborg Press On',
-      'img' => 'originals/Una-llanta-tipo-cushion-llantas-treleborg.jpg',
+      'img' => 'originals/Una-llanta-tipo-cushion-llantas-treleborg.webp',
       'alt' => 'Llantas Trelleborg Press on',
     ],
     [
       'url' => url('/llantas-para-montacargas/trelleborg-ps1000'),
       'title' => 'Trelleborg PS1000',
-      'img' => 'originals/MOSAICO-PS-1000.jpg',
+      'img' => 'originals/MOSAICO-PS-1000.webp',
       'alt' => 'Llantas Trelleborg PS1000',
     ],
     [
       'url' => url('/llantas-para-montacargas/trelleborg-itl-maxmatic-press-on'),
       'title' => 'Trelleborg ITL Maxmatic Press On',
-      'img' => 'originals/Llantas-solidas-con-arillo-para-Montacargas.jpg',
+      'img' => 'originals/Llantas-solidas-con-arillo-para-Montacargas.webp',
       'alt' => 'Llantas Trelleborg ITL Maxmatic Press On',
     ],
     [
@@ -45,13 +45,13 @@
       'title' => 'Trelleborg ITL Press On',
       // Nota: en tu código original el href tenía slash final en la imagen, pero el enlace de texto era sin slash.
       // Unificamos a la versión sin slash para consistencia.
-      'img' => 'originals/Llanta-PREMIUM-solida-con-anillo-para-montacargas-de-uso-rudo.jpg',
+      'img' => 'originals/Llanta-PREMIUM-solida-con-anillo-para-montacargas-de-uso-rudo.webp',
       'alt' => 'Llantas Trelleborg ITL Press On',
     ],
     [
       'url' => url('/llantas-para-montacargas/trelleborg-ps800-con-arillo'),
       'title' => 'Trelleborg PS800',
-      'img' => 'originals/PS800.jpg',
+      'img' => 'originals/PS800.webp',
       'alt' => 'Llantas Trelleborg PS800',
     ],
   ];
@@ -157,39 +157,6 @@
   </div>
 </section>
 
-<section class="relative w-full">
-  <div class="relative mx-auto flex max-w-[1140px] flex-col gap-3 px-2.5 md:flex-row md:gap-0">
-    <!-- Col 1 (right on desktop) -->
-    <div class="flex justify-center w-full md:w-1/3 md:justify-end">
-      <a
-        href="{{ url('/llantas-para-montacargas') }}"
-        class="inline-flex items-center justify-center rounded-[3px] bg-[#e76a3e] px-6 py-3 font-['Roboto',sans-serif] text-[15px] leading-[15px] font-medium text-white no-underline transition duration-300"
-      >
-        MONTACARGAS
-      </a>
-    </div>
-
-    <!-- Col 2 (center) -->
-    <div class="flex justify-center w-full md:w-1/3 md:justify-center">
-      <a
-        href="{{ url('/llantas-para-minicargadores') }}"
-        class="inline-flex items-center justify-center rounded-[3px] bg-[#e76a3e] px-6 py-3 font-['Roboto',sans-serif] text-[15px] leading-[15px] font-medium text-white no-underline transition duration-300"
-      >
-        MINICARGADORES
-      </a>
-    </div>
-
-    <!-- Col 3 (left on desktop) -->
-    <div class="flex w-full justify-center md:w-1/3 md:justify-start">
-      <a
-        href="{{ url('/llantas-para-cargadores') }}"
-        class="inline-flex items-center justify-center rounded-[3px] bg-[#e76a3e] px-6 py-3 font-['Roboto',sans-serif] text-[15px] leading-[15px] font-medium text-white no-underline transition duration-300"
-      >
-        CARGADOR FRONTAL
-      </a>
-    </div>
-  </div>
-</section>
 
 <section class="relative">
   <div class="relative mx-auto flex max-w-[1140px]">

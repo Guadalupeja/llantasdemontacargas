@@ -227,7 +227,7 @@
     {{-- Derecha --}}
     <div class="lg:w-1/2 p-[10px] flex flex-wrap content-start text-center">
       <x-responsive-image
-        :variants="image_variants('originals/Instalacion-de-llantas-para-montacargas-con-prensa-movil-en-sitio.jpg')"
+        :variants="image_variants('originals/Instalacion-de-llantas-para-montacargas-con-prensa-movil-en-sitio.webp')"
         alt="Instalación de llantas para montacargas con prensa móvil en sitio"
         sizes="(min-width: 1024px) 50vw, 100vw"
         class="inline-block max-w-full h-auto align-middle border-0 shadow-none"

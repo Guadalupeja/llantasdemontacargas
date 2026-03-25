@@ -143,35 +143,35 @@
   $cardsMontacargas = [
     [
       'href' => '/llantas-para-montacargas/trelleborg-elite-xp',
-      'img'  => 'originals/MOSAICO-XP1000.jpg',
+      'img'  => 'originals/MOSAICO-XP1000.png',
       'alt'  => 'Llantas Trelleborg XP1000',
       'title'=> 'Trelleborg XP1000',
       'minH' => 'min-h-[50px]',
     ],
     [
       'href' => '/llantas-para-montacargas/trelleborg-xp800',
-      'img'  => 'originals/MOSAICO-XP800.jpg',
+      'img'  => 'originals/MOSAICO-XP800.png',
       'alt'  => 'Llantas Trelleborg XP800',
       'title'=> 'Trelleborg XP800',
       'minH' => 'min-h-[50px]',
     ],
     [
       'href' => '/llantas-para-montacargas/trelleborg-master-solid',
-      'img'  => 'originals/master-solid.jpg',
+      'img'  => 'originals/master-solid.png',
       'alt'  => 'Llantas Trelleborg Master Solid',
       'title'=> 'Trelleborg Master Solid',
       'minH' => 'min-h-[50px]',
     ],
     [
       'href' => '/llantas-para-montacargas/trelleborg-pro-hd',
-      'img'  => 'originals/Trelleborg-Pro-HD.jpg',
+      'img'  => 'originals/Trelleborg-Pro-HD.png',
       'alt'  => 'Llantas Trelleborg PRO HD',
       'title'=> 'Trelleborg PRO HD',
       'minH' => 'min-h-[50px]',
     ],
     [
       'href' => '/llantas-para-montacargas/trelleborg-m2',
-      'img'  => 'originals/M2.jpg',
+      'img'  => 'originals/M2.png',
       'alt'  => 'Llantas Trelleborg M2',
       'title'=> 'Trelleborg M2',
       'minH' => 'min-h-[50px]',
@@ -185,39 +185,7 @@
     ],
   ];
 
-  $cardsMinicargadores = [
-    [
-      'href' => '/llantas-para-minicargadores/brawler-hd-solidflex',
-      'img'  => 'originals/Llantas-para-minicargadores-en-las-aplicaciones-mas-rigurosas.jpg',
-      'alt'  => 'Llantas Brawler HD Solidflex',
-      'title'=> 'Brawler HD Solidflex',
-      'minH' => 'min-h-[82px]',
-    ],
-    [
-      'href' => '/llantas-para-minicargadores/brawler-hps-solidflex-traction-smooth',
-      'img'  => 'originals/Llanta-Solida-de-alto-desempeño.jpg',
-      'alt'  => 'Llantas Trelleborg Brawler® HPS Solidflex Traction/Smooth',
-      'title'=> 'Brawler® HPS Solidflex Traction/Smooth',
-      'minH' => 'min-h-[82px]',
-    ],
-    [
-      'href' => '/llantas-para-minicargadores/sks-900-traction-smooth',
-      'img'  => 'originals/master-solid.jpg',
-      'alt'  => 'Llantas Trelleborg SKS 900 Traction/Smooth',
-      'title'=> 'SKS 900 Traction/Smooth',
-      'minH' => 'min-h-[82px]',
-    ],
-  ];
 
-  $cardsTelehandler = [
-    [
-      'href' => '/llantas-para-manipulador-telescopico/trelleborg-brawler-hps',
-      'img'  => 'originals/Llanta-solida-PREMIUM-para-aplicaciones-extremas.jpg',
-      'alt'  => 'Llantas Brawler HD',
-      'title'=> 'Brawler HD',
-      'minH' => 'min-h-[56px]',
-    ],
-  ];
 
   $heroImgJpg = asset('storage/originals/heros/venta-de-llantas-para-montacargas.jpg');
   $heroImgAvif = asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-1024.avif');
@@ -255,26 +223,11 @@
   </div>
 </section>
 
-<section class="relative w-full">
-  <div class="relative mx-auto flex max-w-[1140px] flex-col gap-3 px-2.5 md:flex-row md:gap-0">
-    <div class="flex justify-center w-full md:w-1/3 md:justify-end">
-      <a href="{{ url('#montacargas') }}" class="{{ $btnClass }}">MONTACARGAS</a>
-    </div>
-
-    <div class="flex justify-center w-full md:w-1/3 md:justify-center">
-      <a href="{{ url('#minicargadores') }}" class="{{ $btnClass }}">MINICARGADORES</a>
-    </div>
-
-    <div class="flex w-full justify-center md:w-1/3 md:justify-start">
-      <a href="{{ url('#cargadorfrontal') }}" class="{{ $btnClass }}">CARGADOR FRONTAL</a>
-    </div>
-  </div>
-</section>
 
 <section class="relative" id="montacargas">
   <div class="{{ $containerClass }}">
     <div class="w-full {{ $pad10 }} text-center">
-      <div class="mb-5 lg:h-[80px] h-[40px]"></div>
+  
 
       <h1 class="m-0 mb-5 p-0 {{ $roboto }} text-[23px] leading-[23px] lg:text-[33px] lg:leading-[33px] {{ $titleOrange }}">
         Llantas sólidas para Montacargas
@@ -337,131 +290,7 @@
 </section>
 @endforeach
 
-<section class="relative" id="minicargadores">
-  <div class="{{ $containerClass }}">
-    <div class="w-full {{ $pad10 }} text-center">
-      <div class="mb-5 lg:h-[80px] h-[40px]"></div>
 
-      <h2 class="m-0 mb-5 p-0 {{ $roboto }} text-[23px] leading-[23px] lg:text-[33px] lg:leading-[33px] {{ $titleOrange }}">
-        Llantas sólidas para Minicargador
-      </h2>
-
-      <div class="mb-5 h-[23px]"></div>
-
-      <p class="m-0 mb-5 {{ $roboto }} {{ $textGray }}">
-        Imponchables, libres de mantenimiento y de uso rudo.
-      </p>
-
-      <div class="lg:h-[80px] h-[40px]"></div>
-    </div>
-  </div>
-</section>
-
-<section class="relative">
-  <div class="relative mx-auto flex max-w-[1140px] flex-col md:flex-row">
-    @foreach ($cardsMinicargadores as $card)
-      <div class="flex w-full md:w-1/3">
-        <div class="flex w-full flex-wrap content-start {{ $pad10 }}">
-          <div class="w-full text-center mb-5">
-            <a href="{{ url($card['href']) }}" class="inline-block">
-              <figure class="m-0 w-full max-w-[357px] mx-auto">
-                <div class="aspect-square w-full">
-                  @php $v1 = image_variants($card['img']); @endphp
-                  <x-responsive-image
-                    :variants="$v1"
-                    alt="{{ $card['alt'] }}"
-                    sizes="(max-width: 767px) 100vw, 357px"
-                    class="w-full h-full object-cover align-middle border-0"
-                    width="357" height="357"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </figure>
-            </a>
-          </div>
-
-          <div class="w-full mb-5">
-            <div class="h-[20px]"></div>
-          </div>
-
-          <div class="w-full text-center justify-center">
-            <div class="{{ $cardTitleWrap }} {{ $card['minH'] }}">
-              <h2 class="{{ $cardTitleH2 }}">
-                <a href="{{ url($card['href']) }}" class="text-white no-underline">
-                  {{ $card['title'] }}
-                </a>
-              </h2>
-            </div>
-          </div>
-        </div>
-      </div>
-    @endforeach
-  </div>
-</section>
-
-<section class="relative" id="cargadorfrontal">
-  <div class="{{ $containerClass }}">
-    <div class="w-full {{ $pad10 }} text-center">
-      <div class="mb-5 lg:h-[80px] h-[40px]"></div>
-
-      <h2 class="m-0 mb-5 p-0 {{ $roboto }} text-[23px] leading-[23px] lg:text-[33px] lg:leading-[33px] {{ $titleOrange }}">
-        Llantas Sólidas para manipuladores telescópicos
-      </h2>
-
-      <div class="mb-5 h-[23px]"></div>
-
-      <p class="m-0 mb-5 {{ $roboto }} {{ $textGray }}">
-        De uso rudo, no se ponchan y rinden el triple.
-      </p>
-
-      <div class="lg:h-[80px] h-[40px]"></div>
-    </div>
-  </div>
-</section>
-
-<section class="relative">
-  <div class="relative mx-auto flex max-w-[1140px] flex-col md:flex-row">
-    @foreach ($cardsTelehandler as $card)
-      <div class="flex w-full md:w-1/3">
-        <div class="flex w-full flex-wrap content-start {{ $pad10 }}">
-          <div class="w-full text-center mb-5">
-            <a href="{{ url($card['href']) }}" class="inline-block">
-              <figure class="m-0 w-full max-w-[357px] mx-auto">
-                <div class="aspect-square w-full">
-                  @php $v1 = image_variants($card['img']); @endphp
-                  <x-responsive-image
-                    :variants="$v1"
-                    alt="{{ $card['alt'] }}"
-                    sizes="(max-width: 767px) 100vw, 357px"
-                    class="w-full h-full object-cover align-middle border-0"
-                    width="357" height="357"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </figure>
-            </a>
-          </div>
-
-          <div class="w-full mb-5">
-            <div class="h-[20px]"></div>
-          </div>
-
-          <div class="w-full text-center justify-center">
-            <div class="{{ $cardTitleWrap }} {{ $card['minH'] }}">
-              <h2 class="{{ $cardTitleH2 }}">
-                <a href="{{ url($card['href']) }}" class="text-white no-underline">
-                  {{ $card['title'] }}
-                </a>
-              </h2>
-            </div>
-          </div>
-        </div>
-      </div>
-    @endforeach
-  </div>
-</section>
 
 {{-- ========= Hero cotización ========= --}}
 <section
