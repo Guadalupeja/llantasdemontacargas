@@ -253,7 +253,7 @@
             >
               <ol class="mb-2.5 mt-0 list-decimal list-inside space-y-1">
                 <li><a class="text-white hover:text-[#e76a3e]" href="{{ url('/llantas-para-montacargas') }}">Llantas para Montacargas</a></li>
-                <li><a class="text-white hover:text-[#e76a3e]" href="{{ url('/tienda-en-linea') }}" target="_blank" rel="noopener">Compra en línea</a></li>
+                <li><a class="text-white hover:text-[#e76a3e]" href="https://llantasdemontacargas.com/tienda-en-linea" target="_blank" rel="noopener">Compra en línea</a></li>
                 <li><a class="text-white hover:text-[#e76a3e]" href="{{ url('/instalacion-de-llantas-montacargas-ruguex') }}" target="_blank" rel="noopener">Instalación de llantas gratis en la compra de cualquier llanta</a></li>
                 <li><a class="text-white hover:text-[#e76a3e]" href="#T7">Cotiza en línea o solicita una asesoría</a></li>
               </ol>
@@ -316,7 +316,7 @@
         <div class="absolute inset-0 z-[1] bg-black/20"></div>
 
         <div class="relative z-10 flex h-full w-full items-center justify-center text-center px-4">
-          <a href="{{ url('/tienda-en-linea') }}"
+          <a href="https://llantasdemontacargas.com/tienda-en-linea"
              class="inline-block rounded-[6px] bg-[#e76a3e] px-[50px] py-[25px] text-[25px] font-medium leading-[20px] text-white no-underline transition">
             <span class="flex justify-center">
               <span class="block">¡Compra en línea aquí!</span>

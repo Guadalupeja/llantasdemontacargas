@@ -106,7 +106,7 @@
             <ul class="m-0 flex h-[56px] list-none items-center justify-between p-0">
               <li><a href="{{ url('/') }}" class="flex h-[56px] items-center px-3 text-[15.5px] font-medium tracking-[-0.7px] text-gray-400 hover:text-white">Inicio</a></li>
               <li><a href="{{ url('/llantas-para-montacargas') }}" class="flex h-[56px] items-center px-3 text-[15.5px] font-medium tracking-[-0.7px] text-white hover:text-white/80">Montacargas</a></li>
-              <li><a href="{{ url('/tienda-en-linea') }}" class="flex h-[56px] items-center px-3 text-[15.5px] font-medium tracking-[-0.7px] text-white hover:text-white/80">Compra en línea</a></li>
+              <li><a href="https://llantasdemontacargas.com/tienda-en-linea" class="flex h-[56px] items-center px-3 text-[15.5px] font-medium tracking-[-0.7px] text-white hover:text-white/80">Compra en línea</a></li>
               <li><a href="{{ url('/rines-para-montacargas-y-cargadores') }}" class="flex h-[56px] items-center px-3 text-[15.5px] font-medium tracking-[-0.7px] text-white hover:text-white/80">Rines para tu maquinaria</a></li>
               <li class="relative group">
                 <a href="#" class="flex h-[56px] items-center px-3 text-[15.5px] font-medium tracking-[-0.7px] text-white hover:text-white/80">
@@ -127,7 +127,7 @@
             <ul class="mx-2 mt-2 space-y-1 rounded-2xl border border-white/10 bg-black/80 p-2 text-white shadow-2xl backdrop-blur-md">
               <li><a class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/10" href="{{ url('/') }}"><i class="fa-solid fa-house text-white/70"></i> Inicio</a></li>
               <li><a class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/10" href="{{ url('/llantas-para-montacargas') }}"><i class="fa-solid fa-truck-ramp-box text-white/70"></i> Montacargas</a></li>
-              <li><a class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/10" href="{{ url('/tienda-en-linea') }}"><i class="fa-solid fa-bag-shopping text-white/70"></i> Compra en línea</a></li>
+              <li><a class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/10" href="https://llantasdemontacargas.com/tienda-en-linea"><i class="fa-solid fa-bag-shopping text-white/70"></i> Compra en línea</a></li>
               <li><a class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/10" href="{{ url('/rines-para-montacargas-y-cargadores') }}"><i class="fa-solid fa-circle-notch text-white/70"></i> Rines para tu maquinaria</a></li>
 
               <li class="pt-2">
