@@ -83,7 +83,7 @@
       }
 
       // Carga automática diferida
-      setTimeout(loadHubSpot, 6000);
+      setTimeout(loadHubSpot, 10000);
 
       // Carga antes si el usuario interactúa
       ['scroll', 'click', 'touchstart', 'keydown'].forEach(function (evt) {
@@ -92,7 +92,7 @@
 
       // Si el navegador soporta idle, aprovecha
       if ('requestIdleCallback' in w) {
-        requestIdleCallback(loadHubSpot, { timeout: 7000 });
+        requestIdleCallback(loadHubSpot, { timeout: 12000 });
       }
     })(window, document);
   </script>
