@@ -428,7 +428,7 @@
           'url' => url('llantas-para-montacargas/trelleborg-itl-press-on'),
           'title' => 'Trelleborg ITL Press On',
           'alt' => 'Trelleborg itl ps on',
-          'image' => $makeImage('originals/Llanta-PREMIUM-solida-con-anillo-para-montacargas-de-uso-rudo.webp'),
+          'image' => $makeImage('originals/Llanta-PREMIUM-solida-con-anillo-para-montacargas-de-uso-rudo.jpg'),
           'box' => 'p-7',
           'items' => [
               'Llanta PREMIUM sólida con arillo para montacargas de <strong>uso rudo.</strong>',
