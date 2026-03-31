@@ -139,7 +139,7 @@
               </li>
 
               <li class="pt-2 grid grid-cols-2 gap-2">
-                <a class="block rounded-lg bg-[#FF6000] px-3 py-2 text-center font-semibold hover:brightness-110" href="{{ url('/blog-2') }}">Blog</a>
+                <a class="block rounded-lg bg-[#FF6000] px-3 py-2 text-center font-semibold hover:brightness-110" href="{{ url('/blog') }}">Blog</a>
                 <a class="block rounded-lg bg-white/10 px-3 py-2 text-center font-semibold hover:bg-white/15" href="{{ url('/contacto') }}">Contacto</a>
               </li>
             </ul>
