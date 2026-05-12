@@ -213,6 +213,39 @@
               </span>
             </li>
 
+<li class="rounded-lg border border-white/10 bg-white/5 p-4">
+  <h3 class="m-0 text-[18px] font-semibold text-white">
+    Matriz Puebla
+  </h3>
+
+  <p class="mt-2 text-[14px] leading-6 text-white/80">
+    Atención comercial y técnica para selección, cotización y seguimiento de llantas para montacargas.
+    Matriz en Puebla.
+  </p>
+</li>
+
+<li class="rounded-lg border border-white/10 bg-white/5 p-4">
+  <h3 class="m-0 text-[18px] font-semibold text-white">
+    Almacenes con entrega y montaje
+  </h3>
+
+  <ul class="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px] text-white/85">
+    <li>ESTADO DE MEXICO</li>
+    <li>PUEBLA</li>
+    <li>GUANAJUATO</li>
+    <li>NUEVO LEÓN</li>
+    <li>SAN LUIS POTOSÍ</li>
+    <li>JALISCO</li>
+    <li>AGUASCALIENTES</li>
+  </ul>
+
+  <p class="mt-3 text-[14px] leading-6 text-white/80">
+    Consulta stock y disponibilidad de prensa para montaje.
+  </p>
+</li>
+
+
+
             <li><a href="tel://(83)3246-2205" class="inline-flex items-center gap-2 text-white transition hover:text-white/80"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24 11.36 11.36 0 0 0 3.56.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 7a1 1 0 0 1 1-1h2.49a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.56 1 1 0 0 1-.24 1.03l-2.2 2.2Z"/></svg><span>(83)3246-2205</span></a></li>
             <li><a href="tel://(83)3239-5885" class="inline-flex items-center gap-2 text-white transition hover:text-white/80"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24 11.36 11.36 0 0 0 3.56.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 7a1 1 0 0 1 1-1h2.49a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.56 1 1 0 0 1-.24 1.03l-2.2 2.2Z"/></svg><span>(83)3239-5885</span></a></li>
             <li><a href="tel://(22)2227-3866" class="inline-flex items-center gap-2 text-white transition hover:text-white/80"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24 11.36 11.36 0 0 0 3.56.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 7a1 1 0 0 1 1-1h2.49a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.56 1 1 0 0 1-.24 1.03l-2.2 2.2Z"/></svg><span>(22)2227-3866</span></a></li>

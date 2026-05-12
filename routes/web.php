@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StaticPageController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\PostAdminController;
-use App\Http\Controllers\ProfileController; // 👈 nuevo
+use App\Http\Controllers\ProfileController; 
+use App\Http\Controllers\ChatbotSpecialistRequestController;
 
 // BLOG PÚBLICO
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
@@ -45,3 +46,7 @@ Route::get('/', function () {
 Route::get('/{any}', [StaticPageController::class, 'show'])
     ->where('any', '.*')
     ->name('static.show');
+
+    //ruta chatbot form
+Route::post('/chatbot/specialist-request', [ChatbotSpecialistRequestController::class, 'store'])
+    ->name('chatbot.specialist-request');

@@ -121,5 +121,17 @@
   @include('partials.footer')
   @stack('scripts')
   <x-whatsapp-widget />
+
+@php
+    $chatbotJsonPath = resource_path('data/chatbot/montacargas-products.json');
+
+    $chatbotProducts = file_exists($chatbotJsonPath)
+        ? json_decode(file_get_contents($chatbotJsonPath), true)
+        : ['products' => []];
+@endphp
+
+<x-chatbot-montacargas :products="$chatbotProducts" />
+
+
 </body>
 </html>

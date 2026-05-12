@@ -2,7 +2,12 @@ import './bootstrap';
 // resources/js/app.js
 import '@fortawesome/fontawesome-free/css/all.min.css'
 
+import Alpine from 'alpinejs';
+import forkliftChatbot from './components/chatbot-montacargas';
 
+window.Alpine = Alpine;
+Alpine.data('forkliftChatbot', forkliftChatbot);
+Alpine.start();
 document.addEventListener('DOMContentLoaded', () => {
     const widget = document.getElementById('ruguex-whatsapp-widget');
     if (!widget) return;

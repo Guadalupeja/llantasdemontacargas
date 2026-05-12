@@ -36,6 +36,133 @@
   $ctaHeroAvif960  = asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-960.avif');
   $ctaHeroWebp960  = asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-960.webp');
   $ctaHeroJpg      = asset('storage/originals/heros/venta-de-llantas-para-montacargas.jpg');
+
+
+
+$shopCarouselItems = collect([
+    [
+        'measure' => '6.50-10 / 5.00',
+        'title' => 'Llanta Sólida para Montacargas 6.50-10/5.00 Trabajo Extra Pesado',
+        'promo' => 'Trabajo extra pesado',
+        'price' => '$7,800.68 MXN',
+        'image_path' => 'home/shop/650-10-500.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-6-50-10-5-00-trabajo-extra-pesado/',
+    ],
+    [
+        'measure' => '6.00-9 / 4.00',
+        'title' => 'Llanta Sólida para Montacargas 6.00-9/4.00 Trabajo Extra Pesado',
+        'promo' => 'Trabajo extra pesado',
+        'price' => '$5,517.20 MXN',
+        'image_path' => 'home/shop/600-9-400.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-6-00-9-4-00-trabajo-extra-pesado/',
+    ],
+    [
+        'measure' => '6.00x9',
+        'title' => 'Llanta 6.00x9 Neumática para Montacargas Trabajo Medio',
+        'promo' => 'Trabajo medio',
+        'price' => '$2,354.39 MXN',
+        'image_path' => 'home/shop/600x9-neumatica.jpg',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-6-00x9-neumatica-para-montacargas-trabajo-medio/',
+    ],
+    [
+        'measure' => '300-15 / 8.00',
+        'title' => 'Llanta Sólida para Montacargas 300-15/8.00 Trabajo Medio',
+        'promo' => 'Trabajo medio',
+        'price' => '$19,076.20 MXN',
+        'image_path' => 'home/shop/300-15-800.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-300-15-8-00-trabajo-medio/',
+    ],
+    [
+        'measure' => '300-15 / 8.00',
+        'title' => 'Llanta Sólida para Montacargas 300-15/8.00 Trabajo Extra Pesado',
+        'promo' => 'Trabajo extra pesado',
+        'price' => '$27,756.22 MXN',
+        'image_path' => 'home/shop/300-15-800-extra.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-300-15-8-00-trabajo-extra-pesado/',
+    ],
+    [
+        'measure' => '28x9-15 / 7.00',
+        'title' => 'Llanta Sólida para Montacargas 28x9-15/7.00 Trabajo Extra Pesado',
+        'promo' => 'Trabajo extra pesado',
+        'price' => '$15,672.27 MXN',
+        'image_path' => 'home/shop/28x9-15-700.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-28x9-15-7-00-trabajo-extra-pesado/',
+    ],
+    [
+        'measure' => '250-15 / 7.00',
+        'title' => 'Llanta Sólida para Montacargas 250-15/7.00 Trabajo Extra Pesado',
+        'promo' => 'Trabajo extra pesado',
+        'price' => '$18,437.96 MXN',
+        'image_path' => 'home/shop/250-15-700.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-250-15-7-00-trabajo-extra-pesado/',
+    ],
+    [
+        'measure' => '250-15 / 7.50',
+        'title' => 'Llanta Sólida para Montacargas 250-15/7.50 Trabajo Extra Pesado',
+        'promo' => 'Trabajo extra pesado',
+        'price' => '$21,217.84 MXN',
+        'image_path' => 'home/shop/250-15-750.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-250-15-7-50-trabajo-extra-pesado/',
+    ],
+    [
+        'measure' => '21x7x15',
+        'title' => 'Llanta Sólida para Montacargas 21x7x15 Trabajo Medio Lisa',
+        'promo' => 'Alta demanda',
+        'price' => '$4,822.24 MXN',
+        'image_path' => 'home/shop/21x7x15.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-21x7x15-trabajo-medio-lisa/',
+    ],
+    [
+        'measure' => '8.25-15 / 6.50',
+        'title' => 'Llanta Sólida para Montacargas 8.25-15/6.50 Trabajo Medio',
+        'promo' => 'Alta demanda',
+        'price' => '$15,331.87 MXN',
+        'image_path' => 'home/shop/825-15-650.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-8-25-15-6-50-trabajo-medio/',
+    ],
+    [
+        'measure' => '16x6x10 1/2',
+        'title' => 'Llanta Sólida para Montacargas 16x6x10 1/2 Trabajo Medio Lisa',
+        'promo' => 'Uso industrial',
+        'price' => '$2,751.51 MXN',
+        'image_path' => 'home/shop/16x6x10-5.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-16x6x10-1-2-trabajo-medio-lisa/',
+    ],
+    [
+        'measure' => '15x4 1/2-8 / 3.00',
+        'title' => 'Llanta Sólida para Montacargas 15x4 1/2-8/3.00 Trabajo Medio',
+        'promo' => 'Uso industrial',
+        'price' => '$2,510.40 MXN',
+        'image_path' => 'home/shop/15x4-5-8-300.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-15x4-1-2-8-3-00-trabajo-medio/',
+    ],
+    [
+        'measure' => '18x7x12 1/8',
+        'title' => 'Llanta Sólida para Montacargas 18x7x12 1/8 Trabajo Pesado Lisa',
+        'promo' => 'Trabajo intensivo',
+        'price' => '$5,006.62 MXN',
+        'image_path' => 'home/shop/18x7x12-1-8.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-18x7x12-1-8-trabajo-pesado-lisa/',
+    ],
+    [
+        'measure' => '23x9-10 / 6.50',
+        'title' => 'Llanta Sólida para Montacargas 23x9-10/6.50 Trabajo Extra Pesado',
+        'promo' => 'Trabajo intensivo',
+        'price' => '$14,211.41 MXN',
+        'image_path' => 'home/shop/23x9-10-650.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-23x9-10-6-50-trabajo-extra-pesado/',
+    ],
+    [
+        'measure' => '12.00-20 / 10.00',
+        'title' => 'Llanta Sólida para Montacargas 12.00-20/10.00 Trabajo Extra Pesado',
+        'promo' => 'Gran capacidad',
+        'price' => '$60,334.68 MXN',
+        'image_path' => 'home/shop/12-00-20-10-00.png',
+        'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-12-00-20-10-00-trabajo-extra-pesado/',
+    ],
+]);
+
+
 @endphp
 
 @section('structured-data')
@@ -229,39 +356,102 @@
 @section('content')
 
 <section class="relative bg-black transition-colors">
-  <div class="relative mx-auto flex max-w-[1140px] flex-col gap-6 md:flex-row">
-    <nav aria-label="Tabla de contenido" class="hidden md:block w-full md:w-[48%]">
-      <div class="flex w-full flex-wrap content-start p-2.5">
-        <div class="mx-[70px] w-full">
-          <div class="border border-[#d5d8dc]">
-            <button
-              type="button"
-              class="flex w-full items-center gap-2 px-5 py-[15px] font-roboto font-semibold text-[#e76a3e] leading-4"
-              aria-expanded="true"
-              aria-controls="toc-panel"
-              id="toc-button"
-            >
-              <span class="inline-block w-[1.5em] text-left" aria-hidden="true">▸</span>
-              Tabla de contenido
-            </button>
+  <div class="relative mx-auto flex max-w-[1140px] flex-col gap-6 md:flex-row md:items-start">
+<nav aria-label="Elige cómo te ayudamos" class="hidden md:block w-full md:w-1/2">
+  <div class="flex w-full flex-wrap content-start p-2.5">
+    <div class="mx-[24px] w-full lg:mx-[36px]">
+      <div class="overflow-hidden rounded-[22px] border border-white/10 bg-gradient-to-br from-[#111111] via-[#0b0b0b] to-[#070707] shadow-[0_18px_60px_rgba(0,0,0,0.4)]">
+        <div class="border-b border-white/10 px-5 py-4">
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 text-left font-roboto"
+            aria-expanded="true"
+            aria-controls="toc-panel"
+            id="toc-button"
+          >
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#e76a3e]/15 text-[#e76a3e] text-sm" aria-hidden="true">
+              ▾
+            </span>
 
-            <div
-              id="toc-panel"
-              role="region"
-              aria-labelledby="toc-button"
-              class="border-t border-[#d5d8dc] px-5 py-[15px] font-roboto text-[#7a7a7a]"
-            >
-              <ol class="mb-2.5 mt-0 list-decimal list-inside space-y-1">
-                <li><a class="text-white hover:text-[#e76a3e]" href="{{ url('/llantas-para-montacargas') }}">Llantas para Montacargas</a></li>
-                <li><a class="text-white hover:text-[#e76a3e]" href="https://llantasdemontacargas.com/tienda-en-linea" target="_blank" rel="noopener">Compra en línea</a></li>
-                <li><a class="text-white hover:text-[#e76a3e]" href="{{ url('/instalacion-de-llantas-montacargas-ruguex') }}" target="_blank" rel="noopener">Instalación de llantas gratis en la compra de cualquier llanta</a></li>
-                <li><a class="text-white hover:text-[#e76a3e]" href="#T7">Cotiza en línea o solicita una asesoría</a></li>
-              </ol>
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#e76a3e]">
+                Compra mejor
+              </p>
+              <h2 class="mt-1 text-[18px] font-semibold leading-5 text-white">
+                Elige cómo te ayudamos
+              </h2>
             </div>
+          </button>
+        </div>
+
+        <div
+          id="toc-panel"
+          role="region"
+          aria-labelledby="toc-button"
+          class="px-5 py-4 font-roboto text-white"
+        >
+          <p class="mb-3 text-[13px] leading-5 text-white/70">
+            Compra más rápido y aprovecha nuestros beneficios.
+          </p>
+
+          <div class="overflow-hidden rounded-[16px] border border-white/10 bg-white/[0.02]">
+            <a
+              href="{{ url('/llantas-para-montacargas') }}"
+              class="group flex items-center gap-3 px-4 py-3 transition hover:bg-white/[0.05]"
+            >
+              <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#e76a3e] text-xs font-bold text-white">1</span>
+              <span class="text-[15px] leading-6 text-white transition group-hover:text-[#ff8a5f]">
+                Explora nuestras llantas para montacargas
+              </span>
+            </a>
+
+            <div class="h-px bg-white/10"></div>
+
+            <a
+              href="https://llantasdemontacargas.com/tienda-en-linea"
+              target="_blank"
+              rel="noopener"
+              class="group flex items-center gap-3 px-4 py-3 transition hover:bg-white/[0.05]"
+            >
+              <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#e76a3e] text-xs font-bold text-white">2</span>
+              <span class="text-[15px] leading-6 text-white transition group-hover:text-[#ff8a5f]">
+                Compra en línea con entrega a todo México
+              </span>
+            </a>
+
+            <div class="h-px bg-white/10"></div>
+
+            <a
+              href="{{ url('/instalacion-de-llantas-montacargas-ruguex') }}"
+              target="_blank"
+              rel="noopener"
+              class="group flex items-center gap-3 px-4 py-3 transition hover:bg-white/[0.05]"
+            >
+              <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#e76a3e] text-xs font-bold text-white">3</span>
+              <span class="text-[15px] leading-6 text-white transition group-hover:text-[#ff8a5f]">
+                Aprovecha instalación gratis en tu compra
+              </span>
+            </a>
+
+            <div class="h-px bg-white/10"></div>
+
+            <a
+              href="#T7"
+              class="group flex items-center gap-3 px-4 py-3 transition hover:bg-white/[0.05]"
+            >
+              <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#e76a3e] text-xs font-bold text-white">4</span>
+              <span class="text-[15px] leading-6 text-white transition group-hover:text-[#ff8a5f]">
+                Solicita tu cotización hoy mismo
+              </span>
+            </a>
           </div>
         </div>
       </div>
-    </nav>
+    </div>
+  </div>
+</nav>
+
+
 
     <div class="relative w-full md:w-[52%]">
       <div class="flex w-full flex-wrap content-start p-2.5">
@@ -299,34 +489,94 @@
   </div>
 </section>
 
-<section class="relative w-full bg-black overflow-hidden">
-  <div class="relative flex w-full">
-    <div class="relative w-full min-h-px">
-      <div class="relative h-[260px] md:h-[360px] w-full overflow-hidden">
-        <div class="absolute inset-0 z-0 pointer-events-none">
-          <x-responsive-image
-            :variants="$shopBanner"
-            alt=""
-            sizes="100vw"
-            class="h-full w-full object-cover object-center"
-            loading="lazy"
-          />
-        </div>
 
-        <div class="absolute inset-0 z-[1] bg-black/20"></div>
+<section class="relative left-1/2 right-1/2 w-screen -translate-x-1/2 overflow-hidden bg-black py-5 lg:py-7">
+    <div class="mx-auto max-w-[1680px] px-4 sm:px-6 lg:px-10">
+        <div class="rounded-[32px] border border-white/10 bg-[#0b0b0b] px-4 py-6 shadow-[0_20px_80px_rgba(0,0,0,0.35)] sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+            <div class="mb-8 flex flex-col gap-5 lg:mb-10 md:flex-row md:items-end md:justify-between">
+                <div class="max-w-3xl">
+                    <p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#EB6D3F]">
+                        Compra en línea
+                    </p>
 
-        <div class="relative z-10 flex h-full w-full items-center justify-center text-center px-4">
-          <a href="https://llantasdemontacargas.com/tienda-en-linea"
-             class="inline-block rounded-[6px] bg-[#e76a3e] px-[50px] py-[25px] text-[25px] font-medium leading-[20px] text-white no-underline transition">
-            <span class="flex justify-center">
-              <span class="block">¡Compra en línea aquí!</span>
-            </span>
-          </a>
+                    <h2 class="mt-3 text-3xl font-extrabold leading-tight text-white md:text-4xl xl:text-5xl">
+                        Productos destacados para montacargas
+                    </h2>
+
+                    <p class="mt-4 max-w-2xl text-sm leading-7 text-white/70 md:text-base">
+                        Explora algunas de las medidas con mayor demanda y presencia comercial en nuestra tienda en línea.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <button type="button" id="shop-carousel-prev"
+                        class="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:border-white/30 hover:bg-white/10">
+                        <span class="sr-only">Anterior</span>
+                        &#10094;
+                    </button>
+
+                    <button type="button" id="shop-carousel-next"
+                        class="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:border-white/30 hover:bg-white/10">
+                        <span class="sr-only">Siguiente</span>
+                        &#10095;
+                    </button>
+
+                    <a href="https://llantasdemontacargas.com/tienda-en-linea/"
+                        class="inline-flex items-center justify-center rounded-full bg-[#EB6D3F] px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90">
+                        Ver toda la tienda
+                    </a>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div id="shop-carousel"
+                    class="flex gap-6 overflow-x-auto scroll-smooth px-1 pb-3 pt-1 sm:px-1 lg:px-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                    @foreach ($shopCarouselItems as $item)
+                        <a href="{{ $item['url'] }}"
+                            class="group min-w-[84%] sm:min-w-[46%] lg:min-w-[31%] xl:min-w-[23.2%] overflow-hidden rounded-[30px] border border-black/5 bg-white shadow-[0_12px_40px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_60px_rgba(0,0,0,0.30)]">
+                            <div class="relative aspect-[4/3] overflow-hidden bg-[#f4f4f4]">
+                                <img
+                                    src="{{ asset('img/' . $item['image_path']) }}"
+                                    alt="{{ $item['title'] }} {{ $item['measure'] }}"
+                                    class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                                    loading="lazy"
+                                >
+
+                                <span class="absolute left-4 top-4 rounded-full bg-[#EB6D3F] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-white shadow">
+                                    {{ $item['promo'] }}
+                                </span>
+                            </div>
+
+                            <div class="flex min-h-[220px] flex-col p-6">
+                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                                    {{ $item['measure'] }}
+                                </p>
+
+                                <h3 class="mt-3 line-clamp-3 text-lg font-extrabold leading-6 text-slate-900 lg:text-[22px] lg:leading-7">
+                                    {{ $item['title'] }}
+                                </h3>
+
+                                <p class="mt-4 text-xl font-extrabold text-[#EB6D3F] lg:text-2xl">
+                                    {{ $item['price'] }}
+                                </p>
+
+                                <span class="mt-auto pt-5 inline-flex items-center text-sm font-semibold text-slate-900">
+                                    Ver producto
+                                    <svg class="ml-2 h-4 w-4 transition group-hover:translate-x-1" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h9.586L10.293 5.707a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 11-1.414-1.414L13.586 11H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </section>
+
+
+
 
 <div class="relative mx-auto flex flex-col md:flex-row min-h-[400px] items-center bg-[#e76a3e] ">
   <div class="relative flex min-h-px basis-[50.468%]">
@@ -389,7 +639,7 @@
         <div class="relative mb-[20px] w-full text-center">
           <div class="bg-black p-[10px]">
             <h2 class="m-0 p-0 text-[25px] lg:text-[39px] font-semibold leading-[39px] text-white">
-              ¿Qué Llantas Sólidas necesito?
+              Llantas Sólidas
             </h2>
           </div>
         </div>
@@ -497,7 +747,7 @@
         <div class="relative mb-[20px] w-full text-center">
           <div class="bg-black p-[10px]">
             <h2 class="m-0 p-0 text-[25px] lg:text-[39px] font-semibold leading-[39px] text-white">
-              ¿Qué Llantas Neumáticas necesito?
+              Llantas Neumáticas
             </h2>
           </div>
         </div>
@@ -747,38 +997,71 @@
       </div>
     </div>
 
-    <div class="relative w-full md:min-h-[520px] lg:min-h-[904.781px]">
-      <div class="absolute inset-0 bg-black"></div>
+<div class="relative w-full md:min-h-[520px] lg:min-h-[904.781px]">
+  <div class="absolute inset-0 bg-black"></div>
 
-      <div class="relative z-[1] flex h-full w-full flex-col justify-center gap-4 p-5 text-white lg:p-20">
-        <p class="mb-5">
-          <span class="font-semibold text-[#e76a3e]">NOSOTROS</span>
+  <div class="relative z-[1] flex h-full w-full flex-col justify-center gap-4 p-5 text-white lg:p-20">
+    <p class="mb-5">
+      <span class="font-semibold text-[#e76a3e]">NOSOTROS</span>
+    </p>
+
+    <h2 class="m-0 text-justify text-[22px] font-medium leading-[22px]">
+      Distribuidores a todo el país: Monterrey, Querétaro, Etc.
+    </h2>
+
+    <p class="mb-5">
+      <strong class="text-white text-[25px] lg:text-[35px]">
+        Compra a crédito, con entrega inmediata y Garantías. Las mejores Llantas para el manejo de materiales en la Industria.
+      </strong>
+    </p>
+
+    <span class="text-justify">
+      Distribuidor Autorizado de la marca Trelleborg. Soluciones para Montacargas, Cargadores, Manipuladores y maquinaria de Construcción. Trelleborg fabrica las llantas de alta gama más resistentes y duraderas para aplicaciones demandantes. Ofrecemos los precios más bajos, entrega inmediata, crédito y asesoría técnica en la selección e instalación.
+    </span>
+
+    <div class="mt-4 space-y-3">
+      <div class="rounded-lg border border-white/10 bg-white/5 p-4">
+        <h3 class="m-0 text-[18px] font-semibold text-white">
+          Matriz Puebla
+        </h3>
+
+        <p class="mt-2 text-[14px] leading-6 text-white/80">
+          Atención comercial y técnica para selección, cotización y seguimiento de llantas para montacargas.
+          Matriz en Puebla.
         </p>
+      </div>
 
-        <h2 class="m-0 text-justify text-[22px] font-medium leading-[22px]">
-          Distribuidores a todo el país: Monterrey, Querétaro, Etc.
-        </h2>
+      <div class="rounded-lg border border-white/10 bg-white/5 p-4">
+        <h3 class="m-0 text-[18px] font-semibold text-white">
+          Almacenes con entrega y montaje
+        </h3>
 
-        <p class="mb-5">
-          <strong class="text-white text-[25px] lg:text-[35px]">
-            Compra a crédito, con entrega inmediata y Garantías. Las mejores Llantas para el manejo de materiales en la Industria.
-          </strong>
+        <ul class="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px] text-white/85">
+          <li>ESTADO DE MEXICO</li>
+          <li>PUEBLA</li>
+          <li>GUANAJUATO</li>
+          <li>NUEVO LEÓN</li>
+          <li>SAN LUIS POTOSÍ</li>
+          <li>JALISCO</li>
+          <li>AGUASCALIENTES</li>
+        </ul>
+
+        <p class="mt-3 text-[14px] leading-6 text-white/80">
+          Consulta stock y disponibilidad de prensa para montaje.
         </p>
-
-        <span class="text-justify">
-          Distribuidor Autorizado de la marca Trelleborg. Soluciones para Montacargas, Cargadores, Manipuladores y maquinaria de Construcción. Trelleborg fabrica las llantas de alta gama más resistentes y duraderas para aplicaciones demandantes. Ofrecemos los precios más bajos, entrega inmediata, crédito y asesoría técnica en la selección e instalación.
-        </span>
-
-        <div class="mt-4">
-          <a
-            href="{{ url('/somos') }}"
-            class="inline-block rounded-[4px] bg-[#e76a3e] px-[30px] py-[15px] text-[16px] font-medium leading-[16px] text-white transition"
-          >
-            <span class="flex justify-center"><span class="block">CONOCER MÁS</span></span>
-          </a>
-        </div>
       </div>
     </div>
+
+    <div class="mt-4">
+      <a
+        href="{{ url('/somos') }}"
+        class="inline-block rounded-[4px] bg-[#e76a3e] px-[30px] py-[15px] text-[16px] font-medium leading-[16px] text-white transition"
+      >
+        <span class="flex justify-center"><span class="block">CONOCER MÁS</span></span>
+      </a>
+    </div>
+  </div>
+</div>
   </div>
 </section>
 
@@ -1139,6 +1422,158 @@
     }
   })();
 </script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const track = document.getElementById('shop-carousel');
+    const prev = document.getElementById('shop-carousel-prev');
+    const next = document.getElementById('shop-carousel-next');
+
+    if (!track || !prev || !next) return;
+
+    const originalCards = Array.from(track.querySelectorAll('a'));
+    if (!originalCards.length) return;
+
+    const getGap = () => {
+        const styles = window.getComputedStyle(track);
+        return parseInt(styles.columnGap || styles.gap || 24, 10);
+    };
+
+    const getCardWidth = () => {
+        const firstCard = track.querySelector('a');
+        if (!firstCard) return 320;
+        return firstCard.getBoundingClientRect().width + getGap();
+    };
+
+    const getCardsPerView = () => {
+        if (window.innerWidth >= 1280) return 4;
+        if (window.innerWidth >= 1024) return 3;
+        if (window.innerWidth >= 640) return 2;
+        return 1;
+    };
+
+    let clonesCount = 0;
+    let autoPlay = null;
+    let isHovering = false;
+    let isResetting = false;
+
+    function removeOldClones() {
+        track.querySelectorAll('[data-clone="true"]').forEach(node => node.remove());
+    }
+
+    function setupInfiniteCarousel() {
+        removeOldClones();
+
+        clonesCount = getCardsPerView() + 1;
+
+        for (let i = 0; i < clonesCount; i++) {
+            const clone = originalCards[i % originalCards.length].cloneNode(true);
+            clone.setAttribute('data-clone', 'true');
+            clone.setAttribute('aria-hidden', 'true');
+            track.appendChild(clone);
+        }
+
+        requestAnimationFrame(() => {
+            track.scrollLeft = 0;
+        });
+    }
+
+    function goNext() {
+        track.scrollBy({ left: getCardWidth(), behavior: 'smooth' });
+    }
+
+    function goPrev() {
+        const step = getCardWidth();
+
+        if (track.scrollLeft <= 5) {
+            const originalWidth = getCardWidth() * originalCards.length;
+            isResetting = true;
+            track.scrollLeft = originalWidth;
+            requestAnimationFrame(() => {
+                isResetting = false;
+                track.scrollBy({ left: -step, behavior: 'smooth' });
+            });
+            return;
+        }
+
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+    }
+
+    function handleLoop() {
+        if (isResetting) return;
+
+        const step = getCardWidth();
+        const originalWidth = step * originalCards.length;
+
+        if (track.scrollLeft >= originalWidth - step / 2) {
+            isResetting = true;
+
+            setTimeout(() => {
+                track.scrollLeft = track.scrollLeft - originalWidth;
+                isResetting = false;
+            }, 380);
+        }
+    }
+
+    function startAutoPlay() {
+        stopAutoPlay();
+        autoPlay = setInterval(() => {
+            if (!isHovering) goNext();
+        }, 2600);
+    }
+
+    function stopAutoPlay() {
+        if (autoPlay) {
+            clearInterval(autoPlay);
+            autoPlay = null;
+        }
+    }
+
+    prev.addEventListener('click', () => {
+        goPrev();
+        startAutoPlay();
+    });
+
+    next.addEventListener('click', () => {
+        goNext();
+        startAutoPlay();
+    });
+
+    track.addEventListener('scroll', handleLoop, { passive: true });
+
+    track.addEventListener('mouseenter', () => {
+        isHovering = true;
+    });
+
+    track.addEventListener('mouseleave', () => {
+        isHovering = false;
+    });
+
+    track.addEventListener('touchstart', () => {
+        isHovering = true;
+    }, { passive: true });
+
+    track.addEventListener('touchend', () => {
+        isHovering = false;
+    }, { passive: true });
+
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            setupInfiniteCarousel();
+        }, 180);
+    });
+
+    setupInfiniteCarousel();
+    startAutoPlay();
+});
+</script>
+
+
+
+
 @endpush
 
 @endsection
