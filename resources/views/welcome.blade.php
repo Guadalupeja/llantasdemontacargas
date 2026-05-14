@@ -8,6 +8,17 @@
       return implode(', ', array_map(static fn($v) => $v['url'].' '.$v['w'].'w', $arr));
   };
 
+  /*
+  |--------------------------------------------------------------------------
+  | Tamaños reales para imágenes del home
+  |--------------------------------------------------------------------------
+  | Estas medidas evitan que el navegador descargue originales grandes
+  | cuando visualmente las imágenes se muestran pequeñas.
+  */
+  $categoryImageSizes = '(min-width:1024px) 280px, (min-width:768px) 220px, 160px';
+  $secondaryCarouselSizes = '(min-width:1024px) 520px, (min-width:768px) 50vw, 100vw';
+  $shopCardSizes = '(min-width:1280px) 390px, (min-width:1024px) 31vw, (min-width:640px) 46vw, 84vw';
+
   $heroTop = image_variants('originals/llantas-para-montacargas-trelleborg-2-ousfe5qi9qmv8390s86lcc3l9p4mdicmfsmgsuj2ow.jpg');
   $heroTopFallback = $heroTop['fallback']['url'] ?? asset('storage/originals/llantas-para-montacargas-trelleborg-2-ousfe5qi9qmv8390s86lcc3l9p4mdicmfsmgsuj2ow.jpg');
   $heroTopAvif = $heroTop['avif'] ?? null;
@@ -527,12 +538,43 @@ $shopCarouselItems = collect([
                         <a href="{{ $item['url'] }}"
                             class="group min-w-[84%] sm:min-w-[46%] lg:min-w-[31%] xl:min-w-[23.2%] overflow-hidden rounded-[30px] border border-black/5 bg-white shadow-[0_12px_40px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_60px_rgba(0,0,0,0.30)]">
                             <div class="relative aspect-[4/3] overflow-hidden bg-[#f4f4f4]">
-                                <img
-                                    src="{{ asset('img/' . $item['image_path']) }}"
-                                    alt="{{ $item['title'] }} {{ $item['measure'] }}"
-                                    class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                                    loading="lazy"
-                                >
+                                @php
+                                    $imageInfo = pathinfo($item['image_path']);
+                                    $imageDir = $imageInfo['dirname'];
+                                    $imageName = $imageInfo['filename'];
+
+                                    $shopWebp280 = "img/{$imageDir}/optimized/{$imageName}-280.webp";
+                                    $shopWebp360 = "img/{$imageDir}/optimized/{$imageName}-360.webp";
+                                    $shopWebp480 = "img/{$imageDir}/optimized/{$imageName}-480.webp";
+                                    $shopWebp640 = "img/{$imageDir}/optimized/{$imageName}-640.webp";
+
+                                    $shopWebpSources = collect([
+                                        ['path' => $shopWebp280, 'w' => 280],
+                                        ['path' => $shopWebp360, 'w' => 360],
+                                        ['path' => $shopWebp480, 'w' => 480],
+                                        ['path' => $shopWebp640, 'w' => 640],
+                                    ])->filter(fn ($source) => file_exists(public_path($source['path'])));
+                                @endphp
+
+                                <picture>
+                                    @if($shopWebpSources->isNotEmpty())
+                                        <source
+                                            type="image/webp"
+                                            srcset="{{ $shopWebpSources->map(fn ($source) => asset($source['path']).' '.$source['w'].'w')->implode(', ') }}"
+                                            sizes="{{ $shopCardSizes }}"
+                                        >
+                                    @endif
+
+                                    <img
+                                        src="{{ asset('img/' . $item['image_path']) }}"
+                                        alt="{{ $item['title'] }} {{ $item['measure'] }}"
+                                        class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                                        loading="lazy"
+                                        decoding="async"
+                                        width="640"
+                                        height="480"
+                                    >
+                                </picture>
 
                                 <span class="absolute left-4 top-4 rounded-full bg-[#EB6D3F] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-white shadow">
                                     {{ $item['promo'] }}
@@ -644,9 +686,9 @@ $shopCarouselItems = collect([
                   <x-responsive-image
                     :variants="$imgMontaSolidas"
                     alt="Montacargas"
-                    sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
+                    :sizes="$categoryImageSizes"
                     class="h-full w-full object-contain"
-                    width="800" height="533"
+                    width="280" height="280"
                     loading="lazy"
                   />
                 </div>
@@ -660,9 +702,9 @@ $shopCarouselItems = collect([
                     <x-responsive-image
                       :variants="$imgLlantaXp800"
                       alt="Llantas sólidas para Montacargas Trelleborg"
-                      sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
+                      :sizes="$categoryImageSizes"
                       class="h-full w-full object-contain"
-                      width="170" height="170"
+                      width="280" height="280"
                       loading="lazy"
                     />
                   </div>
@@ -692,9 +734,9 @@ $shopCarouselItems = collect([
                   <x-responsive-image
                     :variants="$imgMontaArillo"
                     alt="Llantas sólidas para minicargadores Brawler"
-                    sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
+                    :sizes="$categoryImageSizes"
                     class="h-full w-full object-contain"
-                    width="800" height="533"
+                    width="280" height="280"
                     loading="lazy"
                   />
                 </div>
@@ -708,9 +750,9 @@ $shopCarouselItems = collect([
                     <x-responsive-image
                       :variants="$imgLlantaPs1000"
                       alt="Llantas solidas con arillo"
-                      sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
+                      :sizes="$categoryImageSizes"
                       class="h-full w-full object-contain"
-                      width="170" height="170"
+                      width="280" height="280"
                       loading="lazy"
                     />
                   </div>
@@ -752,9 +794,9 @@ $shopCarouselItems = collect([
                   <x-responsive-image
                     :variants="$imgMontaNeumatica"
                     alt="Montacargas"
-                    sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
+                    :sizes="$categoryImageSizes"
                     class="h-full w-full object-contain"
-                    width="800" height="533"
+                    width="280" height="280"
                     loading="lazy"
                   />
                 </div>
@@ -768,9 +810,9 @@ $shopCarouselItems = collect([
                     <x-responsive-image
                       :variants="$imgLlantaT900"
                       alt="Llantas sólidas para Montacargas Trelleborg"
-                      sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
+                      :sizes="$categoryImageSizes"
                       class="h-full w-full object-contain"
-                      width="170" height="170"
+                      width="280" height="280"
                       loading="lazy"
                     />
                   </div>
@@ -800,9 +842,9 @@ $shopCarouselItems = collect([
                   <x-responsive-image
                     :variants="$imgMontaRadial"
                     alt="Llantas sólidas para minicargadores Brawler"
-                    sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
+                    :sizes="$categoryImageSizes"
                     class="h-full w-full object-contain"
-                    width="800" height="533"
+                    width="280" height="280"
                     loading="lazy"
                   />
                 </div>
@@ -816,9 +858,9 @@ $shopCarouselItems = collect([
                     <x-responsive-image
                       :variants="$imgLlantaRadial"
                       alt="Llanta sólida rellena para minicargador Brawler HD SolidFlex"
-                      sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
+                      :sizes="$categoryImageSizes"
                       class="h-full w-full object-contain"
-                      width="170" height="170"
+                      width="280" height="280"
                       loading="lazy"
                     />
                   </div>
@@ -886,7 +928,7 @@ $shopCarouselItems = collect([
                   <x-responsive-image
                     :variants="$carousel1"
                     alt="Llantas Sólidas para Montacargas"
-                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    :sizes="$secondaryCarouselSizes"
                     class="mx-auto inline-block h-auto max-h-[340px] w-auto align-middle"
                     loading="lazy"
                     width="357" height="357"
@@ -902,7 +944,7 @@ $shopCarouselItems = collect([
                   <x-responsive-image
                     :variants="$carousel2"
                     alt="Llanta neumática Trelleborg T-900 uso pesado en montacargas"
-                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    :sizes="$secondaryCarouselSizes"
                     class="mx-auto inline-block h-auto max-h-[340px] w-auto align-middle"
                     loading="lazy"
                     width="357" height="357"
@@ -918,7 +960,7 @@ $shopCarouselItems = collect([
                   <x-responsive-image
                     :variants="$carousel3"
                     alt="Llanta sólida con arillo tipo cushion Trelleborg Mono"
-                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    :sizes="$secondaryCarouselSizes"
                     class="mx-auto inline-block h-auto max-h-[340px] w-auto align-middle"
                     loading="lazy"
                     width="357" height="357"
@@ -934,7 +976,7 @@ $shopCarouselItems = collect([
                   <x-responsive-image
                     :variants="$carousel4"
                     alt="Llantas de poliuretano para montacargas"
-                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    :sizes="$secondaryCarouselSizes"
                     class="mx-auto inline-block h-auto max-h-[340px] w-auto align-middle"
                     loading="lazy"
                     width="357" height="357"
