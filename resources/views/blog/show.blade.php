@@ -7,44 +7,42 @@
 @section('title', $post->title . ' | Blog Ruguex')
 
 @section('content')
-<section class="py-10 md:py-14 bg-neutral-100">
-    <div class="max-w-4xl mx-auto px-4">
+<section class="bg-neutral-100 py-10 md:py-14">
+    <div class="mx-auto max-w-5xl px-4">
 
-        {{-- Breadcrumb simple --}}
-        <nav class="text-[11px] text-gray-500 mb-4">
+        {{-- Breadcrumb --}}
+        <nav class="mb-4 text-[11px] text-gray-500">
             <a href="{{ url('/') }}" class="hover:text-orange-600">Inicio</a>
             <span class="mx-1">/</span>
             <a href="{{ route('blog.index') }}" class="hover:text-orange-600">Blog</a>
             <span class="mx-1">/</span>
-            <span class="text-gray-600 line-clamp-1">{{ $post->title }}</span>
+            <span class="line-clamp-1 text-gray-600">{{ $post->title }}</span>
         </nav>
 
-        <article class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <article class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
             {{-- Imagen principal --}}
             <div class="relative">
-                <div class="aspect-[16/7] w-full bg-neutral-200 overflow-hidden">
+                <div class="aspect-[16/7] w-full overflow-hidden bg-neutral-200">
                     <img
                         src="{{ $post->featured_image_url }}"
                         alt="{{ $post->title }}"
-                        class="w-full h-full object-cover"
+                        class="h-full w-full object-cover"
                     >
                 </div>
 
                 @if ($post->category)
-                    <span
-                        class="absolute bottom-3 left-3 inline-flex items-center rounded-full bg-black/70 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-sm"
-                    >
+                    <span class="absolute bottom-3 left-3 inline-flex items-center rounded-full bg-black/70 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
                         {{ $post->category }}
                     </span>
                 @endif
             </div>
 
-            <div class="px-5 md:px-8 pt-6 pb-8 md:pb-10">
-                {{-- Meta principal --}}
-                <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500">
+            <div class="px-5 pb-8 pt-6 md:px-8 md:pb-10">
+                {{-- Meta --}}
+                <div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500">
                     @if($post->published_at)
                         <span class="inline-flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                            <span class="h-1.5 w-1.5 rounded-full bg-orange-500"></span>
                             {{ $post->published_at->translatedFormat('d \\de F \\de Y') }}
                         </span>
                     @endif
@@ -61,23 +59,23 @@
                 </div>
 
                 {{-- Título --}}
-                <h1 class="text-2xl md:text-3xl font-extrabold mb-4 text-gray-900">
+                <h1 class="mb-8 text-3xl font-extrabold leading-tight text-gray-900 md:text-4xl">
                     {{ $post->title }}
                 </h1>
 
-                {{-- Texto del post --}}
-                <div class="prose prose-sm md:prose-base prose-neutral max-w-none leading-relaxed">
-                    {!! nl2br(e($post->content)) !!}
+                {{-- Contenido --}}
+                <div class="blog-content max-w-none text-gray-700">
+                    {!! $post->content !!}
                 </div>
             </div>
         </article>
 
         {{-- Prev / Next --}}
-        <div class="mt-6 flex flex-col md:flex-row justify-between gap-4 text-xs md:text-sm">
+        <div class="mt-6 flex flex-col justify-between gap-4 text-xs md:flex-row md:text-sm">
             @if($prev)
                 <a
                     href="{{ route('blog.show', $prev->slug) }}"
-                    class="flex-1 md:flex-none inline-flex items-start gap-2 text-gray-700 hover:text-orange-600"
+                    class="inline-flex flex-1 items-start gap-2 text-gray-700 hover:text-orange-600 md:flex-none"
                 >
                     <span class="mt-[2px]">←</span>
                     <span class="font-medium">{{ Str::limit($prev->title, 80) }}</span>
@@ -89,7 +87,7 @@
             @if($next)
                 <a
                     href="{{ route('blog.show', $next->slug) }}"
-                    class="flex-1 md:flex-none inline-flex items-start gap-2 text-right text-gray-700 hover:text-orange-600 md:justify-end"
+                    class="inline-flex flex-1 items-start gap-2 text-right text-gray-700 hover:text-orange-600 md:flex-none md:justify-end"
                 >
                     <span class="font-medium">{{ Str::limit($next->title, 80) }}</span>
                     <span class="mt-[2px]">→</span>
@@ -97,25 +95,24 @@
             @endif
         </div>
 
-        {{-- Sección comentarios --}}
-        <section class="mt-10 bg-white rounded-2xl shadow-sm border border-gray-100 px-5 md:px-8 py-6 md:py-8">
-            <h2 class="text-lg font-semibold mb-1 text-gray-900">
+        {{-- Comentarios --}}
+        <section class="mt-10 rounded-2xl border border-gray-100 bg-white px-5 py-6 shadow-sm md:px-8 md:py-8">
+            <h2 class="mb-1 text-lg font-semibold text-gray-900">
                 Deja una respuesta
             </h2>
-            <p class="text-[11px] text-gray-500 mb-5">
+            <p class="mb-5 text-[11px] text-gray-500">
                 Tu dirección de correo electrónico no será publicada. Los campos obligatorios están marcados con *
             </p>
 
-            {{-- Mensajes --}}
             @if (session('success'))
-                <div class="mb-4 text-xs md:text-sm text-green-800 bg-green-50 border border-green-200 rounded-md px-3 py-2">
+                <div class="mb-4 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-xs text-green-800 md:text-sm">
                     {{ session('success') }}
                 </div>
             @endif
 
             @if ($errors->any())
-                <div class="mb-4 text-xs md:text-sm text-red-800 bg-red-50 border border-red-200 rounded-md px-3 py-2">
-                    <ul class="list-disc list-inside space-y-1">
+                <div class="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800 md:text-sm">
+                    <ul class="list-inside list-disc space-y-1">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -123,58 +120,57 @@
                 </div>
             @endif
 
-            {{-- Formulario --}}
             <form action="{{ route('blog.comments.store', $post->slug) }}" method="POST" class="space-y-4">
                 @csrf
 
                 <div>
-                    <label class="block text-xs font-semibold mb-1 text-gray-800">
+                    <label class="mb-1 block text-xs font-semibold text-gray-800">
                         Comentario *
                     </label>
                     <textarea
                         name="content"
                         rows="4"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                         required
                     >{{ old('content') }}</textarea>
                 </div>
 
-                <div class="grid md:grid-cols-3 gap-4">
+                <div class="grid gap-4 md:grid-cols-3">
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-gray-800">
+                        <label class="mb-1 block text-xs font-semibold text-gray-800">
                             Nombre *
                         </label>
                         <input
                             type="text"
                             name="name"
                             value="{{ old('name') }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                             required
                         >
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-gray-800">
+                        <label class="mb-1 block text-xs font-semibold text-gray-800">
                             Correo electrónico *
                         </label>
                         <input
                             type="email"
                             name="email"
                             value="{{ old('email') }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                             required
                         >
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-gray-800">
+                        <label class="mb-1 block text-xs font-semibold text-gray-800">
                             Web
                         </label>
                         <input
                             type="url"
                             name="website"
                             value="{{ old('website') }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                         >
                     </div>
                 </div>
@@ -192,18 +188,17 @@
 
                 <button
                     type="submit"
-                    class="mt-2 inline-flex items-center px-5 py-2.5 rounded-full text-xs md:text-sm font-semibold bg-orange-600 text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1"
+                    class="mt-2 inline-flex items-center rounded-full bg-orange-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 md:text-sm"
                 >
                     Enviar comentario
                 </button>
             </form>
 
-            {{-- Lista de comentarios --}}
             @if ($comments->count())
-                <div class="mt-8 border-t border-gray-200 pt-5 space-y-4">
+                <div class="mt-8 space-y-4 border-t border-gray-200 pt-5">
                     @foreach ($comments as $comment)
-                        <div class="pb-4 border-b border-gray-100 last:border-b-0 last:pb-0">
-                            <div class="flex items-center justify-between mb-1">
+                        <div class="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
+                            <div class="mb-1 flex items-center justify-between">
                                 <div class="text-sm font-semibold text-gray-900">
                                     {{ $comment->name }}
                                 </div>
@@ -221,4 +216,63 @@
         </section>
     </div>
 </section>
+
+<style>
+.blog-content {
+    font-size: 18px;
+    line-height: 1.9;
+    color: #374151;
+}
+
+.blog-content p {
+    margin: 0 0 1.5rem 0;
+}
+
+.blog-content h2 {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    font-size: 1.9rem;
+    line-height: 1.2;
+    font-weight: 800;
+    color: #111827;
+}
+
+.blog-content h3 {
+    margin-top: 2rem;
+    margin-bottom: .75rem;
+    font-size: 1.35rem;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #111827;
+}
+
+.blog-content ul,
+.blog-content ol {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.blog-content li {
+    margin-bottom: .75rem;
+}
+
+.blog-content a {
+    color: #e76a3e;
+    text-decoration: underline;
+}
+
+.blog-content strong {
+    font-weight: 700;
+    color: #111827;
+}
+
+.blog-content blockquote {
+    margin: 2rem 0;
+    padding: 1rem 1.25rem;
+    border-left: 4px solid #e76a3e;
+    background: #fff7f3;
+    color: #374151;
+    border-radius: 0.75rem;
+}
+</style>
 @endsection

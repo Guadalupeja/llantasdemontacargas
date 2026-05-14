@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class StaticPageController extends Controller
 {
@@ -95,40 +97,49 @@ class StaticPageController extends Controller
 
     /**
      * Muestra la vista si la ruta está permitida y existe el archivo Blade correspondiente.
+     * Si la ruta coincide con el slug de un post publicado, redirige a /blog/{slug}.
+     *
      * Estructura de vistas: resources/views/pages/<ruta>.blade.php
      * Sustituyendo "/" por "." (ej: "llantas-para-montacargas/trelleborg-ps800-con-arillo" -> "pages.llantas-para-montacargas.trelleborg-ps800-con-arillo")
      */
-    public function show(Request $request): View
+    public function show(Request $request): View|Response
     {
         // Normaliza la ruta solicitada
-        $path = trim($request->path(), '/'); // "" para "/"
+        $path = trim($request->path(), '/');
         if ($path === '') {
             abort(404);
         }
 
-        // Acepta con o sin "/" final, y case-insensitive
-        $normalized = Str::lower($path);
+        $normalized = Str::lower(rtrim($path, '/'));
 
-        // Si termina en "/", quítalo
-        $normalized = rtrim($normalized, '/');
+        /**
+         * 1) Si existe un post publicado con ese slug, redirige a la URL oficial del blog.
+         * Esto permite que /mi-post funcione, pero consolida SEO en /blog/mi-post
+         */
+        $post = Post::query()
+            ->where('slug', $normalized)
+            ->where('is_published', true)
+            ->first();
 
-        // Verifica allow-list (comparación estric­ta)
-        if (!in_array($normalized, self::ALLOWED, true)) {
+        if ($post) {
+            return redirect()->route('blog.show', ['post' => $post->slug], 301);
+        }
+
+        /**
+         * 2) Si no es post, sigue la lógica normal de páginas estáticas
+         */
+        if (! in_array($normalized, self::ALLOWED, true)) {
             abort(404);
         }
 
-        // Mapea a la vista "pages.<ruta-con-puntos>"
         $viewName = 'pages.' . str_replace('/', '.', $normalized);
 
-        // Si la vista no existe, usa una plantilla genérica "en construcción"
-        if (!view()->exists($viewName)) {
+        if (! view()->exists($viewName)) {
             $viewName = 'pages.__generic';
         }
 
-        // Puedes pasar meta por defecto o dejar que cada vista defina @section('title', ...)
         return view($viewName, [
             'slug' => $normalized,
         ]);
     }
 }
-

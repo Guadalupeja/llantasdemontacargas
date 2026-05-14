@@ -13,7 +13,7 @@ class BlogController extends Controller
     {
         $posts = Post::where('is_published', true)
             ->orderByDesc('published_at')
-            ->paginate(9); // 9 por página, grid 3x3
+            ->paginate(9);
 
         return view('blog.index', compact('posts'));
     }
@@ -21,18 +21,15 @@ class BlogController extends Controller
     // DETALLE /blog/{slug}
     public function show(Post $post)
     {
-        // Comments aprobados
         $comments = $post->comments()
             ->where('is_approved', true)
             ->get();
 
-        // Post anterior (más viejo)
         $prev = Post::where('is_published', true)
             ->where('published_at', '<', $post->published_at)
             ->orderByDesc('published_at')
             ->first();
 
-        // Post siguiente (más nuevo)
         $next = Post::where('is_published', true)
             ->where('published_at', '>', $post->published_at)
             ->orderBy('published_at')

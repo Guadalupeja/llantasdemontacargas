@@ -12,9 +12,6 @@ export default function forkliftChatbot(dataset, csrfToken) {
         state: {
             type: null,
             measure: null,
-            tread: null,
-            function: null,
-            service: null,
         },
 
         rawProducts: dataset?.products ?? [],
@@ -39,11 +36,11 @@ export default function forkliftChatbot(dataset, csrfToken) {
                 .filter(item => item && item.title && item.url && item.type)
                 .map(item => ({
                     ...item,
-                    type: item.type?.trim() || null,
-                    measure: item.measure?.trim() || null,
-                    tread: item.tread?.trim() || 'cualquiera',
-                    function: item.function?.trim() || 'cualquiera',
-                    service: item.service?.trim() || 'cualquiera',
+                    type: (item.type || '').trim(),
+                    measure: (item.measure || '').trim(),
+                    title: (item.title || '').trim(),
+                    price_label: item.price_label || null,
+                    image: item.image || null,
                 }));
         },
 
@@ -59,18 +56,19 @@ export default function forkliftChatbot(dataset, csrfToken) {
             return labels[type] || type;
         },
 
+        uniqueByValue(values) {
+            return [...new Set(values.filter(Boolean))];
+        },
+
         getAvailableTypes() {
-            const grouped = {};
+            const types = this.uniqueByValue(
+                this.products
+                    .filter(item => item.measure)
+                    .map(item => item.type)
+            );
 
-            this.products.forEach(item => {
-                if (!item.type) return;
-                if (!grouped[item.type]) grouped[item.type] = [];
-                grouped[item.type].push(item);
-            });
-
-            return Object.entries(grouped)
-                .filter(([_, items]) => items.some(item => item.measure))
-                .map(([type]) => ({
+            return types
+                .map(type => ({
                     value: type,
                     label: this.getTypeLabel(type),
                 }))
@@ -78,11 +76,11 @@ export default function forkliftChatbot(dataset, csrfToken) {
         },
 
         getAvailableMeasures(type) {
-            return [...new Set(
+            return this.uniqueByValue(
                 this.products
                     .filter(item => item.type === type && item.measure)
                     .map(item => item.measure)
-            )].sort((a, b) => a.localeCompare(b, 'es', { numeric: true, sensitivity: 'base' }));
+            ).sort((a, b) => a.localeCompare(b, 'es', { numeric: true, sensitivity: 'base' }));
         },
 
         isBusinessHours() {
@@ -122,15 +120,13 @@ export default function forkliftChatbot(dataset, csrfToken) {
         restart() {
             this.step = 'type';
             this.results = [];
+            this.currentOptions = [];
             this.showSpecialistForm = false;
             this.isSubmitting = false;
 
             this.state = {
                 type: null,
                 measure: null,
-                tread: null,
-                function: null,
-                service: null,
             };
 
             this.specialistForm = {
@@ -142,7 +138,7 @@ export default function forkliftChatbot(dataset, csrfToken) {
             };
 
             this.messages = [];
-            this.bot('Hola. Te ayudo a encontrar la llanta correcta para tu montacargas.');
+            this.bot('Hola. Te ayudo a encontrar la llanta adecuada para tu montacargas.');
             this.askType();
         },
 
@@ -154,13 +150,11 @@ export default function forkliftChatbot(dataset, csrfToken) {
         askType() {
             this.step = 'type';
             this.showSpecialistForm = false;
-            this.bot('¿Qué tipo de llanta buscas?');
-
-            const availableTypes = this.getAvailableTypes();
+            this.bot('Para empezar, dime qué tipo de llanta necesitas.');
 
             this.currentOptions = [
-                ...availableTypes,
-                { value: 'no_se', label: 'No estoy segura' },
+                ...this.getAvailableTypes(),
+                { value: 'no_se', label: 'No estoy seguro' },
             ];
         },
 
@@ -171,153 +165,41 @@ export default function forkliftChatbot(dataset, csrfToken) {
             const measures = this.getAvailableMeasures(this.state.type);
 
             if (!measures.length) {
-                this.askSpecialistHelp('No encontré medidas configuradas para ese tipo. Te ayudo mejor con un especialista.');
+                this.askSpecialistHelp('No encontré medidas configuradas para ese tipo. Te ayudo mejor con un asesor.');
                 return;
             }
 
-            this.bot('¿Qué medida necesitas?');
+            this.bot('Ahora selecciona la medida para mostrarte opciones disponibles en tienda.');
 
             this.currentOptions = [
                 ...measures.map(measure => ({
                     value: measure,
                     label: measure,
                 })),
-                { value: 'no_se', label: 'No estoy segura' },
+                { value: 'no_se', label: 'No estoy seguro' },
             ];
         },
 
-        askTread() {
-            this.step = 'tread';
-            this.showSpecialistForm = false;
-
-            const pool = this.filteredProducts({
-                type: this.state.type,
-                measure: this.state.measure,
+        filteredProducts(filters = {}) {
+            return this.products.filter(item => {
+                if (filters.type && filters.type !== 'no_se' && item.type !== filters.type) return false;
+                if (filters.measure && filters.measure !== 'no_se' && item.measure !== filters.measure) return false;
+                return true;
             });
-
-            const labels = {
-                lisa: 'Lisa',
-                traccion: 'Tracción',
-                cualquiera: 'Cualquiera',
-            };
-
-            const options = [...new Set(pool.map(item => item.tread).filter(Boolean))]
-                .filter(value => labels[value])
-                .map(value => ({
-                    value,
-                    label: labels[value],
-                }));
-
-            if (!options.length) {
-                this.state.tread = 'cualquiera';
-                this.askFunction();
-                return;
-            }
-
-            this.bot('¿Qué rodamiento buscas?');
-
-            this.currentOptions = options.some(opt => opt.value === 'cualquiera')
-                ? options
-                : [...options, { value: 'cualquiera', label: 'Cualquiera' }];
         },
 
-        askFunction() {
-            this.step = 'function';
-            this.showSpecialistForm = false;
+        rankResults(items) {
+            return [...items].sort((a, b) => {
+                const aFeed = a.matched_from_feed ? 1 : 0;
+                const bFeed = b.matched_from_feed ? 1 : 0;
 
-            const pool = this.filteredProducts({
-                type: this.state.type,
-                measure: this.state.measure,
-                tread: this.state.tread,
+                if (aFeed !== bFeed) return bFeed - aFeed;
+
+                const aPrice = typeof a.price_mxn === 'number' ? a.price_mxn : Number.MAX_SAFE_INTEGER;
+                const bPrice = typeof b.price_mxn === 'number' ? b.price_mxn : Number.MAX_SAFE_INTEGER;
+
+                return aPrice - bPrice;
             });
-
-            const labels = {
-                estandar: 'Estándar',
-                no_manchante: 'No manchante',
-                cualquiera: 'Cualquiera',
-            };
-
-            const options = [...new Set(pool.map(item => item.function).filter(Boolean))]
-                .filter(value => labels[value])
-                .map(value => ({
-                    value,
-                    label: labels[value],
-                }));
-
-            if (!options.length) {
-                this.state.function = 'cualquiera';
-                this.askService();
-                return;
-            }
-
-            this.bot('¿Qué función necesitas?');
-
-            this.currentOptions = options.some(opt => opt.value === 'cualquiera')
-                ? options
-                : [...options, { value: 'cualquiera', label: 'Cualquiera' }];
-        },
-
-        askService() {
-            this.step = 'service';
-            this.showSpecialistForm = false;
-
-            const pool = this.filteredProducts({
-                type: this.state.type,
-                measure: this.state.measure,
-                tread: this.state.tread,
-                function: this.state.function,
-            });
-
-            const labels = {
-                medio: 'Trabajo medio',
-                pesado: 'Trabajo pesado',
-                extra_pesado: 'Trabajo extra pesado',
-                cualquiera: 'Cualquiera',
-            };
-
-            const options = [...new Set(pool.map(item => item.service).filter(Boolean))]
-                .filter(value => labels[value])
-                .map(value => ({
-                    value,
-                    label: labels[value],
-                }));
-
-            if (!options.length) {
-                this.state.service = 'cualquiera';
-                this.showResults();
-                return;
-            }
-
-            this.bot('¿Qué nivel de trabajo necesitas?');
-
-            this.currentOptions = options.some(opt => opt.value === 'cualquiera')
-                ? options
-                : [...options, { value: 'cualquiera', label: 'Cualquiera' }];
-        },
-
-        askSpecialistHelp(customMessage = null) {
-            this.step = 'specialist';
-            this.currentOptions = [];
-            this.results = [];
-            this.showSpecialistForm = false;
-
-            this.bot(
-                customMessage ||
-                'Si no tienes clara la medida o el tipo de llanta, te ayudo a hablar con un especialista.'
-            );
-
-            const specialistOptions = [
-                { value: 'form', label: 'Hablar con un especialista' },
-            ];
-
-            if (this.isBusinessHours()) {
-                specialistOptions.push({
-                    value: 'whatsapp',
-                    label: 'Chatear por WhatsApp',
-                });
-            }
-
-            this.currentOptions = specialistOptions;
         },
 
         showResults() {
@@ -326,45 +208,42 @@ export default function forkliftChatbot(dataset, csrfToken) {
             this.showSpecialistForm = false;
 
             const exact = this.filteredProducts(this.state);
-            const fallbackByMeasure = this.filteredProducts({
-                type: this.state.type,
-                measure: this.state.measure,
-            });
             const fallbackByType = this.filteredProducts({
                 type: this.state.type,
             });
 
             if (exact.length) {
-                this.results = exact.slice(0, 4);
-                this.bot('Estas son las opciones disponibles para tu selección.');
-                return;
-            }
-
-            if (fallbackByMeasure.length) {
-                this.results = fallbackByMeasure.slice(0, 4);
-                this.bot('No encontré una coincidencia exacta con todos esos filtros. Te muestro alternativas de la misma medida.');
+                this.results = this.rankResults(exact).slice(0, 6);
+                this.bot('Estas son las opciones que encontré para tu selección.');
                 return;
             }
 
             if (fallbackByType.length) {
-                this.results = fallbackByType.slice(0, 4);
-                this.bot('No encontré una opción exacta para esa medida. Te muestro otras opciones disponibles del mismo tipo.');
+                this.results = this.rankResults(fallbackByType).slice(0, 6);
+                this.bot('No encontré una opción exacta para esa medida. Te muestro otras alternativas del mismo tipo.');
                 return;
             }
 
             this.results = [];
-            this.askSpecialistHelp('No encontré opciones exactas con esos filtros. Te ayudo mejor con un especialista.');
+            this.askSpecialistHelp('No encontré una opción exacta en este momento. Te ayudo a cotizarla con un asesor.');
         },
 
-        filteredProducts(filters = {}) {
-            return this.products.filter(item => {
-                if (filters.type && filters.type !== 'no_se' && item.type !== filters.type) return false;
-                if (filters.measure && filters.measure !== 'no_se' && item.measure !== filters.measure) return false;
-                if (filters.tread && filters.tread !== 'cualquiera' && item.tread !== filters.tread) return false;
-                if (filters.function && filters.function !== 'cualquiera' && item.function !== filters.function) return false;
-                if (filters.service && filters.service !== 'cualquiera' && item.service !== filters.service) return false;
-                return true;
-            });
+        askSpecialistHelp(customMessage = null) {
+            this.step = 'specialist';
+            this.currentOptions = [];
+            this.showSpecialistForm = false;
+
+            this.bot(
+                customMessage ||
+                'Si no tienes clara la medida o el tipo de llanta, uno de nuestros asesores puede ayudarte a elegir la opción correcta.'
+            );
+
+            this.currentOptions = [
+                { value: 'form', label: 'Solicitar asesoría especializada' },
+                ...(this.isBusinessHours()
+                    ? [{ value: 'whatsapp', label: 'Atención inmediata por WhatsApp' }]
+                    : []),
+            ];
         },
 
         selectOption(option) {
@@ -383,29 +262,11 @@ export default function forkliftChatbot(dataset, csrfToken) {
 
             if (this.step === 'measure') {
                 if (option.value === 'no_se') {
-                    this.askSpecialistHelp('Si no tienes clara la medida, te ayudo a contactar a un especialista.');
+                    this.askSpecialistHelp('Si no tienes clara la medida, te ayudo a encontrar la opción correcta con un asesor.');
                     return;
                 }
 
                 this.state.measure = option.value;
-                this.askTread();
-                return;
-            }
-
-            if (this.step === 'tread') {
-                this.state.tread = option.value;
-                this.askFunction();
-                return;
-            }
-
-            if (this.step === 'function') {
-                this.state.function = option.value;
-                this.askService();
-                return;
-            }
-
-            if (this.step === 'service') {
-                this.state.service = option.value;
                 this.showResults();
                 return;
             }
@@ -413,14 +274,13 @@ export default function forkliftChatbot(dataset, csrfToken) {
             if (this.step === 'specialist') {
                 if (option.value === 'form') {
                     this.showSpecialistForm = true;
-                    this.bot('Déjame tus datos y un especialista te ayudará a encontrar la llanta correcta.');
+                    this.bot('Déjanos tus datos y un asesor especializado te ayudará a identificar la opción adecuada para tu equipo.');
                     this.currentOptions = [];
                     return;
                 }
 
                 if (option.value === 'whatsapp') {
                     window.open(this.getWhatsAppUrl(), '_blank', 'noopener');
-                    return;
                 }
             }
         },
@@ -429,7 +289,16 @@ export default function forkliftChatbot(dataset, csrfToken) {
             if (this.isSubmitting) return;
 
             this.isSubmitting = true;
-            
+
+            const payload = {
+                name: this.specialistForm.name?.trim() || '',
+                company: this.specialistForm.company?.trim() || '',
+                phone: this.specialistForm.phone?.trim() || '',
+                email: this.specialistForm.email?.trim() || '',
+                message: this.specialistForm.message?.trim() || '',
+                type: this.state.type,
+                measure: this.state.measure,
+            };
 
             try {
                 const response = await fetch('/chatbot/specialist-request', {
@@ -439,25 +308,22 @@ export default function forkliftChatbot(dataset, csrfToken) {
                         'X-CSRF-TOKEN': this.csrfToken,
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify({
-                        name: this.specialistForm.name,
-                        company: this.specialistForm.company,
-                        phone: this.specialistForm.phone,
-                        email: this.specialistForm.email,
-                        message: this.specialistForm.message,
-                        type: this.state.type,
-                        measure: this.state.measure,
-                    }),
+                    body: JSON.stringify(payload),
                 });
 
                 const data = await response.json();
 
                 if (!response.ok) {
+                    if (data.errors) {
+                        const firstError = Object.values(data.errors)?.[0]?.[0];
+                        throw new Error(firstError || data.message || 'No se pudo enviar la solicitud.');
+                    }
+
                     throw new Error(data.message || 'No se pudo enviar la solicitud.');
                 }
 
                 this.showSpecialistForm = false;
-                this.bot('Tu solicitud fue enviada correctamente. Un especialista te contactará pronto.');
+                this.bot('Gracias. Tu solicitud fue enviada correctamente y un asesor se pondrá en contacto contigo lo antes posible.');
 
                 this.specialistForm = {
                     name: '',
@@ -467,7 +333,7 @@ export default function forkliftChatbot(dataset, csrfToken) {
                     message: '',
                 };
             } catch (error) {
-                this.bot(error.message || 'Ocurrió un error al enviar tu solicitud. Intenta de nuevo.');
+                this.bot(error.message || 'Ocurrió un problema al enviar tu solicitud. Intenta nuevamente.');
             } finally {
                 this.isSubmitting = false;
             }

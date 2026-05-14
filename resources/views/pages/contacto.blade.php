@@ -307,6 +307,48 @@ style="background-image: url('{{ asset('storage/originals/llantas-de-montacarga-
                         <span class="block self-center pl-[5px] text-white">(55)5752-1715</span>
                     </a>
                 </li>
+                <li class="mt-6 list-none">
+    <div class="rounded-lg border border-white/10 bg-white/5 p-4">
+        <h3 class="m-0 text-[18px] font-semibold text-white">
+            Matriz Puebla
+        </h3>
+
+        <p class="mt-2 text-[14px] leading-6 text-white/80">
+            Atención comercial y técnica para selección, cotización y seguimiento de llantas para montacargas.
+            Matriz en Puebla.
+        </p>
+    </div>
+</li>
+
+<li class="mt-3 list-none">
+    <div class="rounded-lg border border-white/10 bg-white/5 p-4">
+        <h3 class="m-0 text-[18px] font-semibold text-white">
+            Almacenes con entrega y montaje
+        </h3>
+
+        <ul class="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px] text-white/85">
+            <li>ESTADO DE MEXICO</li>
+            <li>PUEBLA</li>
+            <li>GUANAJUATO</li>
+            <li>NUEVO LEÓN</li>
+            <li>SAN LUIS POTOSÍ</li>
+            <li>JALISCO</li>
+            <li>AGUASCALIENTES</li>
+        </ul>
+
+        <p class="mt-3 text-[14px] leading-6 text-white/80">
+            Consulta stock y disponibilidad de prensa para montaje por
+            <a
+                href="https://wa.me/528332395885?text=Hola,%20quiero%20consultar%20stock%20y%20disponibilidad%20de%20prensa%20para%20montaje."
+                target="_blank"
+                rel="noopener"
+                class="font-semibold text-[#e76a3e] underline underline-offset-4 transition hover:text-white"
+            >
+                WhatsApp
+            </a>.
+        </p>
+    </div>
+</li>
             </ul>
         </div>
     </div>
