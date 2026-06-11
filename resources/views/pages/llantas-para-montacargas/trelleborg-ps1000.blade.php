@@ -525,6 +525,9 @@
   </div>
 </section>
 
+
+<x-store-products-by-model model="ps1000" />
+
 <div class="h-[10px] lg:h-[45px]" aria-hidden="true"></div>
 
 <section

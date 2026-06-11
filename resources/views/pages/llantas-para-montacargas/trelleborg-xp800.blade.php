@@ -475,6 +475,9 @@
   </div>
 </section>
 
+<x-store-products-by-model model="xp800" />
+
+
 <div class="lg:h-[35px] h-[10px]" aria-hidden="true"></div>
 
 <section

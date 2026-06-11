@@ -242,6 +242,7 @@
   </div>
 </section>
 
+<x-store-products-by-model model="ps800" />
 
 <section class="relative mt-6" role="region" aria-label="Tabla de medidas y capacidades">
   <div class="relative mx-auto max-w-[1140px] px-2 sm:px-3">

@@ -471,6 +471,9 @@
   </div>
 </section>
 
+
+<x-store-products-by-model model="t900" />
+
 <div class="h-[10px] lg:h-[35px]" aria-hidden="true"></div>
 
 <section class="relative mt-6" role="region" aria-label="Tabla de medidas y capacidades">
