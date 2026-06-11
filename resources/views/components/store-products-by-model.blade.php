@@ -102,7 +102,7 @@
             </p>
 
             <a
-                href="#T7"
+                href="#contacto"
                 class="mt-4 inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-bold text-slate-900 transition hover:bg-slate-100"
             >
                 Pedir ayuda para elegir mi llanta
