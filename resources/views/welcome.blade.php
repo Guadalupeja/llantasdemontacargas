@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
 @section('title', 'Llantas para montacargas y minicargadores mejor calidad 2026')
-@section('meta_description', 'Cotiza llantas para montacargas y minicargadores 2026 sólidas, neumáticas, poliuretano, envío GRATIS a la República mexicana, entrega inmediata precio mayorista')
+@section('meta_description', 'Cotiza llantas para montacargas y minicargadores 2026 sólidas y neumáticas, envío GRATIS a toda la República mexicana, entrega inmediata precio mayorista')
 
 @php
   $toSrcset = static function ($arr) {
@@ -40,7 +40,6 @@
   $carousel1 = image_variants('originals/MOSAICO-PS-1000.png');
   $carousel2 = image_variants('originals/Llanta-neumatica-reforzada.jpg');
   $carousel3 = image_variants('originals/Llanta-solida-con-arillo.jpg');
-  $carousel4 = image_variants('originals/Llanta-de-poliuretano-de-alta-calidad-con-anillo-metalico.jpg');
 
   $ctaHeroAvif1024 = asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-1024.avif');
   $ctaHeroWebp1024 = asset('storage/variants/originals/heros/venta-de-llantas-para-montacargas-1024.webp');
@@ -269,8 +268,7 @@ $shopCarouselItems = collect([
             "url": "{{ url('/llantas-para-montacargas') }}",
             "itemListElement": [
               { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Llantas sólidas para montacargas", "brand": "Trelleborg" } },
-              { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Llantas neumáticas para montacargas", "brand": "Trelleborg" } },
-              { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Llantas de poliuretano para montacargas", "brand": "Trelleborg" } }
+              { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Llantas neumáticas para montacargas", "brand": "Trelleborg" } }
             ]
           },
           {
@@ -971,21 +969,6 @@ $shopCarouselItems = collect([
                 </figure>
               </article>
 
-              <article class="relative box-border min-w-0 shrink-0 basis-full overflow-hidden text-center md:basis-1/2" role="group" aria-roledescription="slide" aria-label="4 de 4">
-                <figure class="m-0">
-                  <x-responsive-image
-                    :variants="$carousel4"
-                    alt="Llantas de poliuretano para montacargas"
-                    :sizes="$secondaryCarouselSizes"
-                    class="mx-auto inline-block h-auto max-h-[340px] w-auto align-middle"
-                    loading="lazy"
-                    width="357" height="357"
-                  />
-                  <figcaption class="mt-1 text-center text-[22px] font-semibold text-[#e76a3e]">
-                    Llantas de Poliuretano
-                  </figcaption>
-                </figure>
-              </article>
             </div>
 
             <div class="pointer-events-none absolute inset-0 z-20 flex items-center justify-between">

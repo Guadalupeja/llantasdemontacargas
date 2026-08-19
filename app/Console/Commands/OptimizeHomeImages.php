@@ -23,7 +23,6 @@ class OptimizeHomeImages extends Command
         'originals/MOSAICO-PS-1000.png',
         'originals/Llanta-neumatica-reforzada.jpg',
         'originals/Llanta-solida-con-arillo.jpg',
-        'originals/Llanta-de-poliuretano-de-alta-calidad-con-anillo-metalico.jpg',
     ];
 
     private array $shopImages = [

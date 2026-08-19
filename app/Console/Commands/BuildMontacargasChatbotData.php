@@ -444,7 +444,6 @@ class BuildMontacargasChatbotData extends Command
             Str::contains($text, 'neumatica'),
             Str::contains($text, 'neumática') => 'neumatica',
 
-            Str::contains($text, 'poliuretano') => 'poliuretano',
 
             Str::contains($text, 'solida'),
             Str::contains($text, 'sólida') => 'solida',
@@ -585,7 +584,6 @@ class BuildMontacargasChatbotData extends Command
             Str::contains($text, 'neumática'),
             Str::contains($text, 'neumatica') => 'neumatica',
 
-            Str::contains($text, 'poliuretano') => 'poliuretano',
 
             Str::contains($text, 'sólida'),
             Str::contains($text, 'solida') => 'solida',

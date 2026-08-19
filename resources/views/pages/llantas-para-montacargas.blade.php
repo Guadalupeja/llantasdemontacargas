@@ -1,7 +1,7 @@
 ﻿@extends('layouts.public')
 
 @section('title', 'Llantas para montacargas sólidas, neumáticas | Trelleborg MX')
-@section('meta_description', 'Cotiza llantas para montacargas neumáticas, sólidas, con arillo y de poliuretano,entrega inmediata, precios mayorista, envío GRATIS a toda la República mexicana')
+@section('meta_description', 'Cotiza llantas para montacargas neumáticas, sólidas y con arillo, entrega inmediata, precios mayorista, envío GRATIS a toda la República mexicana')
 
 @section('structured-data')
   <link rel="dns-prefetch" href="//js.hsforms.net">
@@ -116,7 +116,6 @@
           "Llantas sólidas para montacargas",
           "Llantas sólidas con arillo para montacargas",
           "Llantas neumáticas para montacargas",
-          "Llantas de poliuretano para montacargas",
           "Bandajes Press On para montacargas",
           "Llantas industriales Trelleborg",
           "Asesoría técnica en selección de llantas para montacargas"
@@ -156,7 +155,7 @@
         "@id": "{{ url()->current() }}#catalog",
         "url": "{{ url()->current() }}",
         "name": "Catálogo de llantas para montacargas Trelleborg en México",
-        "description": "Catálogo de llantas para montacargas Trelleborg en México con opciones sólidas, sólidas con arillo, neumáticas y de poliuretano. Incluye modelos para trabajo ligero, medio y pesado con entrega inmediata, precios mayorista y asesoría técnica.",
+        "description": "Catálogo de llantas para montacargas Trelleborg en México con opciones sólidas, sólidas con arillo y neumáticas. Incluye modelos para trabajo ligero, medio y pesado con entrega inmediata, precios mayorista y asesoría técnica.",
         "inLanguage": "es-MX",
         "isPartOf": {
           "@id": "{{ url('/') }}#website"
@@ -173,10 +172,6 @@
           {
             "@type": "Thing",
             "name": "Llantas neumáticas para montacargas"
-          },
-          {
-            "@type": "Thing",
-            "name": "Llantas de poliuretano para montacargas"
           }
         ],
         "hasPart": [
@@ -188,9 +183,6 @@
           },
           {
             "@id": "{{ url()->current() }}#pneumatic-tires"
-          },
-          {
-            "@id": "{{ url()->current() }}#polyurethane-tires"
           }
         ]
       },
@@ -210,7 +202,7 @@
           "@type": "Audience",
           "audienceType": "Empresas industriales, almacenes, centros logísticos, puertos, siderúrgicas, recicladoras y operaciones de manejo de materiales"
         },
-        "description": "Servicio de cotización y asesoría para seleccionar llantas sólidas, neumáticas, con arillo y de poliuretano para montacargas según carga, superficie, velocidad, intensidad de uso y condiciones de operación."
+        "description": "Servicio de cotización y asesoría para seleccionar llantas sólidas, neumáticas y con arillo para montacargas según carga, superficie, velocidad, intensidad de uso y condiciones de operación."
       },
       {
         "@type": "ItemList",
@@ -252,17 +244,6 @@
           { "@type": "ListItem", "position": 1, "url": "{{ url('llantas-para-montacargas/trelleborg-tr-900-neumatica-radial') }}", "name": "Trelleborg TR-900 Neumática Radial" },
           { "@type": "ListItem", "position": 2, "url": "{{ url('llantas-para-montacargas/trelleborg-t-800') }}", "name": "Trelleborg T-800" },
           { "@type": "ListItem", "position": 3, "url": "{{ url('llantas-para-montacargas/trelleborg-t-900-neumatica') }}", "name": "Trelleborg T-900 Neumático" }
-        ]
-      },
-      {
-        "@type": "ItemList",
-        "@id": "{{ url()->current() }}#polyurethane-tires",
-        "name": "Llantas de poliuretano para montacargas",
-        "itemListOrder": "https://schema.org/ItemListOrderAscending",
-        "numberOfItems": 2,
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "url": "{{ url('llantas-para-montacargas/llanta-de-poliuretano-monothane') }}", "name": "Llanta de Poliuretano Monothane®" },
-          { "@type": "ListItem", "position": 2, "url": "{{ url('llantas-para-montacargas/llanta-de-poliuretano-permathane') }}", "name": "Llanta de Poliuretano Permathane®" }
         ]
       },
       {
@@ -487,30 +468,6 @@
       ],
   ];
 
-  $polyurethaneCards = [
-      [
-          'url' => url('llantas-para-montacargas/llanta-de-poliuretano-monothane'),
-          'title' => 'Llanta de Poliuretano Monothane®',
-          'alt' => 'Trelleborg Llanta de Poliuretano Monothane®',
-          'image' => $makeImage('originals/Llanta-de-poliuretano-de-alta-calidad-con-anillo-metalico.jpg'),
-          'box' => 'p-4',
-          'items' => [
-              'Llanta de poliuretano de alta calidad con arillo metálico Press-On, <strong>para almacenes y suelos uniformes.</strong>',
-              'Serie PREMIUM para gran carga disponibles dureza 83 Shore A y 92 Shore A; de <strong>materiales de primera y diseño exclusivo.</strong>',
-          ],
-      ],
-      [
-          'url' => url('llantas-para-montacargas/llanta-de-poliuretano-permathane'),
-          'title' => 'Llanta de Poliuretano Permathane®',
-          'alt' => 'Llanta de Poliuretano Permathane®',
-          'image' => $makeImage('originals/Llanta-ultra-PREMIUM-para-carga-adicional-y-resistencia.jpg'),
-          'box' => 'p-4',
-          'items' => [
-              'Llanta ultra PREMIUM para carga adicional y <strong>resistencia al frio extremo </strong>en almacenes refrigerados.',
-              'Disponible en durezas 80 Shore A y 90 Shore A. Mayor capacidad de carga que las llantas de hule.',
-          ],
-      ],
-  ];
 @endphp
 
 <section class="bg-black">
@@ -584,14 +541,6 @@
                 </a>
             </div>
 
-            <div class="w-full p-[10px] md:w-1/4">
-                <a
-                    href="#llantas-poliuretano-montacargas"
-                    class="flex justify-center rounded-[3px] bg-[#e76a3e] px-6 py-3 text-center text-[15px] font-medium leading-[15px] text-white transition duration-300 hover:bg-[#d94c2b]"
-                >
-                    Llantas de Poliuretano para Montacargas
-                </a>
-            </div>
         </div>
     </div>
 </section>
@@ -776,65 +725,7 @@
   </div>
 </section>
 
-<section>
-    <div class="mx-auto max-w-[1140px] px-[10px] pt-5 pb-10 text-center" id="llantas-poliuretano-montacargas">
-        <h2 class="my-5 text-2xl font-semibold leading-tight text-black md:text-[33px] md:leading-[33px]">
-            Llantas de Poliuretano para Montacargas.
-        </h2>
 
-        <p class="my-[23px] text-base font-normal text-[#7a7a7a] md:text-[20px]">
-           Ruedas que soportan grandes cargas, en almacenes, pasillos, congeladores y suelos en buen estado.
-        </p>
-    </div>
-</section>
-
-<section class="py-8 [content-visibility:auto] [contain-intrinsic-size:1px_800px]">
-  <div class="max-w-[1140px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    @foreach($polyurethaneCards as $card)
-      <div class="text-center">
-        <a href="{{ $card['url'] }}">
-          <figure class="m-0 text-center">
-            <picture>
-              @if($card['image']['avif'])
-                <source type="image/avif" srcset="{{ $card['image']['avif'] }}" sizes="{{ $card['image']['sizes'] }}">
-              @endif
-              @if($card['image']['webp'])
-                <source type="image/webp" srcset="{{ $card['image']['webp'] }}" sizes="{{ $card['image']['sizes'] }}">
-              @endif
-              @if($card['image']['jpg'])
-                <source type="image/jpeg" srcset="{{ $card['image']['jpg'] }}" sizes="{{ $card['image']['sizes'] }}">
-              @endif
-
-              <img
-                src="{{ $card['image']['fallback'] }}"
-                alt="{{ $card['alt'] }}"
-                width="594"
-                height="722"
-                loading="lazy"
-                decoding="async"
-                class="inline-block h-auto max-w-full align-middle border-0"
-              >
-            </picture>
-          </figure>
-        </a>
-
-        <div class="bg-[#00063a] {{ $card['box'] }} mb-4">
-          <h2 class="text-white text-[26px] font-semibold leading-[26px]">
-            <a href="{{ $card['url'] }}" class="text-white">
-              {{ $card['title'] }}
-            </a>
-          </h2>
-        </div>
-
-        <ul class="text-[#7a7a7a] text-left leading-[32px] list-disc pl-6">
-          @foreach($card['items'] as $item)
-            <li>{!! $item !!}</li>
-          @endforeach
-        </ul>
-      </div>
-    @endforeach
-  </div>
-</section>
 
 <section
   id="contacto"

@@ -36,8 +36,8 @@
       'tab' => '3',
     ],
     [
-      'q' => '¿Cuál es la diferencia entre llanta sólida, neumática y poliuretano (press-on)?',
-      'a' => 'Depende de tu operación: la sólida es ideal para evitar ponchaduras y trabajo pesado; la neumática ofrece más amortiguación; y la press-on (poliuretano/“bandaje”) es común en almacén y pasillos, con buena maniobrabilidad. Te recomendamos la opción correcta según piso, carga y turnos.',
+      'q' => '¿Cuál es la diferencia entre llanta sólida y neumática?',
+      'a' => 'Depende de tu operación: la llanta sólida es ideal para evitar ponchaduras y trabajo pesado; la neumática ofrece más amortiguación. Te recomendamos la opción correcta según piso, carga y turnos.',
       'open' => false,
       'tab' => '4',
     ],
