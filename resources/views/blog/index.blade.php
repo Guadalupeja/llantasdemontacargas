@@ -18,7 +18,7 @@
                 Optimiza el rendimiento de tus montacargas
             </h1>
             <p class="text-sm md:text-base text-gray-600 max-w-2xl">
-                Consejos, guías y casos reales sobre llantas sólidas, neumáticas y de poliuretano
+                Consejos, guías y casos reales sobre llantas sólidas y neumáticas
                 para montacargas y minicargadores Trelleborg en México.
             </p>
         </header>

@@ -7,6 +7,12 @@ use App\Http\Controllers\Admin\PostAdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChatbotSpecialistRequestController;
 
+Route::redirect('/llantas-de-poliuretano-para-montacargas', '/llantas-para-montacargas', 301);
+
+Route::redirect('/llantas-para-montacargas/llanta-de-poliuretano-monothane', '/llantas-para-montacargas', 301);
+
+Route::redirect('/llantas-para-montacargas/llanta-de-poliuretano-permathane', '/llantas-para-montacargas', 301);
+
 // BLOG PÚBLICO
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');

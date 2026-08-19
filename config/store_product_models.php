@@ -78,14 +78,5 @@ return [
         'TR-900',
     ],
 ],
-    'poliuretano' => [
-        'heading' => 'Compra llantas de poliuretano en línea',
-        'eyebrow' => 'Llantas de poliuretano para montacargas',
-        'description' => 'Soluciones para pisos lisos, centros de distribución, almacenes y aplicaciones donde se busca eficiencia, limpieza y rendimiento.',
-        'button_label' => 'Ver toda la tienda',
-        'button_url' => 'https://llantasdemontacargas.com/tienda-en-linea/',
-        'limit' => 8,
-        'model' => 'POLIURETANO',
-    ],
 
 ];

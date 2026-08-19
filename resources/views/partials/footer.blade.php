@@ -186,7 +186,6 @@
             <li><a href="{{ url('/llantas-solidas') }}" class="inline-flex items-center justify-center text-base text-white transition hover:text-white/80">Llantas Sólidas para Montacargas</a></li>
             <li><a href="{{ url('/llantas-solidas-con-arillo') }}" class="inline-flex items-center justify-center text-base text-white transition hover:text-white/80">Llantas sólidas con arillo para Montacargas</a></li>
             <li><a href="{{ url('/llantas-neumaticas') }}" class="inline-flex items-center justify-center text-base text-white transition hover:text-white/80">Llantas Neumáticas para Montacargas</a></li>
-            <li><a href="{{ url('/llantas-de-poliuretano-para-montacargas') }}" class="inline-flex items-center justify-center text-base text-white transition hover:text-white/80">Llantas de Poliuretano para Montacargas</a></li>
           </ul>
         </div>
 
