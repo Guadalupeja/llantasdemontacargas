@@ -50,7 +50,6 @@ export default function forkliftChatbot(dataset, csrfToken) {
                 solida_con_arillo: 'Sólida con arillo',
                 neumatica: 'Neumática',
                 neumatica_radial: 'Neumática radial',
-                poliuretano: 'Poliuretano',
             };
 
             return labels[type] || type;

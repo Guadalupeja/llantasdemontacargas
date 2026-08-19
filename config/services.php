@@ -31,4 +31,11 @@ return [
         ],
     ],
 
+    'ruguex' => [
+    'final_prices_endpoint' => env(
+        'RUGUEX_FINAL_PRICES_ENDPOINT',
+        'https://llantasdemontacargas.com/tienda-en-linea/wp-json/ruguex/v1/final-prices'
+    ),
+],
+
 ];

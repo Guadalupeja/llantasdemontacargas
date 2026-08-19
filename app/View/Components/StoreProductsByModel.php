@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use App\Services\RuguexFinalPriceService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -16,20 +17,24 @@ class StoreProductsByModel extends Component
 
     public Collection $products;
 
-    public function __construct(string $model)
-    {
-        $this->model = $model;
+public function __construct(string $model)
+{
+    $this->model = $model;
 
-        $settings = config("store_product_models.{$model}");
+    $settings = config("store_product_models.{$model}");
 
-        $this->settings = is_array($settings) ? $settings : [];
+    $this->settings = is_array($settings) ? $settings : [];
 
-        $this->products = $this->loadProducts()
-            ->filter(fn (array $product) => $this->matchesModel($product))
-            ->sortBy(fn (array $product) => $this->sortProduct($product))
-            ->take((int) ($this->settings['limit'] ?? 8))
-            ->values();
-    }
+    $products = $this->loadProducts()
+        ->filter(fn (array $product) => $this->matchesModel($product))
+        ->sortBy(fn (array $product) => $this->sortProduct($product))
+        ->take((int) ($this->settings['limit'] ?? 8))
+        ->values();
+
+    $this->products = app(RuguexFinalPriceService::class)
+        ->applyTo($products)
+        ->values();
+}
 
     public function render(): View
     {

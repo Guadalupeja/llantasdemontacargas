@@ -2,6 +2,27 @@
     'products' => [],
 ])
 
+@php
+    $productsPayload = $products instanceof \Illuminate\Support\Collection
+        ? $products->toArray()
+        : (is_array($products) ? $products : []);
+
+    $chatbotProducts = $productsPayload['products'] ?? [];
+
+    if ($chatbotProducts instanceof \Illuminate\Support\Collection) {
+        $chatbotProducts = $chatbotProducts->toArray();
+    }
+
+    if (is_iterable($chatbotProducts)) {
+        $productsPayload['products'] = app(\App\Services\RuguexFinalPriceService::class)
+            ->applyTo($chatbotProducts)
+            ->values()
+            ->all();
+
+        $products = $productsPayload;
+    }
+@endphp
+
 <div
     id="forklift-chatbot"
     x-data="forkliftChatbot(@js($products), '{{ csrf_token() }}')"
