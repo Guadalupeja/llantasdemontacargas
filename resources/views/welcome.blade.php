@@ -51,6 +51,7 @@
 
 $shopCarouselItems = collect([
     [
+        'sku' => 'GX73341693',
         'measure' => '6.50-10 / 5.00',
         'title' => 'Llanta Sólida para Montacargas 6.50-10/5.00 Trabajo Extra Pesado',
         'promo' => 'Trabajo extra pesado',
@@ -59,6 +60,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-6-50-10-5-00-trabajo-extra-pesado/',
     ],
     [
+        'sku' => 'GX72741693',
         'measure' => '6.00-9 / 4.00',
         'title' => 'Llanta Sólida para Montacargas 6.00-9/4.00 Trabajo Extra Pesado',
         'promo' => 'Trabajo extra pesado',
@@ -67,6 +69,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-6-00-9-4-00-trabajo-extra-pesado/',
     ],
     [
+        'sku' => 'P727121025',
         'measure' => '6.00x9',
         'title' => 'Llanta 6.00x9 Neumática para Montacargas Trabajo Medio',
         'promo' => 'Trabajo medio',
@@ -75,6 +78,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-6-00x9-neumatica-para-montacargas-trabajo-medio/',
     ],
     [
+        'sku' => 'AM88781685',
         'measure' => '300-15 / 8.00',
         'title' => 'Llanta Sólida para Montacargas 300-15/8.00 Trabajo Medio',
         'promo' => 'Trabajo medio',
@@ -83,6 +87,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-300-15-8-00-trabajo-medio/',
     ],
     [
+        'sku' => 'GX88741693',
         'measure' => '300-15 / 8.00',
         'title' => 'Llanta Sólida para Montacargas 300-15/8.00 Trabajo Extra Pesado',
         'promo' => 'Trabajo extra pesado',
@@ -91,6 +96,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-300-15-8-00-trabajo-extra-pesado/',
     ],
     [
+        'sku' => 'GX87241693',
         'measure' => '28x9-15 / 7.00',
         'title' => 'Llanta Sólida para Montacargas 28x9-15/7.00 Trabajo Extra Pesado',
         'promo' => 'Trabajo extra pesado',
@@ -99,6 +105,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-28x9-15-7-00-trabajo-extra-pesado/',
     ],
     [
+        'sku' => 'GX88441693',
         'measure' => '250-15 / 7.00',
         'title' => 'Llanta Sólida para Montacargas 250-15/7.00 Trabajo Extra Pesado',
         'promo' => 'Trabajo extra pesado',
@@ -107,6 +114,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-250-15-7-00-trabajo-extra-pesado/',
     ],
     [
+        'sku' => 'GX88541693',
         'measure' => '250-15 / 7.50',
         'title' => 'Llanta Sólida para Montacargas 250-15/7.50 Trabajo Extra Pesado',
         'promo' => 'Trabajo extra pesado',
@@ -115,6 +123,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-250-15-7-50-trabajo-extra-pesado/',
     ],
     [
+        'sku' => 'SM11955601',
         'measure' => '21x7x15',
         'title' => 'Llanta Sólida para Montacargas 21x7x15 Trabajo Medio Lisa',
         'promo' => 'Alta demanda',
@@ -123,6 +132,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-21x7x15-trabajo-medio-lisa/',
     ],
     [
+        'sku' => 'AM76981685',
         'measure' => '8.25-15 / 6.50',
         'title' => 'Llanta Sólida para Montacargas 8.25-15/6.50 Trabajo Medio',
         'promo' => 'Alta demanda',
@@ -131,6 +141,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-8-25-15-6-50-trabajo-medio/',
     ],
     [
+        'sku' => 'SM06355601',
         'measure' => '16x6x10 1/2',
         'title' => 'Llanta Sólida para Montacargas 16x6x10 1/2 Trabajo Medio Lisa',
         'promo' => 'Uso industrial',
@@ -139,6 +150,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-16x6x10-1-2-trabajo-medio-lisa/',
     ],
     [
+        'sku' => 'AM84181685',
         'measure' => '15x4 1/2-8 / 3.00',
         'title' => 'Llanta Sólida para Montacargas 15x4 1/2-8/3.00 Trabajo Medio',
         'promo' => 'Uso industrial',
@@ -147,6 +159,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-15x4-1-2-8-3-00-trabajo-medio/',
     ],
     [
+        'sku' => 'SX10251602',
         'measure' => '18x7x12 1/8',
         'title' => 'Llanta Sólida para Montacargas 18x7x12 1/8 Trabajo Pesado Lisa',
         'promo' => 'Trabajo intensivo',
@@ -155,6 +168,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-18x7x12-1-8-trabajo-pesado-lisa/',
     ],
     [
+        'sku' => 'GX86141693',
         'measure' => '23x9-10 / 6.50',
         'title' => 'Llanta Sólida para Montacargas 23x9-10/6.50 Trabajo Extra Pesado',
         'promo' => 'Trabajo intensivo',
@@ -163,6 +177,7 @@ $shopCarouselItems = collect([
         'url' => 'https://llantasdemontacargas.com/tienda-en-linea/producto/llanta-solida-para-montacargas-23x9-10-6-50-trabajo-extra-pesado/',
     ],
     [
+        'sku' => 'GX81241693',
         'measure' => '12.00-20 / 10.00',
         'title' => 'Llanta Sólida para Montacargas 12.00-20/10.00 Trabajo Extra Pesado',
         'promo' => 'Gran capacidad',
@@ -172,6 +187,9 @@ $shopCarouselItems = collect([
     ],
 ]);
 
+$shopCarouselItems = app(\App\Services\RuguexFinalPriceService::class)
+    ->applyTo($shopCarouselItems)
+    ->values();
 
 @endphp
 
@@ -589,7 +607,9 @@ $shopCarouselItems = collect([
                                 </h3>
 
                                 <p class="mt-4 text-xl font-extrabold text-[#EB6D3F] lg:text-2xl">
-                                    {{ $item['price'] }}
+                                   {{ isset($item['price_mxn'])
+                                  ? '$' . number_format((float) $item['price_mxn'], 2) . ' MXN'
+                                  : ($item['price'] ?? 'Consultar precio') }}
                                 </p>
 
                                 <span class="mt-auto pt-5 inline-flex items-center text-sm font-semibold text-slate-900">
