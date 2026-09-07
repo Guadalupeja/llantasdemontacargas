@@ -543,4 +543,110 @@ class MontacargasProductSearchService
         }
 
         return $verified;
+    }
+    /**
+     * Punto de entrada seguro para el chatbot.
+     *
+     * Recibe la información conocida del cliente y devuelve
+     * un estado estructurado para que la IA sepa qué hacer.
+     */
+    public function resolveForChatbot(array $criteria): array
+    {
+        $candidates = $this->searchLocal(
+            isset($criteria['type']) ? (string) $criteria['type'] : null,
+            isset($criteria['measure']) ? (string) $criteria['measure'] : null,
+            isset($criteria['model']) ? (string) $criteria['model'] : null
+        );
+
+        if ($candidates->isEmpty()) {
+            return [
+                'status' => 'not_found',
+                'candidate_count' => 0,
+                'message' => 'No se encontraron productos que coincidan con los datos proporcionados.',
+            ];
+        }
+
+        $variantAttributes = [
+            'function',
+            'rim_type',
+            'tread',
+            'service',
+            'shifts',
+        ];
+
+        foreach ($variantAttributes as $attribute) {
+            $value = $criteria[$attribute] ?? null;
+
+            if ($value === null || trim((string) $value) === '') {
+                continue;
+            }
+
+            $candidates = $this->applyClarification(
+                $candidates,
+                $attribute,
+                (string) $value
+            );
+
+            if ($candidates->isEmpty()) {
+                return [
+                    'status' => 'not_found',
+                    'candidate_count' => 0,
+                    'message' => 'No existe una variante que coincida con todos los datos proporcionados.',
+                ];
+            }
+        }
+
+        if ($candidates->count() > 1) {
+            return [
+                'status' => 'needs_clarification',
+                'candidate_count' => $candidates->count(),
+                'clarification' => $this->nextClarification($candidates),
+            ];
+        }
+
+        $product = $this->verifyResolved($candidates);
+
+        if ($product === null) {
+            return [
+                'status' => 'unavailable',
+                'candidate_count' => 1,
+                'message' => 'El producto fue identificado, pero no pudo ser confirmado actualmente en WooCommerce.',
+            ];
+        }
+
+        return [
+            'status' => 'resolved',
+            'candidate_count' => 1,
+            'product' => $this->formatProductForChatbot($product),
+        ];
+    }
+
+    /**
+     * Limita los datos comerciales que se entregan a la IA.
+     *
+     * Precio, URL, ID y disponibilidad ya fueron validados
+     * contra WooCommerce antes de llegar aquí.
+     */
+    private function formatProductForChatbot(array $product): array
+    {
+        return [
+            'product_id' => (int) $product['woocommerce_id'],
+            'sku' => (string) ($product['sku'] ?? ''),
+            'title' => (string) ($product['title'] ?? ''),
+            'type' => $product['type'] ?? null,
+            'measure' => $product['measure'] ?? null,
+            'model' => $product['model'] ?? null,
+            'function' => $product['function'] ?? null,
+            'rim_type' => $product['rim_type'] ?? null,
+            'tread' => $product['tread'] ?? null,
+            'service' => $product['service'] ?? null,
+            'shifts' => $product['shifts'] ?? null,
+            'brand' => $product['brand'] ?? null,
+            'price_mxn' => (float) $product['price_mxn'],
+            'price_label' => (string) ($product['price_label'] ?? ''),
+            'url' => (string) $product['url'],
+            'image' => $product['image'] ?? null,
+            'stock_status' => $product['stock_status'] ?? null,
+            'is_in_stock' => (bool) ($product['is_in_stock'] ?? false),
+        ];
     }}
