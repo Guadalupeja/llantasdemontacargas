@@ -38,4 +38,12 @@ return [
     ),
 ],
 
+
+    'anthropic' => [
+        'api_key' => env('ANTHROPIC_API_KEY'),
+        'model' => env('ANTHROPIC_MODEL', 'claude-haiku-4-5'),
+        'version' => env('ANTHROPIC_VERSION', '2023-06-01'),
+        'base_url' => env('ANTHROPIC_BASE_URL', 'https://api.anthropic.com'),
+        'timeout' => (int) env('ANTHROPIC_TIMEOUT', 35),
+    ],
 ];
