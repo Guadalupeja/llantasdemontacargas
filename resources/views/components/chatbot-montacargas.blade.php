@@ -120,6 +120,44 @@
                 </div>
             </template>
 
+            {{-- Conversación con Claude --}}
+            <div
+                x-show="step === 'chat'"
+                class="mt-3"
+            >
+                <div
+                    x-show="isChatting"
+                    class="mb-3 flex items-center gap-2 text-sm text-slate-500"
+                >
+                    <span class="inline-block h-2 w-2 animate-pulse rounded-full bg-[#e76a3e]"></span>
+                    <span>Escribiendo...</span>
+                </div>
+
+                <form
+                    @submit.prevent="sendChatMessage()"
+                    class="flex items-center gap-2"
+                >
+                    <input
+                        x-model="chatInput"
+                        type="text"
+                        maxlength="1200"
+                        :disabled="isChatting"
+                        placeholder="Escribe tu mensaje..."
+                        autocomplete="off"
+                        class="min-w-0 flex-1 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-[#e76a3e] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+
+                    <button
+                        type="submit"
+                        :disabled="isChatting || !chatInput.trim()"
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e76a3e] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label="Enviar mensaje"
+                    >
+                        <span aria-hidden="true">➤</span>
+                    </button>
+                </form>
+            </div>
+
             {{-- Opciones --}}
             <template x-if="step !== 'results' && currentOptions.length">
                 <div class="mt-2 space-y-3">

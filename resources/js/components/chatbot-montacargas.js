@@ -1,3 +1,5 @@
+import { sendRgxChatMessage } from '../services/rgx-chatbot-api';
+
 export default function forkliftChatbot(dataset, csrfToken) {
     return {
         open: false,
@@ -8,6 +10,9 @@ export default function forkliftChatbot(dataset, csrfToken) {
         fallbackImage: '/img/home/shop/650-10-500.png',
         csrfToken: csrfToken || '',
         isSubmitting: false,
+        isChatting: false,
+        chatInput: '',
+        claudeHistory: [],
 
         state: {
             type: null,
@@ -117,11 +122,14 @@ export default function forkliftChatbot(dataset, csrfToken) {
         },
 
         restart() {
-            this.step = 'type';
+            this.step = 'chat';
             this.results = [];
             this.currentOptions = [];
             this.showSpecialistForm = false;
             this.isSubmitting = false;
+            this.isChatting = false;
+            this.chatInput = '';
+            this.claudeHistory = [];
 
             this.state = {
                 type: null,
@@ -137,8 +145,9 @@ export default function forkliftChatbot(dataset, csrfToken) {
             };
 
             this.messages = [];
-            this.bot('Hola. Te ayudo a encontrar la llanta adecuada para tu montacargas.');
-            this.askType();
+            this.bot(
+                'Hola. Soy el asistente virtual de RUGUEX. Cuéntame qué llanta necesitas y te ayudaré a identificar la información necesaria.'
+            );
         },
 
         resetAndClose() {
@@ -281,6 +290,54 @@ export default function forkliftChatbot(dataset, csrfToken) {
                 if (option.value === 'whatsapp') {
                     window.open(this.getWhatsAppUrl(), '_blank', 'noopener');
                 }
+            }
+        },
+
+        async sendChatMessage() {
+            if (this.isChatting) return;
+
+            const message = this.chatInput?.trim() || '';
+
+            if (!message) return;
+
+            const history = this.claudeHistory.slice(-8);
+
+            this.user(message);
+            this.chatInput = '';
+            this.isChatting = true;
+            this.step = 'chat';
+            this.currentOptions = [];
+            this.results = [];
+            this.showSpecialistForm = false;
+
+            try {
+                const answer = await sendRgxChatMessage({
+                    message,
+                    history,
+                    csrfToken: this.csrfToken,
+                });
+
+                this.bot(answer);
+
+                this.claudeHistory.push(
+                    {
+                        role: 'user',
+                        text: message,
+                    },
+                    {
+                        role: 'assistant',
+                        text: answer,
+                    }
+                );
+
+                this.claudeHistory = this.claudeHistory.slice(-8);
+            } catch (error) {
+                this.bot(
+                    error.message
+                    || 'No pude responder en este momento. Intenta nuevamente.'
+                );
+            } finally {
+                this.isChatting = false;
             }
         },
 
