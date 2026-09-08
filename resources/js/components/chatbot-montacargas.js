@@ -13,6 +13,7 @@ export default function forkliftChatbot(dataset, csrfToken) {
         isChatting: false,
         chatInput: '',
         claudeHistory: [],
+        conversationId: null,
 
         state: {
             type: null,
@@ -131,6 +132,7 @@ export default function forkliftChatbot(dataset, csrfToken) {
             this.isChatting = false;
             this.chatInput = '';
             this.claudeHistory = [];
+            this.conversationId = crypto.randomUUID();
 
             this.state = {
                 type: null,
@@ -315,6 +317,7 @@ export default function forkliftChatbot(dataset, csrfToken) {
                 const { answer, product } = await sendRgxChatMessage({
                     message,
                     history,
+                    conversationId: this.conversationId,
                     csrfToken: this.csrfToken,
                 });
 

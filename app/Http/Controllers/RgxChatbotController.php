@@ -20,6 +20,10 @@ class RgxChatbotController extends Controller
                 'string',
                 'max:1200',
             ],
+            'conversation_id' => [
+                'required',
+                'uuid',
+            ],
             'history' => [
                 'sometimes',
                 'array',
@@ -51,6 +55,33 @@ class RgxChatbotController extends Controller
             return response()->json([
                 'error' => 'El asistente no pudo responder en este momento.',
             ], 502);
+        }
+
+        $conversationId = $validated['conversation_id'];
+        $selectionKey = "rgx_chatbot.selected_products.{$conversationId}";
+        $searchStatus = $result['product_search_status'] ?? null;
+
+        if (
+            $searchStatus === 'resolved'
+            && is_array($result['product'] ?? null)
+        ) {
+            $productId = (int) ($result['product']['product_id'] ?? 0);
+
+            if ($productId > 0) {
+                $request->session()->put($selectionKey, $productId);
+            } else {
+                $request->session()->forget($selectionKey);
+            }
+        } elseif (in_array(
+            $searchStatus,
+            [
+                'needs_clarification',
+                'not_found',
+                'unavailable',
+            ],
+            true
+        )) {
+            $request->session()->forget($selectionKey);
         }
 
         $product = null;

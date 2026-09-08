@@ -39,6 +39,7 @@ class RgxChatbotService
 
         $response = null;
         $resolvedProduct = null;
+        $productSearchStatus = null;
 
         for ($iteration = 0; $iteration < 3; $iteration++) {
             $response = $this->anthropic->messages([
@@ -63,6 +64,7 @@ class RgxChatbotService
                 return [
                     'answer' => $answer,
                     'product' => $resolvedProduct,
+                    'product_search_status' => $productSearchStatus,
                     'model' => $response['model'] ?? null,
                     'usage' => $response['usage'] ?? null,
                 ];
@@ -93,12 +95,28 @@ class RgxChatbotService
                     true
                 );
 
-                if (
-                    is_array($toolPayload)
-                    && ($toolPayload['status'] ?? null) === 'resolved'
-                    && is_array($toolPayload['product'] ?? null)
-                ) {
-                    $resolvedProduct = $toolPayload['product'];
+                if (is_array($toolPayload)) {
+                    $status = $toolPayload['status'] ?? null;
+
+                    if (in_array(
+                        $status,
+                        [
+                            'resolved',
+                            'needs_clarification',
+                            'not_found',
+                            'unavailable',
+                        ],
+                        true
+                    )) {
+                        $productSearchStatus = $status;
+                    }
+
+                    if (
+                        $status === 'resolved'
+                        && is_array($toolPayload['product'] ?? null)
+                    ) {
+                        $resolvedProduct = $toolPayload['product'];
+                    }
                 }
             }
 

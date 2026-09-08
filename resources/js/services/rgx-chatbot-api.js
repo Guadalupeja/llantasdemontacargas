@@ -1,6 +1,7 @@
 export async function sendRgxChatMessage({
     message,
     history = [],
+    conversationId = '',
     csrfToken = '',
 }) {
     const response = await fetch('/chatbot/message', {
@@ -13,6 +14,7 @@ export async function sendRgxChatMessage({
         body: JSON.stringify({
             message,
             history,
+            conversation_id: conversationId,
         }),
     });
 
