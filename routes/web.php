@@ -6,6 +6,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\PostAdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChatbotSpecialistRequestController;
+use App\Http\Controllers\RgxChatbotController;
 
 Route::redirect('/llantas-de-poliuretano-para-montacargas', '/llantas-para-montacargas', 301);
 
@@ -53,6 +54,11 @@ Route::get('/', function () {
 Route::post('/chatbot/specialist-request', [ChatbotSpecialistRequestController::class, 'store'])
     ->name('chatbot.specialist-request');
 
+
+// CHATBOT IA RGX
+Route::post('/chatbot/message', RgxChatbotController::class)
+    ->middleware('throttle:12,5')
+    ->name('chatbot.message');
 // Catch-all SIEMPRE al final
 Route::get('/{any}', [StaticPageController::class, 'show'])
     ->where('any', '.*')
