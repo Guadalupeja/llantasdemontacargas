@@ -38,6 +38,7 @@ class RgxChatbotService
         ];
 
         $response = null;
+        $resolvedProduct = null;
 
         for ($iteration = 0; $iteration < 3; $iteration++) {
             $response = $this->anthropic->messages([
@@ -61,6 +62,7 @@ class RgxChatbotService
 
                 return [
                     'answer' => $answer,
+                    'product' => $resolvedProduct,
                     'model' => $response['model'] ?? null,
                     'usage' => $response['usage'] ?? null,
                 ];
@@ -82,7 +84,22 @@ class RgxChatbotService
             $toolResults = [];
 
             foreach ($toolUses as $toolUse) {
-                $toolResults[] = $this->executeTool($toolUse);
+                $toolResult = $this->executeTool($toolUse);
+
+                $toolResults[] = $toolResult;
+
+                $toolPayload = json_decode(
+                    (string) ($toolResult['content'] ?? ''),
+                    true
+                );
+
+                if (
+                    is_array($toolPayload)
+                    && ($toolPayload['status'] ?? null) === 'resolved'
+                    && is_array($toolPayload['product'] ?? null)
+                ) {
+                    $resolvedProduct = $toolPayload['product'];
+                }
             }
 
             $messages[] = [
@@ -376,6 +393,8 @@ Si el resultado no encuentra coincidencias, informa que no se encontró una coin
 Si el resultado indica que el producto no pudo verificarse o no está disponible, dilo claramente y no inventes alternativas, precios ni enlaces.
 
 Si el resultado resuelve un producto, utiliza únicamente los datos devueltos por la herramienta para describirlo.
+
+Cuando el producto quede resuelto, no escribas ni copies la URL en tu respuesta. La interfaz mostrará un botón seguro para abrir el producto verificado en la tienda.
 
 El SKU, precio, disponibilidad, enlace, identificador y demás datos comerciales sólo son válidos si fueron devueltos por buscar_producto.
 

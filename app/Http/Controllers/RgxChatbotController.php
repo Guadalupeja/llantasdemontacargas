@@ -53,8 +53,30 @@ class RgxChatbotController extends Controller
             ], 502);
         }
 
+        $product = null;
+
+        if (is_array($result['product'] ?? null)) {
+            $product = array_intersect_key(
+                $result['product'],
+                array_flip([
+                    'product_id',
+                    'sku',
+                    'title',
+                    'measure',
+                    'model',
+                    'brand',
+                    'price_label',
+                    'url',
+                    'image',
+                    'stock_status',
+                    'is_in_stock',
+                ])
+            );
+        }
+
         return response()->json([
             'answer' => $result['answer'],
+            'product' => $product,
         ]);
     }
 }

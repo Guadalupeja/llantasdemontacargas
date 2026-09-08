@@ -105,11 +105,12 @@ export default function forkliftChatbot(dataset, csrfToken) {
             return `https://wa.me/528332395885?text=${text}`;
         },
 
-        bot(text) {
+        bot(text, product = null) {
             this.messages.push({
                 id: crypto.randomUUID(),
                 role: 'bot',
                 text,
+                product,
             });
         },
 
@@ -311,13 +312,13 @@ export default function forkliftChatbot(dataset, csrfToken) {
             this.showSpecialistForm = false;
 
             try {
-                const answer = await sendRgxChatMessage({
+                const { answer, product } = await sendRgxChatMessage({
                     message,
                     history,
                     csrfToken: this.csrfToken,
                 });
 
-                this.bot(answer);
+                this.bot(answer, product);
 
                 this.claudeHistory.push(
                     {

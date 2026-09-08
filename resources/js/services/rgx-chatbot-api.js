@@ -50,5 +50,8 @@ export async function sendRgxChatMessage({
         );
     }
 
-    return data.answer;
+    return {
+        answer: data.answer,
+        product: data.product ?? null,
+    };
 }
