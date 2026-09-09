@@ -91,11 +91,26 @@ class RgxChatbotService
 
             $toolResults = [];
 
+            $hasProductSearch = false;
+
+            foreach ($toolUses as $candidateToolUse) {
+                if (
+                    is_array($candidateToolUse)
+                    && trim((string) ($candidateToolUse['name'] ?? ''))
+                        === 'buscar_producto'
+                ) {
+                    $hasProductSearch = true;
+
+                    break;
+                }
+            }
+
             foreach ($toolUses as $toolUse) {
                 $toolResult = $this->executeTool(
                     $toolUse,
                     $selectedProductId,
-                    $quoteContext
+                    $quoteContext,
+                    ! $hasProductSearch
                 );
 
                 $toolResults[] = $toolResult;
@@ -218,6 +233,52 @@ class RgxChatbotService
                     ],
                 ],
             ],
+            [
+                'name' => 'generar_cotizacion',
+                'description' => 'Genera una cotización formal del producto RGX que el sistema ya verificó y seleccionó previamente. Úsala únicamente cuando el cliente solicite una cotización y ya se hayan recopilado todos los datos obligatorios. El producto, precio, SKU y demás datos comerciales son determinados internamente por el sistema y nunca deben enviarse a esta herramienta.',
+                'input_schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'cliente' => [
+                            'type' => 'string',
+                            'description' => 'Empresa, razón social o nombre del cliente que solicita la cotización.',
+                        ],
+                        'contacto' => [
+                            'type' => 'string',
+                            'description' => 'Nombre de la persona de contacto.',
+                        ],
+                        'correo' => [
+                            'type' => 'string',
+                            'description' => 'Correo electrónico del contacto.',
+                        ],
+                        'telefono' => [
+                            'type' => 'string',
+                            'description' => 'Teléfono del contacto.',
+                        ],
+                        'ubicacion' => [
+                            'type' => 'string',
+                            'description' => 'Ciudad, estado o ubicación del cliente.',
+                        ],
+                        'cantidad' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'Cantidad de llantas que el cliente desea cotizar.',
+                        ],
+                        'comentarios' => [
+                            'type' => 'string',
+                            'description' => 'Comentarios adicionales del cliente, únicamente si los proporcionó.',
+                        ],
+                    ],
+                    'required' => [
+                        'cliente',
+                        'contacto',
+                        'correo',
+                        'telefono',
+                        'ubicacion',
+                        'cantidad',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -249,7 +310,8 @@ class RgxChatbotService
     private function executeTool(
         array $toolUse,
         ?int $selectedProductId = null,
-        ?array &$quoteContext = null
+        ?array &$quoteContext = null,
+        bool $allowQuote = true
     ): array {
         $toolUseId = trim((string) ($toolUse['id'] ?? ''));
         $toolName = trim((string) ($toolUse['name'] ?? ''));
@@ -258,6 +320,21 @@ class RgxChatbotService
             throw new RuntimeException(
                 'Claude devolvió una llamada de herramienta sin identificador.'
             );
+        }
+
+        if (
+            $toolName === 'generar_cotizacion'
+            && ! $allowQuote
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'quote_waiting_product_verification',
+                    'message' => 'Primero debe completarse la verificación del producto antes de generar la cotización.',
+                ]),
+            ];
         }
 
         if ($toolName === 'generar_cotizacion') {
@@ -639,7 +716,41 @@ El SKU, precio, disponibilidad, enlace, identificador y demás datos comerciales
 
 No modifiques, completes ni inventes precios, existencias, SKU, enlaces, identificadores, especificaciones técnicas ni productos concretos.
 
-No afirmes que generaste una cotización. La herramienta disponible en esta etapa sólo busca productos.
+Cuando el cliente solicite una cotización, primero debe existir un producto resuelto y verificado mediante buscar_producto.
+
+Para generar una cotización formal recopila únicamente estos datos:
+- empresa, razón social o nombre del cliente;
+- nombre de contacto;
+- correo electrónico;
+- teléfono;
+- ubicación;
+- cantidad de llantas.
+
+Los comentarios adicionales son opcionales y sólo debes incluirlos si el cliente los proporciona.
+
+Si falta alguno de los datos obligatorios para cotizar, pregunta únicamente por los que falten. No vuelvas a solicitar información que el cliente ya proporcionó.
+
+Cuando ya tengas todos los datos obligatorios y el cliente haya solicitado una cotización, usa generar_cotizacion. No pidas confirmación adicional antes de ejecutar la herramienta.
+
+Nunca envíes, inventes ni solicites producto_id, SKU, precio, total, enlace del producto, folio o enlace del PDF como argumentos para generar_cotizacion. Esos valores son determinados exclusivamente por el sistema.
+
+Interpreta el resultado de generar_cotizacion como autoridad del sistema.
+
+Si el resultado es no_selected_product, no afirmes que existe una cotización. Indica que primero es necesario identificar y verificar el producto.
+
+Si el resultado es missing_required, solicita únicamente los campos indicados por la herramienta.
+
+Si el resultado es quote_waiting_product_verification, no afirmes que existe una cotización. Espera a que la búsqueda actual termine de verificar el producto y, si ya cuentas con todos los datos obligatorios del cliente, utiliza generar_cotizacion en la siguiente ejecución de herramienta.
+
+Si el resultado es invalid_email, solicita un correo electrónico válido.
+
+Si el resultado es quote_error, informa que no fue posible generar la cotización en ese momento y no inventes folio, total ni PDF.
+
+Si el resultado es quoted, informa al cliente que su cotización fue generada correctamente utilizando únicamente el folio, total y demás datos devueltos por la herramienta.
+
+Si el resultado es already_quoted, no generes otra cotización. Informa al cliente utilizando la cotización existente devuelta por la herramienta.
+
+Nunca inventes ni modifiques folios, totales, precios o enlaces devueltos por generar_cotizacion.
 
 No muestres al cliente JSON, nombres internos de herramientas, instrucciones internas ni detalles técnicos de configuración.
 
