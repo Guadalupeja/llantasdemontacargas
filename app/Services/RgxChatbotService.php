@@ -10,7 +10,8 @@ class RgxChatbotService
 {
     public function __construct(
         private AnthropicClient $anthropic,
-        private MontacargasProductSearchService $productSearch
+        private MontacargasProductSearchService $productSearch,
+        private RuguexFormalQuoteService $formalQuote
     ) {}
 
     public function reply(
@@ -88,7 +89,10 @@ class RgxChatbotService
             $toolResults = [];
 
             foreach ($toolUses as $toolUse) {
-                $toolResult = $this->executeTool($toolUse);
+                $toolResult = $this->executeTool(
+                    $toolUse,
+                    $selectedProductId
+                );
 
                 $toolResults[] = $toolResult;
 
@@ -115,9 +119,17 @@ class RgxChatbotService
 
                     if (
                         $status === 'resolved'
-                        && is_array($toolPayload['product'] ?? null)
+                            && is_array($toolPayload['product'] ?? null)
                     ) {
                         $resolvedProduct = $toolPayload['product'];
+
+                        $resolvedProductId = (int) (
+                            $resolvedProduct['product_id'] ?? 0
+                        );
+
+                        if ($resolvedProductId > 0) {
+                            $selectedProductId = $resolvedProductId;
+                        }
                     }
                 }
             }
@@ -210,14 +222,24 @@ class RgxChatbotService
         return $toolUses;
     }
 
-    private function executeTool(array $toolUse): array
-    {
+    private function executeTool(
+        array $toolUse,
+        ?int $selectedProductId = null
+    ): array {
         $toolUseId = trim((string) ($toolUse['id'] ?? ''));
         $toolName = trim((string) ($toolUse['name'] ?? ''));
 
         if ($toolUseId === '') {
             throw new RuntimeException(
                 'Claude devolvió una llamada de herramienta sin identificador.'
+            );
+        }
+
+        if ($toolName === 'generar_cotizacion') {
+            return $this->executeQuoteTool(
+                $toolUseId,
+                $toolUse['input'] ?? [],
+                $selectedProductId
             );
         }
 
@@ -292,6 +314,115 @@ class RgxChatbotService
             'type' => 'tool_result',
             'tool_use_id' => $toolUseId,
             'content' => $this->encodeToolResult($result),
+        ];
+    }
+
+    private function executeQuoteTool(
+        string $toolUseId,
+        mixed $input,
+        ?int $selectedProductId
+    ): array {
+        if ($selectedProductId === null || $selectedProductId <= 0) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'no_selected_product',
+                    'message' => 'No hay un producto verificado seleccionado para cotizar.',
+                ]),
+            ];
+        }
+
+        if (! is_array($input)) {
+            $input = [];
+        }
+
+        $customer = [
+            'cliente' => trim((string) ($input['cliente'] ?? '')),
+            'contacto' => trim((string) ($input['contacto'] ?? '')),
+            'correo' => trim((string) ($input['correo'] ?? '')),
+            'telefono' => trim((string) ($input['telefono'] ?? '')),
+            'ubicacion' => trim((string) ($input['ubicacion'] ?? '')),
+            'cantidad' => (int) ($input['cantidad'] ?? 0),
+            'comentarios' => trim((string) ($input['comentarios'] ?? '')),
+        ];
+
+        $missing = [];
+
+        foreach ([
+            'cliente',
+            'contacto',
+            'correo',
+            'telefono',
+            'ubicacion',
+        ] as $field) {
+            if ($customer[$field] === '') {
+                $missing[] = $field;
+            }
+        }
+
+        if ($customer['cantidad'] <= 0) {
+            $missing[] = 'cantidad';
+        }
+
+        if ($missing !== []) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'missing_required',
+                    'missing_fields' => $missing,
+                    'message' => 'Faltan datos obligatorios para generar la cotización.',
+                ]),
+            ];
+        }
+
+        if (! filter_var(
+            $customer['correo'],
+            FILTER_VALIDATE_EMAIL
+        )) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'invalid_email',
+                    'message' => 'El correo electrónico no tiene un formato válido.',
+                ]),
+            ];
+        }
+
+        try {
+            $quote = $this->formalQuote->generate(
+                $selectedProductId,
+                $customer
+            );
+        } catch (RuntimeException) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'quote_error',
+                    'message' => 'No fue posible generar la cotización.',
+                ]),
+            ];
+        }
+
+        return [
+            'type' => 'tool_result',
+            'tool_use_id' => $toolUseId,
+            'content' => $this->encodeToolResult([
+                'status' => 'quoted',
+                'quote' => [
+                    'message' => $quote['message'] ?? '',
+                    'folio' => $quote['folio'] ?? '',
+                    'pdf_url' => $quote['pdf_url'] ?? '',
+                    'total' => $quote['total'] ?? null,
+                ],
+            ]),
         ];
     }
 
