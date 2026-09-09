@@ -17,7 +17,8 @@ class RgxChatbotService
     public function reply(
         string $message,
         array $history = [],
-        ?int $selectedProductId = null
+        ?int $selectedProductId = null,
+        ?array $existingQuoteContext = null
     ): array {
         $message = trim($message);
 
@@ -43,6 +44,7 @@ class RgxChatbotService
         $response = null;
         $resolvedProduct = null;
         $productSearchStatus = null;
+        $quoteContext = $existingQuoteContext;
 
         for ($iteration = 0; $iteration < 3; $iteration++) {
             $response = $this->anthropic->messages([
@@ -68,6 +70,7 @@ class RgxChatbotService
                     'answer' => $answer,
                     'product' => $resolvedProduct,
                     'product_search_status' => $productSearchStatus,
+                    'quote_context' => $quoteContext,
                     'model' => $response['model'] ?? null,
                     'usage' => $response['usage'] ?? null,
                 ];
@@ -91,7 +94,8 @@ class RgxChatbotService
             foreach ($toolUses as $toolUse) {
                 $toolResult = $this->executeTool(
                     $toolUse,
-                    $selectedProductId
+                    $selectedProductId,
+                    $quoteContext
                 );
 
                 $toolResults[] = $toolResult;
@@ -117,15 +121,35 @@ class RgxChatbotService
                         $productSearchStatus = $status;
                     }
 
+                    if (in_array(
+                        $status,
+                        [
+                            'needs_clarification',
+                            'not_found',
+                            'unavailable',
+                        ],
+                        true
+                    )) {
+                        $selectedProductId = null;
+                        $quoteContext = null;
+                    }
+
                     if (
                         $status === 'resolved'
-                            && is_array($toolPayload['product'] ?? null)
+                        && is_array($toolPayload['product'] ?? null)
                     ) {
                         $resolvedProduct = $toolPayload['product'];
 
                         $resolvedProductId = (int) (
                             $resolvedProduct['product_id'] ?? 0
                         );
+
+                        if (
+                            $resolvedProductId > 0
+                            && $selectedProductId !== $resolvedProductId
+                        ) {
+                            $quoteContext = null;
+                        }
 
                         if ($resolvedProductId > 0) {
                             $selectedProductId = $resolvedProductId;
@@ -224,7 +248,8 @@ class RgxChatbotService
 
     private function executeTool(
         array $toolUse,
-        ?int $selectedProductId = null
+        ?int $selectedProductId = null,
+        ?array &$quoteContext = null
     ): array {
         $toolUseId = trim((string) ($toolUse['id'] ?? ''));
         $toolName = trim((string) ($toolUse['name'] ?? ''));
@@ -239,7 +264,8 @@ class RgxChatbotService
             return $this->executeQuoteTool(
                 $toolUseId,
                 $toolUse['input'] ?? [],
-                $selectedProductId
+                $selectedProductId,
+                $quoteContext
             );
         }
 
@@ -320,7 +346,8 @@ class RgxChatbotService
     private function executeQuoteTool(
         string $toolUseId,
         mixed $input,
-        ?int $selectedProductId
+        ?int $selectedProductId,
+        ?array &$quoteContext
     ): array {
         if ($selectedProductId === null || $selectedProductId <= 0) {
             return [
@@ -394,6 +421,59 @@ class RgxChatbotService
             ];
         }
 
+        $fingerprintPayload = [
+            'product_id' => $selectedProductId,
+            'cliente' => $customer['cliente'],
+            'contacto' => $customer['contacto'],
+            'correo' => mb_strtolower($customer['correo']),
+            'telefono' => $customer['telefono'],
+            'ubicacion' => $customer['ubicacion'],
+            'cantidad' => $customer['cantidad'],
+            'comentarios' => $customer['comentarios'],
+        ];
+
+        try {
+            $fingerprint = hash(
+                'sha256',
+                json_encode(
+                    $fingerprintPayload,
+                    JSON_UNESCAPED_UNICODE
+                    | JSON_UNESCAPED_SLASHES
+                    | JSON_THROW_ON_ERROR
+                )
+            );
+        } catch (JsonException) {
+            throw new RuntimeException(
+                'No fue posible generar la huella de la cotización.'
+            );
+        }
+
+        $existingFingerprint = trim(
+            (string) ($quoteContext['fingerprint'] ?? '')
+        );
+
+        $existingProductId = (int) (
+            $quoteContext['product_id'] ?? 0
+        );
+
+        $existingQuote = $quoteContext['quote'] ?? null;
+
+        if (
+            $existingFingerprint !== ''
+            && hash_equals($existingFingerprint, $fingerprint)
+            && $existingProductId === $selectedProductId
+            && is_array($existingQuote)
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'content' => $this->encodeToolResult([
+                    'status' => 'already_quoted',
+                    'quote' => $existingQuote,
+                ]),
+            ];
+        }
+
         try {
             $quote = $this->formalQuote->generate(
                 $selectedProductId,
@@ -411,17 +491,25 @@ class RgxChatbotService
             ];
         }
 
+        $storedQuote = [
+            'message' => trim((string) ($quote['message'] ?? '')),
+            'folio' => trim((string) ($quote['folio'] ?? '')),
+            'pdf_url' => trim((string) ($quote['pdf_url'] ?? '')),
+            'total' => $quote['total'] ?? null,
+        ];
+
+        $quoteContext = [
+            'fingerprint' => $fingerprint,
+            'product_id' => $selectedProductId,
+            'quote' => $storedQuote,
+        ];
+
         return [
             'type' => 'tool_result',
             'tool_use_id' => $toolUseId,
             'content' => $this->encodeToolResult([
                 'status' => 'quoted',
-                'quote' => [
-                    'message' => $quote['message'] ?? '',
-                    'folio' => $quote['folio'] ?? '',
-                    'pdf_url' => $quote['pdf_url'] ?? '',
-                    'total' => $quote['total'] ?? null,
-                ],
+                'quote' => $storedQuote,
             ]),
         ];
     }

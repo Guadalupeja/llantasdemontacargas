@@ -43,6 +43,13 @@ class RgxChatbotController extends Controller
 
         $conversationId = $validated['conversation_id'];
         $selectionKey = "rgx_chatbot.selected_products.{$conversationId}";
+        $quoteKey = "rgx_chatbot.quotations.{$conversationId}";
+
+        $existingQuoteContext = $request->session()->get($quoteKey);
+
+        if (! is_array($existingQuoteContext)) {
+            $existingQuoteContext = null;
+        }
 
         $selectedProductId = (int) $request->session()->get(
             $selectionKey,
@@ -57,7 +64,8 @@ class RgxChatbotController extends Controller
             $result = $chatbot->reply(
                 $validated['message'],
                 $validated['history'] ?? [],
-                $selectedProductId
+                $selectedProductId,
+                $existingQuoteContext
             );
         } catch (Throwable $exception) {
             Log::error('RGX chatbot error', [
@@ -93,6 +101,17 @@ class RgxChatbotController extends Controller
             true
         )) {
             $request->session()->forget($selectionKey);
+        }
+
+        if (array_key_exists('quote_context', $result)) {
+            if (is_array($result['quote_context'])) {
+                $request->session()->put(
+                    $quoteKey,
+                    $result['quote_context']
+                );
+            } else {
+                $request->session()->forget($quoteKey);
+            }
         }
 
         $product = null;
