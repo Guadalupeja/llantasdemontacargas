@@ -41,10 +41,23 @@ class RgxChatbotController extends Controller
             ],
         ]);
 
+        $conversationId = $validated['conversation_id'];
+        $selectionKey = "rgx_chatbot.selected_products.{$conversationId}";
+
+        $selectedProductId = (int) $request->session()->get(
+            $selectionKey,
+            0
+        );
+
+        if ($selectedProductId <= 0) {
+            $selectedProductId = null;
+        }
+
         try {
             $result = $chatbot->reply(
                 $validated['message'],
-                $validated['history'] ?? []
+                $validated['history'] ?? [],
+                $selectedProductId
             );
         } catch (Throwable $exception) {
             Log::error('RGX chatbot error', [
@@ -57,8 +70,6 @@ class RgxChatbotController extends Controller
             ], 502);
         }
 
-        $conversationId = $validated['conversation_id'];
-        $selectionKey = "rgx_chatbot.selected_products.{$conversationId}";
         $searchStatus = $result['product_search_status'] ?? null;
 
         if (

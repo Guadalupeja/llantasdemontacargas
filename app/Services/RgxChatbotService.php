@@ -11,11 +11,13 @@ class RgxChatbotService
     public function __construct(
         private AnthropicClient $anthropic,
         private MontacargasProductSearchService $productSearch
-    ) {
-    }
+    ) {}
 
-    public function reply(string $message, array $history = []): array
-    {
+    public function reply(
+        string $message,
+        array $history = [],
+        ?int $selectedProductId = null
+    ): array {
         $message = trim($message);
 
         if ($message === '') {
