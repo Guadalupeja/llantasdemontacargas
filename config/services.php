@@ -32,11 +32,24 @@ return [
     ],
 
     'ruguex' => [
-    'final_prices_endpoint' => env(
-        'RUGUEX_FINAL_PRICES_ENDPOINT',
-        'https://llantasdemontacargas.com/tienda-en-linea/wp-json/ruguex/v1/final-prices'
-    ),
-],
+        'final_prices_endpoint' => env(
+            'RUGUEX_FINAL_PRICES_ENDPOINT',
+            'https://llantasdemontacargas.com/tienda-en-linea/wp-json/ruguex/v1/final-prices'
+        ),
+
+        'formal_quote_endpoint' => env(
+            'RUGUEX_FORMAL_QUOTE_ENDPOINT'
+        ),
+
+        'formal_quote_token' => env(
+            'RUGUEX_FORMAL_QUOTE_TOKEN'
+        ),
+
+        'formal_quote_timeout' => (int) env(
+            'RUGUEX_FORMAL_QUOTE_TIMEOUT',
+            45
+        ),
+    ],
 
 
     'anthropic' => [
