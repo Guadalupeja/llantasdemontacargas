@@ -55,5 +55,6 @@ export async function sendRgxChatMessage({
     return {
         answer: data.answer,
         product: data.product ?? null,
+        quote: data.quote ?? null,
     };
 }

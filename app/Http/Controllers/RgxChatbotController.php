@@ -135,9 +135,53 @@ class RgxChatbotController extends Controller
             );
         }
 
+        $quote = null;
+
+        if (is_array($result['quote'] ?? null)) {
+            $folio = trim((string) (
+                $result['quote']['folio'] ?? ''
+            ));
+
+            $total = $result['quote']['total'] ?? null;
+
+            $pdfUrl = trim((string) (
+                $result['quote']['pdf_url'] ?? ''
+            ));
+
+            if ($pdfUrl !== '') {
+                $scheme = strtolower((string) parse_url(
+                    $pdfUrl,
+                    PHP_URL_SCHEME
+                ));
+
+                if (
+                    ! filter_var($pdfUrl, FILTER_VALIDATE_URL)
+                    || ! in_array($scheme, ['http', 'https'], true)
+                ) {
+                    $pdfUrl = '';
+                }
+            }
+
+            if ($folio !== '') {
+                $quote = [
+                    'folio' => $folio,
+                    'total' => is_numeric($total)
+                        ? (float) $total
+                        : null,
+                    'total_label' => is_numeric($total)
+                        ? '$'.number_format((float) $total, 2).' MXN'
+                        : null,
+                    'pdf_url' => $pdfUrl !== ''
+                        ? $pdfUrl
+                        : null,
+                ];
+            }
+        }
+
         return response()->json([
             'answer' => $result['answer'],
             'product' => $product,
+            'quote' => $quote,
         ]);
     }
 }

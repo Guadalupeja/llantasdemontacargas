@@ -43,6 +43,7 @@ class RgxChatbotService
 
         $response = null;
         $resolvedProduct = null;
+        $resolvedQuote = null;
         $productSearchStatus = null;
         $quoteContext = $existingQuoteContext;
 
@@ -70,6 +71,7 @@ class RgxChatbotService
                     'answer' => $answer,
                     'product' => $resolvedProduct,
                     'product_search_status' => $productSearchStatus,
+                    'quote' => $resolvedQuote,
                     'quote_context' => $quoteContext,
                     'model' => $response['model'] ?? null,
                     'usage' => $response['usage'] ?? null,
@@ -123,6 +125,20 @@ class RgxChatbotService
                 if (is_array($toolPayload)) {
                     $status = $toolPayload['status'] ?? null;
 
+                    if (
+                        in_array(
+                            $status,
+                            [
+                                'quoted',
+                                'already_quoted',
+                            ],
+                            true
+                        )
+                        && is_array($toolPayload['quote'] ?? null)
+                    ) {
+                        $resolvedQuote = $toolPayload['quote'];
+                    }
+
                     if (in_array(
                         $status,
                         [
@@ -134,6 +150,8 @@ class RgxChatbotService
                         true
                     )) {
                         $productSearchStatus = $status;
+                        $resolvedQuote = null;
+
                     }
 
                     if (in_array(

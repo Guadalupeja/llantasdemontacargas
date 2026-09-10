@@ -157,6 +157,38 @@
                                         </div>
                                     </div>
                                 </template>
+
+                                <template x-if="message.quote && message.quote.folio">
+                                    <div class="mt-4 rounded-[16px] border border-[#e76a3e]/30 bg-white p-3">
+                                        <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                                            Cotizaci&oacute;n formal
+                                        </p>
+
+                                        <p class="mt-2 text-sm font-semibold text-slate-700">
+                                            Folio:
+                                            <span
+                                                class="font-bold text-slate-900"
+                                                x-text="message.quote.folio"
+                                            ></span>
+                                        </p>
+
+                                        <p
+                                            x-show="message.quote.total_label"
+                                            class="mt-2 text-base font-extrabold text-[#e76a3e]"
+                                            x-text="message.quote.total_label"
+                                        ></p>
+
+                                        <a
+                                            x-show="message.quote.pdf_url"
+                                            :href="message.quote.pdf_url"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="mt-3 block rounded-full bg-[#e76a3e] px-4 py-2.5 text-center text-sm font-bold text-white transition hover:opacity-90"
+                                        >
+                                            Ver cotizaci&oacute;n PDF &rarr;
+                                        </a>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     </template>
