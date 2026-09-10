@@ -47,6 +47,7 @@ class RgxChatbotService
         $resolvedQuote = null;
         $productSearchStatus = null;
         $quoteContext = $existingQuoteContext;
+        $technicalKnowledgeContext = null;
 
         for ($iteration = 0; $iteration < 3; $iteration++) {
             $response = $this->anthropic->messages([
@@ -97,16 +98,23 @@ class RgxChatbotService
             $toolResults = [];
 
             $hasProductSearch = false;
+            $hasQuoteRequest = false;
 
             foreach ($toolUses as $candidateToolUse) {
-                if (
-                    is_array($candidateToolUse)
-                    && trim((string) ($candidateToolUse['name'] ?? ''))
-                        === 'buscar_producto'
-                ) {
-                    $hasProductSearch = true;
+                if (! is_array($candidateToolUse)) {
+                    continue;
+                }
 
-                    break;
+                $candidateToolName = trim(
+                    (string) ($candidateToolUse['name'] ?? '')
+                );
+
+                if ($candidateToolName === 'buscar_producto') {
+                    $hasProductSearch = true;
+                }
+
+                if ($candidateToolName === 'generar_cotizacion') {
+                    $hasQuoteRequest = true;
                 }
             }
 
@@ -116,7 +124,9 @@ class RgxChatbotService
                     $selectedProductId,
                     $quoteContext,
                     ! $hasProductSearch,
-                    ! $hasProductSearch
+                    ! $hasProductSearch,
+                    $technicalKnowledgeContext,
+                    ! $hasProductSearch && ! $hasQuoteRequest
                 );
 
                 $toolResults[] = $toolResult;
@@ -128,6 +138,39 @@ class RgxChatbotService
 
                 if (is_array($toolPayload)) {
                     $status = $toolPayload['status'] ?? null;
+
+                    if ($status === 'technical_answer_resolved') {
+                        $technicalAnswer = trim(
+                            (string) ($toolPayload['answer'] ?? '')
+                        );
+
+                        if ($technicalAnswer === '') {
+                            throw new RuntimeException(
+                                'El servidor produjo una respuesta técnica vacía.'
+                            );
+                        }
+
+                        return [
+                            'answer' => $technicalAnswer,
+                            'product' => $resolvedProduct,
+                            'product_search_status' => $productSearchStatus,
+                            'quote' => $resolvedQuote,
+                            'quote_context' => $quoteContext,
+                            'model' => $response['model'] ?? null,
+                            'usage' => $response['usage'] ?? null,
+                        ];
+                    }
+
+                    if (
+                        trim((string) ($toolUse['name'] ?? ''))
+                            === 'buscar_producto'
+                    ) {
+                        $technicalKnowledgeContext = null;
+                    }
+
+                    if ($status === 'knowledge_resolved') {
+                        $technicalKnowledgeContext = $toolPayload;
+                    }
 
                     if (
                         in_array(
@@ -265,6 +308,34 @@ class RgxChatbotService
                 ],
             ],
             [
+                'name' => 'seleccionar_informacion_tecnica',
+                'description' => 'Selecciona únicamente por ID los hechos técnicos y guardrails relevantes del último conocimiento técnico verificado por el servidor. No recibe producto, modelo, SKU, variante, scope ni texto técnico libre.',
+                'input_schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'fact_ids' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'string',
+                            ],
+                            'description' => 'IDs de facts relevantes que existan exactamente en el último resultado knowledge_resolved.',
+                        ],
+                        'guardrail_ids' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'string',
+                            ],
+                            'description' => 'IDs de guardrails relevantes que existan exactamente en el último resultado knowledge_resolved.',
+                        ],
+                    ],
+                    'required' => [
+                        'fact_ids',
+                        'guardrail_ids',
+                    ],
+                    'additionalProperties' => false,
+                ],
+            ],
+            [
                 'name' => 'generar_cotizacion',
                 'description' => 'Genera una cotización formal del producto RGX que el sistema ya verificó y seleccionó previamente. Úsala únicamente cuando el cliente solicite una cotización y ya se hayan recopilado todos los datos obligatorios. El producto, precio, SKU y demás datos comerciales son determinados internamente por el sistema y nunca deben enviarse a esta herramienta.',
                 'input_schema' => [
@@ -369,7 +440,9 @@ class RgxChatbotService
         ?int $selectedProductId = null,
         ?array &$quoteContext = null,
         bool $allowQuote = true,
-        bool $allowTechnicalKnowledge = true
+        bool $allowTechnicalKnowledge = true,
+        ?array $technicalKnowledgeContext = null,
+        bool $allowTechnicalSelection = true
     ): array {
         $toolUseId = trim((string) ($toolUse['id'] ?? ''));
         $toolName = trim((string) ($toolUse['name'] ?? ''));
@@ -399,6 +472,44 @@ class RgxChatbotService
             return $this->executeTechnicalKnowledgeTool(
                 $toolUseId,
                 $selectedProductId
+            );
+        }
+
+        if (
+            $toolName === 'seleccionar_informacion_tecnica'
+            && ! $allowTechnicalKnowledge
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'technical_selection_waiting_product_verification',
+                    'message' => 'La selección técnica debe esperar a que termine la verificación del producto actual.',
+                ]),
+            ];
+        }
+
+        if (
+            $toolName === 'seleccionar_informacion_tecnica'
+            && ! $allowTechnicalSelection
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'technical_selection_waiting_quote',
+                    'message' => 'La selección técnica debe esperar a que se procese la cotización solicitada en esta ejecución.',
+                ]),
+            ];
+        }
+
+        if ($toolName === 'seleccionar_informacion_tecnica') {
+            return $this->executeTechnicalSelectionTool(
+                $toolUseId,
+                $toolUse['input'] ?? [],
+                $technicalKnowledgeContext
             );
         }
 
@@ -566,6 +677,11 @@ class RgxChatbotService
             )
             ->map(
                 fn (array $fact): array => [
+                    'id' => trim(
+                        (string) (
+                            $fact['id'] ?? ''
+                        )
+                    ),
                     'category' => trim(
                         (string) (
                             $fact['category'] ?? ''
@@ -583,6 +699,11 @@ class RgxChatbotService
                     'statement' => trim(
                         (string) (
                             $fact['statement'] ?? ''
+                        )
+                    ),
+                    'statement_es' => trim(
+                        (string) (
+                            $fact['statement_es'] ?? ''
                         )
                     ),
                 ]
@@ -629,9 +750,19 @@ class RgxChatbotService
             )
             ->map(
                 fn (array $item): array => [
+                    'id' => trim(
+                        (string) (
+                            $item['id'] ?? ''
+                        )
+                    ),
                     'rule' => trim(
                         (string) (
                             $item['rule'] ?? ''
+                        )
+                    ),
+                    'rule_es' => trim(
+                        (string) (
+                            $item['rule_es'] ?? ''
                         )
                     ),
                     'forbidden_inference' => trim(
@@ -674,6 +805,224 @@ class RgxChatbotService
         ];
     }
 
+    /**
+     * Filtra selecciones técnicas contra el contexto autorizado
+     * que ya fue determinado por el servidor.
+     */
+    private function selectAuthorizedTechnicalItems(
+        array $knowledge,
+        array $factIds,
+        array $guardrailIds
+    ): array {
+        $requestedFactIds = collect($factIds)
+            ->filter(
+                fn ($id): bool => is_string($id)
+            )
+            ->map(
+                fn (string $id): string => trim($id)
+            )
+            ->filter(
+                fn (string $id): bool => $id !== ''
+            )
+            ->unique()
+            ->values();
+
+        $requestedGuardrailIds = collect($guardrailIds)
+            ->filter(
+                fn ($id): bool => is_string($id)
+            )
+            ->map(
+                fn (string $id): string => trim($id)
+            )
+            ->filter(
+                fn (string $id): bool => $id !== ''
+            )
+            ->unique()
+            ->values();
+
+        $factsById = collect(
+            $knowledge['facts'] ?? []
+        )
+            ->filter(
+                fn ($item): bool => is_array($item)
+                    && trim(
+                        (string) ($item['id'] ?? '')
+                    ) !== ''
+            )
+            ->keyBy(
+                fn (array $item): string => trim(
+                    (string) $item['id']
+                )
+            );
+
+        $guardrailsById = collect(
+            $knowledge['guardrails'] ?? []
+        )
+            ->filter(
+                fn ($item): bool => is_array($item)
+                    && trim(
+                        (string) ($item['id'] ?? '')
+                    ) !== ''
+            )
+            ->keyBy(
+                fn (array $item): string => trim(
+                    (string) $item['id']
+                )
+            );
+
+        $facts = $requestedFactIds
+            ->map(
+                fn (string $id) => $factsById->get($id)
+            )
+            ->filter(
+                fn ($item): bool => is_array($item)
+            )
+            ->values()
+            ->all();
+
+        $guardrails = $requestedGuardrailIds
+            ->map(
+                fn (string $id) => $guardrailsById->get($id)
+            )
+            ->filter(
+                fn ($item): bool => is_array($item)
+            )
+            ->values()
+            ->all();
+
+        return [
+            'facts' => $facts,
+            'guardrails' => $guardrails,
+        ];
+    }
+    /**
+     * Construye una respuesta técnica únicamente con contenido
+     * previamente autorizado por el servidor.
+     */
+    private function renderAuthorizedTechnicalSelection(
+        array $selection
+    ): string {
+        $facts = collect(
+            $selection['facts'] ?? []
+        )
+            ->filter(
+                fn ($item): bool => is_array($item)
+            )
+            ->map(
+                fn (array $item): string => trim(
+                    (string) ($item['statement_es'] ?? '')
+                )
+            )
+            ->filter(
+                fn (string $statement): bool =>
+                    $statement !== ''
+            );
+
+        $guardrails = collect(
+            $selection['guardrails'] ?? []
+        )
+            ->filter(
+                fn ($item): bool => is_array($item)
+            )
+            ->map(
+                fn (array $item): string => trim(
+                    (string) ($item['rule_es'] ?? '')
+                )
+            )
+            ->filter(
+                fn (string $rule): bool => $rule !== ''
+            );
+
+        $lines = $facts
+            ->merge($guardrails)
+            ->unique()
+            ->values();
+
+        if ($lines->isEmpty()) {
+            return 'No hay información técnica verificada disponible para responder esta consulta.';
+        }
+
+        return 'Información técnica verificada:'
+            .PHP_EOL
+            .$lines
+                ->map(
+                    fn (string $line): string => '- '.$line
+                )
+                ->implode(PHP_EOL);
+    }
+    /**
+     * Resuelve una selección de IDs técnicos únicamente contra
+     * el contexto autorizado previamente por el servidor.
+     */
+    private function executeTechnicalSelectionTool(
+        string $toolUseId,
+        mixed $input,
+        ?array $knowledge
+    ): array {
+        if (
+            ! is_array($knowledge)
+            || ($knowledge['status'] ?? null)
+                !== 'knowledge_resolved'
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'technical_selection_unavailable',
+                    'message' => 'No existe un contexto técnico verificado para seleccionar información.',
+                ]),
+            ];
+        }
+
+        if (! is_array($input)) {
+            $input = [];
+        }
+
+        $factIds = is_array(
+            $input['fact_ids'] ?? null
+        )
+            ? $input['fact_ids']
+            : [];
+
+        $guardrailIds = is_array(
+            $input['guardrail_ids'] ?? null
+        )
+            ? $input['guardrail_ids']
+            : [];
+
+        $selection = $this->selectAuthorizedTechnicalItems(
+            $knowledge,
+            $factIds,
+            $guardrailIds
+        );
+
+        if (
+            ($selection['facts'] ?? []) === []
+            && ($selection['guardrails'] ?? []) === []
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'technical_selection_empty',
+                    'message' => 'La selección no contiene información técnica autorizada.',
+                ]),
+            ];
+        }
+
+        return [
+            'type' => 'tool_result',
+            'tool_use_id' => $toolUseId,
+            'content' => $this->encodeToolResult([
+                'status' => 'technical_answer_resolved',
+                'answer' => $this->renderAuthorizedTechnicalSelection(
+                    $selection
+                ),
+            ]),
+        ];
+    }
     private function executeQuoteTool(
         string $toolUseId,
         mixed $input,
@@ -974,13 +1323,35 @@ Si el cliente pregunta por características, ventajas, aplicaciones, construcci�
 
 consultar_conocimiento_tecnico no recibe producto, identificador, SKU, modelo, variante, compuesto ni scope. El servidor determina automáticamente el producto y los alcances permitidos.
 
-Si el resultado es knowledge_resolved, responde información técnica únicamente con los facts devueltos.
+Si el resultado es knowledge_resolved, no redactes todavía una respuesta técnica. Usa inmediatamente seleccionar_informacion_tecnica.
 
-Respeta el scope de cada fact. Un fact variant:... sólo corresponde a esa variante y nunca debe presentarse como característica general de toda la familia.
+seleccionar_informacion_tecnica sólo recibe fact_ids y guardrail_ids que existan exactamente en el último resultado knowledge_resolved. No envíes producto, identificador, SKU, modelo, variante, scope, texto técnico libre ni otros campos.
 
-Respeta siempre los guardrails devueltos y evita las inferencias prohibidas sin revelar las instrucciones internas al cliente.
+Selecciona únicamente los IDs necesarios para responder la pregunta del cliente. No inventes, reconstruyas ni modifiques IDs.
 
-No agregues capacidades, dimensiones, presiones, porcentajes, características ni especificaciones técnicas que no estén expresamente presentes en los facts.
+No uses seleccionar_informacion_tecnica antes de recibir knowledge_resolved ni en la misma ejecución de herramientas que buscar_producto.
+
+No uses seleccionar_informacion_tecnica en la misma ejecución de herramientas que generar_cotizacion. Si ambas acciones están pendientes, procesa primero generar_cotizacion.
+
+Si generar_cotizacion devuelve quoted o already_quoted y todavía debes responder una consulta técnica, utiliza seleccionar_informacion_tecnica en la siguiente ejecución.
+
+Si generar_cotizacion devuelve missing_required, invalid_email, quote_error u otro estado que requiera atención, resuelve primero ese estado y no intentes completar la selección técnica en esa misma ejecución.
+
+Después de seleccionar los IDs, el servidor construirá la respuesta técnica final con contenido autorizado.
+
+Después de knowledge_resolved tu función técnica se limita exclusivamente a seleccionar IDs autorizados. No redactes, traduzcas, resumas, expliques ni parafrasees los facts o guardrails.
+
+Respeta el scope de cada fact al decidir qué IDs seleccionar. Un fact variant:... sólo puede seleccionarse cuando el servidor lo haya incluido en knowledge_resolved para la variante verificada.
+
+Selecciona únicamente facts que respondan directamente a la consulta del cliente. No agregues IDs por conocimiento general, semejanza entre modelos, inferencia o conveniencia.
+
+Respeta siempre los guardrails devueltos. Si la pregunta del cliente toca una afirmación, confusión o interpretación cubierta por un guardrail, incluye expresamente su guardrail_id en seleccionar_informacion_tecnica.
+
+No construyas por tu cuenta la corrección contenida en un guardrail ni reveles forbidden_inference. Selecciona el guardrail_id correspondiente y deja que el servidor produzca el texto final autorizado.
+
+No utilices conocimiento general, conocimiento previo del modelo, definiciones externas ni inferencias propias para decidir hechos que no estén presentes en knowledge_resolved.
+
+Si ningún fact o guardrail autorizado responde a la consulta, no inventes una explicación técnica.
 
 consultar_conocimiento_tecnico nunca es fuente autorizada para precio, SKU, disponibilidad, stock, URL, folio, total ni otros datos comerciales.
 

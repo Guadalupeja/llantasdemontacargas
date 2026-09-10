@@ -441,4 +441,42 @@ class TechnicalKnowledgeServiceTest extends TestCase
 
         $this->assertSame([], $scopes);
     }
+    public function test_lookup_preserves_curated_spanish_presentation(): void
+    {
+        $service = app(
+            \App\Services\TechnicalKnowledgeService::class
+        );
+
+        $result = $service->lookupByModel(
+            'PS1000 SM FL MP'
+        );
+
+        $fact = collect(
+            $result['facts'] ?? []
+        )->firstWhere(
+            'id',
+            'ps1000-type'
+        );
+
+        $guardrail = collect(
+            $result['guardrails'] ?? []
+        )->firstWhere(
+            'id',
+            'ps1000-radial-sipes-not-radial'
+        );
+
+        $this->assertIsArray($fact);
+
+        $this->assertSame(
+            'PS1000 es una llanta sólida tipo press-on.',
+            $fact['statement_es'] ?? null
+        );
+
+        $this->assertIsArray($guardrail);
+
+        $this->assertSame(
+            'La expresión «laminillas radiales» describe la geometría de la banda de rodamiento. No significa que la PS1000 sea una llanta radial.',
+            $guardrail['rule_es'] ?? null
+        );
+    }
 }

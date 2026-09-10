@@ -550,8 +550,86 @@ class MontacargasProductSearchService
      * Recibe la información conocida del cliente y devuelve
      * un estado estructurado para que la IA sepa qué hacer.
      */
+    /**
+     * Repara una clasificación errónea de la IA cuando una parte
+     * del modelo fue enviada por error como function.
+     *
+     * Sólo se repara cuando model + function coincide exactamente
+     * con un modelo existente en el catálogo.
+     */
+    private function repairMisclassifiedModelCriteria(
+        array $criteria
+    ): array {
+        $model = trim(
+            (string) ($criteria['model'] ?? '')
+        );
+
+        $function = trim(
+            (string) ($criteria['function'] ?? '')
+        );
+
+        if ($model === '' || $function === '') {
+            return $criteria;
+        }
+
+        $normalizedFunction = $this->normalizeVariantValue(
+            'function',
+            $function
+        );
+
+        if (
+            in_array(
+                $normalizedFunction,
+                [
+                    'estandar',
+                    'no_manchante',
+                ],
+                true
+            )
+        ) {
+            return $criteria;
+        }
+
+        $combinedModel = $this->normalizeModel(
+            $model.' '.$function
+        );
+
+        if ($combinedModel === null) {
+            return $criteria;
+        }
+
+        $matchingModels = $this->loadProducts()
+            ->map(
+                fn (array $product): string => trim(
+                    (string) ($product['model'] ?? '')
+                )
+            )
+            ->filter(
+                fn (string $candidate): bool =>
+                    $candidate !== ''
+                    && $this->normalizeModel(
+                        $candidate
+                    ) === $combinedModel
+            )
+            ->unique()
+            ->values();
+
+        if ($matchingModels->count() !== 1) {
+            return $criteria;
+        }
+
+        $criteria['model'] = (string) $matchingModels->first();
+
+        unset($criteria['function']);
+
+        return $criteria;
+    }
+
     public function resolveForChatbot(array $criteria): array
     {
+        $criteria = $this->repairMisclassifiedModelCriteria(
+            $criteria
+        );
         $candidates = $this->searchLocal(
             isset($criteria['type']) ? (string) $criteria['type'] : null,
             isset($criteria['measure']) ? (string) $criteria['measure'] : null,

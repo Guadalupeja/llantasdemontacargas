@@ -181,8 +181,14 @@ class TechnicalKnowledgeService
                     && ($guardrail['family'] ?? null) === $familyName
             )
             ->map(fn (array $guardrail) => [
+                'id' => trim(
+                    (string) ($guardrail['id'] ?? '')
+                ),
                 'rule' => trim(
                     (string) ($guardrail['rule'] ?? '')
+                ),
+                'rule_es' => trim(
+                    (string) ($guardrail['rule_es'] ?? '')
                 ),
                 'forbidden_inference' => trim(
                     (string) (
@@ -404,6 +410,9 @@ class TechnicalKnowledgeService
             'page' => (int) ($fact['page'] ?? 0),
             'statement' => trim(
                 (string) ($fact['statement'] ?? '')
+            ),
+            'statement_es' => trim(
+                (string) ($fact['statement_es'] ?? '')
             ),
         ];
 

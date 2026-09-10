@@ -30,13 +30,17 @@
   ],
   "guardrails": [
     {
+      "id": "ps1000-radial-sipes-not-radial",
       "family": "PS1000",
       "rule": "The phrase radial sipes describes tread geometry. It does not mean PS1000 is a radial tire.",
+      "rule_es": "La expresión «laminillas radiales» describe la geometría de la banda de rodamiento. No significa que la PS1000 sea una llanta radial.",
       "forbidden_inference": "PS1000 is a radial tire."
     },
     {
+      "id": "tr900-antistatic-not-explosion-proof",
       "family": "TR-900",
-      "rule": "Anti-static properties may be described as reducing the risk of sparks in potentially explosive atmospheres.",
+      "rule": "The anti-static characteristic does not mean that TR-900 is an explosion-proof tire.",
+      "rule_es": "La característica antiestática no significa que la TR-900 sea una llanta a prueba de explosiones.",
       "forbidden_inference": "TR-900 is explosion proof."
     }
   ],
@@ -57,7 +61,8 @@
           "scope": "family",
           "status": "approved",
           "page": 2,
-          "statement": "XP800 is designed for medium intensity applications."
+          "statement": "XP800 is designed for medium intensity applications.",
+          "statement_es": "XP800 está diseñada para aplicaciones de intensidad media."
         },
         {
           "id": "xp800-indoor-outdoor",
@@ -65,7 +70,8 @@
           "scope": "family",
           "status": "approved",
           "page": 4,
-          "statement": "XP800 tread design is intended to support both indoor and outdoor performance."
+          "statement": "XP800 tread design is intended to support both indoor and outdoor performance.",
+          "statement_es": "El diseño de la banda de rodamiento de la XP800 está pensado para ofrecer desempeño tanto en interiores como en exteriores."
         },
         {
           "id": "xp800-indoor-handling",
@@ -73,7 +79,8 @@
           "scope": "family",
           "status": "approved",
           "page": 4,
-          "statement": "Its wide central contact area with zig-zag profile is designed to minimize vibration and improve handling indoors."
+          "statement": "Its wide central contact area with zig-zag profile is designed to minimize vibration and improve handling indoors.",
+          "statement_es": "Su amplia zona central de contacto con perfil en zigzag está diseñada para minimizar la vibración y mejorar la maniobrabilidad en interiores."
         },
         {
           "id": "xp800-outdoor-traction",
@@ -81,7 +88,8 @@
           "scope": "family",
           "status": "approved",
           "page": 4,
-          "statement": "Deep lateral lugs are designed to provide traction in outdoor applications."
+          "statement": "Deep lateral lugs are designed to provide traction in outdoor applications.",
+          "statement_es": "Los tacos laterales profundos están diseñados para proporcionar tracción en aplicaciones exteriores."
         },
         {
           "id": "xp800-tread-life",
@@ -89,7 +97,8 @@
           "scope": "family",
           "status": "approved",
           "page": 4,
-          "statement": "Extra-deep tread is designed to increase longevity and service life."
+          "statement": "Extra-deep tread is designed to increase longevity and service life.",
+          "statement_es": "La banda de rodamiento extra profunda está diseñada para aumentar la durabilidad y la vida útil."
         },
         {
           "id": "xp800-stability",
@@ -97,7 +106,8 @@
           "scope": "family",
           "status": "approved",
           "page": 4,
-          "statement": "Extra-wide tread width is designed to improve stability."
+          "statement": "Extra-wide tread width is designed to improve stability.",
+          "statement_es": "El ancho extra amplio de la banda de rodamiento está diseñado para mejorar la estabilidad."
         },
         {
           "id": "xp800-rim-protection",
@@ -105,7 +115,8 @@
           "scope": "family",
           "status": "approved",
           "page": 4,
-          "statement": "A protruding rim protector is designed to minimize wheel damage."
+          "statement": "A protruding rim protector is designed to minimize wheel damage.",
+          "statement_es": "Un protector de rin sobresaliente está diseñado para minimizar daños en la rueda."
         },
         {
           "id": "xp800-multipurpose",
@@ -113,7 +124,8 @@
           "scope": "variant:Multipurpose",
           "status": "approved",
           "page": 5,
-          "statement": "Multipurpose is the standard black compound intended for balanced overall performance."
+          "statement": "Multipurpose is the standard black compound intended for balanced overall performance.",
+          "statement_es": "Multipurpose es el compuesto negro estándar destinado a ofrecer un desempeño general equilibrado."
         },
         {
           "id": "xp800-non-marking",
@@ -121,7 +133,8 @@
           "scope": "variant:Non Marking",
           "status": "approved",
           "page": 5,
-          "statement": "Non Marking is a specialized compound designed to keep floors clean from tire marks."
+          "statement": "Non Marking is a specialized compound designed to keep floors clean from tire marks.",
+          "statement_es": "Non Marking es un compuesto especializado diseñado para mantener los pisos limpios de marcas de llanta."
         },
         {
           "id": "xp800-cost-comparison",
@@ -130,6 +143,7 @@
           "status": "conditional",
           "page": 6,
           "statement": "The catalog reports potential cost-of-ownership savings of up to 11 percent versus compared competitors in a medium-intensity scenario.",
+          "statement_es": "El catálogo reporta ahorros potenciales de hasta 11 % en costo de propiedad frente a los competidores comparados en un escenario de intensidad media.",
           "condition": "Present only as a catalog comparison in its tested scenario, never as guaranteed customer savings."
         }
       ]
@@ -150,7 +164,8 @@
           "scope": "family",
           "status": "approved",
           "page": 2,
-          "statement": "XP1000 is specifically designed for maximum intensity applications."
+          "statement": "XP1000 is specifically designed for maximum intensity applications.",
+          "statement_es": "XP1000 está diseñada específicamente para aplicaciones de máxima intensidad."
         },
         {
           "id": "xp1000-applications",
@@ -158,7 +173,8 @@
           "scope": "family",
           "status": "approved",
           "page": 2,
-          "statement": "The catalog identifies warehouse operations, port yards, shop floors and material-handling ground service as XP1000 applications."
+          "statement": "The catalog identifies warehouse operations, port yards, shop floors and material-handling ground service as XP1000 applications.",
+          "statement_es": "El catálogo identifica operaciones de almacén, patios portuarios, pisos de taller y servicio terrestre de manejo de materiales como aplicaciones de la XP1000."
         },
         {
           "id": "xp1000-indoor-handling",
@@ -166,7 +182,8 @@
           "scope": "family",
           "status": "approved",
           "page": 4,
-          "statement": "The central contact area and circumferential rib profile are designed to reduce vibration and improve indoor handling."
+          "statement": "The central contact area and circumferential rib profile are designed to reduce vibration and improve indoor handling.",
+          "statement_es": "La zona central de contacto y el perfil de nervadura circunferencial están diseñados para reducir la vibración y mejorar la maniobrabilidad en interiores."
         },
         {
           "id": "xp1000-outdoor-traction",
@@ -174,7 +191,8 @@
           "scope": "family",
           "status": "approved",
           "page": 4,
-          "statement": "Very deep lugs are designed to provide traction in outdoor applications."
+          "statement": "Very deep lugs are designed to provide traction in outdoor applications.",
+          "statement_es": "Los tacos muy profundos están diseñados para proporcionar tracción en aplicaciones exteriores."
         },
         {
           "id": "xp1000-service-life",
@@ -182,7 +200,8 @@
           "scope": "family",
           "status": "approved",
           "page": 4,
-          "statement": "The extra-deep tread profile is designed to maximize service life."
+          "statement": "The extra-deep tread profile is designed to maximize service life.",
+          "statement_es": "El perfil extra profundo de la banda de rodamiento está diseñado para maximizar la vida útil."
         },
         {
           "id": "xp1000-rim-protection",
@@ -190,7 +209,8 @@
           "scope": "family",
           "status": "approved",
           "page": 4,
-          "statement": "A protruding rim protector is designed to minimize wheel damage."
+          "statement": "A protruding rim protector is designed to minimize wheel damage.",
+          "statement_es": "Un protector de rin sobresaliente está diseñado para minimizar daños en la rueda."
         },
         {
           "id": "xp1000-cushion-layer",
@@ -198,7 +218,8 @@
           "scope": "family",
           "status": "approved",
           "page": 5,
-          "statement": "The middle cushion layer is designed to control internal temperature, absorb road roughness and reduce vibration for operator comfort."
+          "statement": "The middle cushion layer is designed to control internal temperature, absorb road roughness and reduce vibration for operator comfort.",
+          "statement_es": "La capa intermedia de amortiguación está diseñada para controlar la temperatura interna, absorber las irregularidades del terreno y reducir la vibración para la comodidad del operador."
         },
         {
           "id": "xp1000-prohd",
@@ -206,7 +227,8 @@
           "scope": "variant:ProHD",
           "status": "approved",
           "page": 6,
-          "statement": "ProHD is a specialized compound for heavy-duty applications."
+          "statement": "ProHD is a specialized compound for heavy-duty applications.",
+          "statement_es": "ProHD es un compuesto especializado para aplicaciones de trabajo pesado."
         },
         {
           "id": "xp1000-proenergy",
@@ -214,7 +236,8 @@
           "scope": "variant:ProEnergy",
           "status": "approved",
           "page": 6,
-          "statement": "ProEnergy is a cool-running compound intended for long-distance operations at consistently high speeds."
+          "statement": "ProEnergy is a cool-running compound intended for long-distance operations at consistently high speeds.",
+          "statement_es": "ProEnergy es un compuesto de baja generación de calor destinado a operaciones de larga distancia a velocidades altas de manera constante."
         },
         {
           "id": "xp1000-heatshield",
@@ -222,7 +245,8 @@
           "scope": "variant:Heatshield",
           "status": "approved",
           "page": 6,
-          "statement": "Heatshield is a flame-retardant compound designed to withstand high ambient temperatures."
+          "statement": "Heatshield is a flame-retardant compound designed to withstand high ambient temperatures.",
+          "statement_es": "Heatshield es un compuesto retardante de llama diseñado para soportar altas temperaturas ambientales."
         },
         {
           "id": "xp1000-non-marking",
@@ -230,7 +254,8 @@
           "scope": "variant:Non Marking",
           "status": "approved",
           "page": 6,
-          "statement": "Non Marking is a premium white compound designed to keep floors free from tire marks."
+          "statement": "Non Marking is a premium white compound designed to keep floors free from tire marks.",
+          "statement_es": "Non Marking es un compuesto blanco premium diseñado para mantener los pisos libres de marcas de llanta."
         },
         {
           "id": "xp1000-electrically-conducting",
@@ -238,7 +263,8 @@
           "scope": "variant:Electrically Conducting",
           "status": "approved",
           "page": 6,
-          "statement": "Electrically Conducting is a specialized black compound intended to enhance safety in flammable and explosive environments."
+          "statement": "Electrically Conducting is a specialized black compound intended to enhance safety in flammable and explosive environments.",
+          "statement_es": "Electrically Conducting es un compuesto negro especializado destinado a mejorar la seguridad en entornos inflamables y explosivos."
         },
         {
           "id": "xp1000-temperature-comparison",
@@ -247,6 +273,7 @@
           "status": "conditional",
           "page": 9,
           "statement": "The catalog reports 21 percent higher temperature resistance and 13 percent higher comfort versus the compared premium competitors.",
+          "statement_es": "El catálogo reporta 21 % más resistencia a la temperatura y 13 % más comodidad frente a los competidores premium comparados.",
           "condition": "Present only as a manufacturer catalog comparison and never as a universal performance guarantee."
         }
       ]
@@ -270,7 +297,8 @@
           "scope": "family",
           "status": "approved",
           "page": 2,
-          "statement": "PS800 is designed for medium intensity applications."
+          "statement": "PS800 is designed for medium intensity applications.",
+          "statement_es": "PS800 está diseñada para aplicaciones de intensidad media."
         },
         {
           "id": "ps800-indoor-outdoor",
@@ -278,7 +306,8 @@
           "scope": "family",
           "status": "approved",
           "page": 2,
-          "statement": "PS800 is intended for everyday work in both indoor and outdoor conditions."
+          "statement": "PS800 is intended for everyday work in both indoor and outdoor conditions.",
+          "statement_es": "PS800 está destinada al trabajo cotidiano tanto en interiores como en exteriores."
         },
         {
           "id": "ps800-pattern-options",
@@ -286,7 +315,8 @@
           "scope": "family",
           "status": "approved",
           "page": 3,
-          "statement": "PS800 is available in smooth and traction versions."
+          "statement": "PS800 is available in smooth and traction versions.",
+          "statement_es": "PS800 está disponible en versiones lisa y de tracción."
         },
         {
           "id": "ps800-smooth",
@@ -294,7 +324,8 @@
           "scope": "variant:Smooth",
           "status": "approved",
           "page": 3,
-          "statement": "The smooth version is intended to provide high performance in indoor applications."
+          "statement": "The smooth version is intended to provide high performance in indoor applications.",
+          "statement_es": "La versión lisa está destinada a ofrecer alto desempeño en aplicaciones interiores."
         },
         {
           "id": "ps800-traction",
@@ -302,7 +333,8 @@
           "scope": "variant:Traction",
           "status": "approved",
           "page": 3,
-          "statement": "The traction version is intended to provide grip in outdoor applications."
+          "statement": "The traction version is intended to provide grip in outdoor applications.",
+          "statement_es": "La versión de tracción está destinada a proporcionar agarre en aplicaciones exteriores."
         },
         {
           "id": "ps800-stability",
@@ -310,7 +342,8 @@
           "scope": "family",
           "status": "approved",
           "page": 3,
-          "statement": "Its wide and flat contact profile is designed to improve stability during load handling."
+          "statement": "Its wide and flat contact profile is designed to improve stability during load handling.",
+          "statement_es": "Su perfil de contacto ancho y plano está diseñado para mejorar la estabilidad durante el manejo de cargas."
         },
         {
           "id": "ps800-outdoor-lugs",
@@ -318,7 +351,8 @@
           "scope": "variant:Traction",
           "status": "approved",
           "page": 3,
-          "statement": "Deep tread blocks are designed to increase traction outdoors."
+          "statement": "Deep tread blocks are designed to increase traction outdoors.",
+          "statement_es": "Los bloques profundos de la banda de rodamiento están diseñados para aumentar la tracción en exteriores."
         },
         {
           "id": "ps800-tread-life",
@@ -326,7 +360,8 @@
           "scope": "family",
           "status": "approved",
           "page": 3,
-          "statement": "Deep durable tread is designed to increase tire life."
+          "statement": "Deep durable tread is designed to increase tire life.",
+          "statement_es": "La banda de rodamiento profunda y duradera está diseñada para aumentar la vida útil de la llanta."
         },
         {
           "id": "ps800-multipurpose",
@@ -334,7 +369,8 @@
           "scope": "variant:Multipurpose",
           "status": "approved",
           "page": 3,
-          "statement": "Multipurpose is a standard black compound intended for balanced overall performance."
+          "statement": "Multipurpose is a standard black compound intended for balanced overall performance.",
+          "statement_es": "Multipurpose es un compuesto negro estándar destinado a ofrecer un desempeño general equilibrado."
         },
         {
           "id": "ps800-non-marking",
@@ -342,7 +378,8 @@
           "scope": "variant:Non Marking",
           "status": "approved",
           "page": 3,
-          "statement": "Non Marking is a specialized compound designed to keep floors clean from tire marks."
+          "statement": "Non Marking is a specialized compound designed to keep floors clean from tire marks.",
+          "statement_es": "Non Marking es un compuesto especializado diseñado para mantener los pisos limpios de marcas de llanta."
         },
         {
           "id": "ps800-wet-traction",
@@ -350,7 +387,8 @@
           "scope": "variant:Traction",
           "status": "approved",
           "page": 4,
-          "statement": "The traction version is designed to provide grip outdoors on wet pavement."
+          "statement": "The traction version is designed to provide grip outdoors on wet pavement.",
+          "statement_es": "La versión de tracción está diseñada para proporcionar agarre en exteriores sobre pavimento mojado."
         },
         {
           "id": "ps800-life-comparison",
@@ -359,6 +397,7 @@
           "status": "conditional",
           "page": 4,
           "statement": "The catalog reports longer service life than compared competitors in medium-intensity applications.",
+          "statement_es": "El catálogo reporta una vida útil más larga que la de los competidores comparados en aplicaciones de intensidad media.",
           "condition": "Present only as a catalog comparison, not as a guaranteed service-life result."
         }
       ]
@@ -382,7 +421,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "PS1000 is a press-on solid tire."
+          "statement": "PS1000 is a press-on solid tire.",
+          "statement_es": "PS1000 es una llanta sólida tipo press-on."
         },
         {
           "id": "ps1000-intensity",
@@ -390,7 +430,8 @@
           "scope": "family",
           "status": "approved",
           "page": 7,
-          "statement": "PS1000 is positioned for maximum intensity applications."
+          "statement": "PS1000 is positioned for maximum intensity applications.",
+          "statement_es": "PS1000 está posicionada para aplicaciones de máxima intensidad."
         },
         {
           "id": "ps1000-pattern-options",
@@ -398,7 +439,8 @@
           "scope": "family",
           "status": "approved",
           "page": 3,
-          "statement": "PS1000 is offered in smooth and traction configurations."
+          "statement": "PS1000 is offered in smooth and traction configurations.",
+          "statement_es": "PS1000 se ofrece en configuraciones lisa y de tracción."
         },
         {
           "id": "ps1000-design-benefits",
@@ -406,7 +448,8 @@
           "scope": "family",
           "status": "approved",
           "page": 3,
-          "statement": "Its design uses a concave sidewall, deep wearable tread, wide contact area and cushion construction to support stability, comfort, wear resistance and heat control."
+          "statement": "Its design uses a concave sidewall, deep wearable tread, wide contact area and cushion construction to support stability, comfort, wear resistance and heat control.",
+          "statement_es": "Su diseño utiliza un costado cóncavo, una banda de rodamiento profunda con material de desgaste, una amplia área de contacto y una construcción amortiguada para favorecer la estabilidad, la comodidad, la resistencia al desgaste y el control térmico."
         },
         {
           "id": "ps1000-wet-traction",
@@ -414,7 +457,8 @@
           "scope": "variant:Traction",
           "status": "approved",
           "page": 4,
-          "statement": "The traction version uses deep lugs with radial sipes to improve traction in wet conditions."
+          "statement": "The traction version uses deep lugs with radial sipes to improve traction in wet conditions.",
+          "statement_es": "La versión de tracción utiliza tacos profundos con laminillas radiales para mejorar la tracción en condiciones húmedas."
         },
         {
           "id": "ps1000-pit-stop",
@@ -422,7 +466,8 @@
           "scope": "family",
           "status": "approved",
           "page": 5,
-          "statement": "PS1000 integrates the Trelleborg Pit Stop Line to indicate tire replacement timing."
+          "statement": "PS1000 integrates the Trelleborg Pit Stop Line to indicate tire replacement timing.",
+          "statement_es": "PS1000 integra la Trelleborg Pit Stop Line para indicar el momento de reemplazo de la llanta."
         },
         {
           "id": "ps1000-pit-stop-hours",
@@ -430,7 +475,8 @@
           "scope": "family",
           "status": "approved",
           "page": 5,
-          "statement": "The Pit Stop Line orange strip appears approximately 100 operating hours before tire replacement is needed."
+          "statement": "The Pit Stop Line orange strip appears approximately 100 operating hours before tire replacement is needed.",
+          "statement_es": "La franja naranja de la Pit Stop Line aparece aproximadamente 100 horas de operación antes de que sea necesario reemplazar la llanta."
         },
         {
           "id": "ps1000-multipurpose",
@@ -438,7 +484,8 @@
           "scope": "variant:Multipurpose",
           "status": "approved",
           "page": 3,
-          "statement": "Multipurpose is a premium two-stage compound with wear and rolling-resistance characteristics."
+          "statement": "Multipurpose is a premium two-stage compound with wear and rolling-resistance characteristics.",
+          "statement_es": "Multipurpose es un compuesto premium de dos etapas con características de desgaste y resistencia a la rodadura."
         },
         {
           "id": "ps1000-non-marking",
@@ -446,7 +493,8 @@
           "scope": "variant:Non Marking",
           "status": "approved",
           "page": 3,
-          "statement": "Non Marking is a premium white compound designed to keep floors clean from tire marks."
+          "statement": "Non Marking is a premium white compound designed to keep floors clean from tire marks.",
+          "statement_es": "Non Marking es un compuesto blanco premium diseñado para mantener los pisos limpios de marcas de llanta."
         },
         {
           "id": "ps1000-protex",
@@ -454,7 +502,8 @@
           "scope": "variant:ProTEX",
           "status": "approved",
           "page": 3,
-          "statement": "ProTEX is a non-marking compound with electrically conducting properties."
+          "statement": "ProTEX is a non-marking compound with electrically conducting properties.",
+          "statement_es": "ProTEX es un compuesto no manchante con propiedades de conductividad eléctrica."
         },
         {
           "id": "ps1000-electrically-conducting",
@@ -462,7 +511,8 @@
           "scope": "variant:Electrically Conducting",
           "status": "approved",
           "page": 3,
-          "statement": "Electrically Conducting is a specialized black compound intended to enhance safety in flammable and explosive environments."
+          "statement": "Electrically Conducting is a specialized black compound intended to enhance safety in flammable and explosive environments.",
+          "statement_es": "Electrically Conducting es un compuesto negro especializado destinado a mejorar la seguridad en entornos inflamables y explosivos."
         },
         {
           "id": "ps1000-prohd",
@@ -470,7 +520,8 @@
           "scope": "variant:ProHD",
           "status": "approved",
           "page": 3,
-          "statement": "ProHD is a specialized compound for heavy-duty applications."
+          "statement": "ProHD is a specialized compound for heavy-duty applications.",
+          "statement_es": "ProHD es un compuesto especializado para aplicaciones de trabajo pesado."
         }
       ]
     },
@@ -490,7 +541,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "T-900 is designed for demanding applications."
+          "statement": "T-900 is designed for demanding applications.",
+          "statement_es": "T-900 está diseñada para aplicaciones exigentes."
         },
         {
           "id": "t900-tread",
@@ -498,7 +550,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "Its block tread design and large footprint are designed to lower specific pressure and maximize tire life."
+          "statement": "Its block tread design and large footprint are designed to lower specific pressure and maximize tire life.",
+          "statement_es": "Su diseño de banda de rodamiento en bloques y su gran huella de contacto están diseñados para reducir la presión específica y maximizar la vida útil de la llanta."
         },
         {
           "id": "t900-impact-protection",
@@ -506,7 +559,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "Its shock-absorbing structure, reinforced sidewalls and rim guards are designed to protect against impact damage."
+          "statement": "Its shock-absorbing structure, reinforced sidewalls and rim guards are designed to protect against impact damage.",
+          "statement_es": "Su estructura de absorción de impactos, los costados reforzados y los protectores de rin están diseñados para proteger contra daños por impacto."
         },
         {
           "id": "t900-bead-stability",
@@ -514,7 +568,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "Its anti-slip bead wire system is designed to improve stability."
+          "statement": "Its anti-slip bead wire system is designed to improve stability.",
+          "statement_es": "Su sistema de alambre del talón antideslizante está diseñado para mejorar la estabilidad."
         },
         {
           "id": "t900-handling",
@@ -522,7 +577,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "The catalog describes greater stability for faster load positioning and improved cornering."
+          "statement": "The catalog describes greater stability for faster load positioning and improved cornering.",
+          "statement_es": "El catálogo describe una mayor estabilidad para posicionar las cargas más rápidamente y mejorar el comportamiento en curvas."
         },
         {
           "id": "t900-temperature",
@@ -530,7 +586,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "The tire is designed to maintain a low internal temperature during operation."
+          "statement": "The tire is designed to maintain a low internal temperature during operation.",
+          "statement_es": "La llanta está diseñada para mantener una temperatura interna baja durante la operación."
         }
       ]
     },
@@ -550,7 +607,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "TR-900 is a radial pneumatic tire."
+          "statement": "TR-900 is a radial pneumatic tire.",
+          "statement_es": "TR-900 es una llanta neumática radial."
         },
         {
           "id": "tr900-intensity",
@@ -558,7 +616,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "TR-900 is positioned for maximum intensity applications."
+          "statement": "TR-900 is positioned for maximum intensity applications.",
+          "statement_es": "TR-900 está posicionada para aplicaciones de máxima intensidad."
         },
         {
           "id": "tr900-radial-use",
@@ -566,7 +625,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "Its radial technology is intended for high-speed and long-distance applications."
+          "statement": "Its radial technology is intended for high-speed and long-distance applications.",
+          "statement_es": "Su tecnología radial está destinada a aplicaciones de alta velocidad y larga distancia."
         },
         {
           "id": "tr900-tread",
@@ -574,7 +634,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "Its block tread design and large footprint are designed to lower stress and maximize tire life."
+          "statement": "Its block tread design and large footprint are designed to lower stress and maximize tire life.",
+          "statement_es": "Su diseño de banda de rodamiento en bloques y su gran huella de contacto están diseñados para reducir los esfuerzos y maximizar la vida útil de la llanta."
         },
         {
           "id": "tr900-sidewall",
@@ -582,7 +643,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "Its reinforced sidewall is designed to reduce impact damage."
+          "statement": "Its reinforced sidewall is designed to reduce impact damage.",
+          "statement_es": "Su costado reforzado está diseñado para reducir los daños por impacto."
         },
         {
           "id": "tr900-energy",
@@ -590,7 +652,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "Low rolling resistance is used to improve energy efficiency."
+          "statement": "Low rolling resistance is used to improve energy efficiency.",
+          "statement_es": "La baja resistencia a la rodadura se utiliza para mejorar la eficiencia energética."
         },
         {
           "id": "tr900-wear",
@@ -598,7 +661,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "Wear-resistant technology is intended to extend tire life and reduce downtime."
+          "statement": "Wear-resistant technology is intended to extend tire life and reduce downtime.",
+          "statement_es": "La tecnología resistente al desgaste está destinada a prolongar la vida útil de la llanta y reducir el tiempo de inactividad."
         },
         {
           "id": "tr900-shock",
@@ -606,7 +670,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "The tire is designed to absorb shocks from obstacles."
+          "statement": "The tire is designed to absorb shocks from obstacles.",
+          "statement_es": "La llanta está diseñada para absorber impactos causados por obstáculos."
         },
         {
           "id": "tr900-rim",
@@ -614,7 +679,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "The design includes rim protection and anti-slip bead wires."
+          "statement": "The design includes rim protection and anti-slip bead wires.",
+          "statement_es": "El diseño incluye protección de rin y alambres de talón antideslizantes."
         },
         {
           "id": "tr900-stability",
@@ -622,7 +688,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "Enhanced stability is intended to support faster load positioning and cornering."
+          "statement": "Enhanced stability is intended to support faster load positioning and cornering.",
+          "statement_es": "La estabilidad mejorada está destinada a favorecer un posicionamiento más rápido de las cargas y el comportamiento en curvas."
         },
         {
           "id": "tr900-antistatic",
@@ -630,7 +697,8 @@
           "scope": "family",
           "status": "approved",
           "page": 1,
-          "statement": "Its anti-static characteristic is intended to reduce the risk of sparks in potentially explosive atmospheres."
+          "statement": "Its anti-static characteristic is intended to reduce the risk of sparks in potentially explosive atmospheres.",
+          "statement_es": "Su característica antiestática está destinada a reducir el riesgo de chispas en atmósferas potencialmente explosivas."
         }
       ]
     }
