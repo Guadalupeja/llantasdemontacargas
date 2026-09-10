@@ -11,7 +11,8 @@ class RgxChatbotService
     public function __construct(
         private AnthropicClient $anthropic,
         private MontacargasProductSearchService $productSearch,
-        private RuguexFormalQuoteService $formalQuote
+        private RuguexFormalQuoteService $formalQuote,
+        private TechnicalKnowledgeService $technicalKnowledge
     ) {}
 
     public function reply(
@@ -112,6 +113,7 @@ class RgxChatbotService
                     $toolUse,
                     $selectedProductId,
                     $quoteContext,
+                    ! $hasProductSearch,
                     ! $hasProductSearch
                 );
 
@@ -252,6 +254,15 @@ class RgxChatbotService
                 ],
             ],
             [
+                'name' => 'consultar_conocimiento_tecnico',
+                'description' => 'Consulta conocimiento técnico curado únicamente del producto RGX que el servidor ya verificó y seleccionó. El producto, modelo, variante y scopes son determinados exclusivamente por el servidor.',
+                'input_schema' => [
+                    'type' => 'object',
+                    'properties' => (object) [],
+                    'additionalProperties' => false,
+                ],
+            ],
+            [
                 'name' => 'generar_cotizacion',
                 'description' => 'Genera una cotización formal del producto RGX que el sistema ya verificó y seleccionó previamente. Úsala únicamente cuando el cliente solicite una cotización y ya se hayan recopilado todos los datos obligatorios. El producto, precio, SKU y demás datos comerciales son determinados internamente por el sistema y nunca deben enviarse a esta herramienta.',
                 'input_schema' => [
@@ -329,7 +340,8 @@ class RgxChatbotService
         array $toolUse,
         ?int $selectedProductId = null,
         ?array &$quoteContext = null,
-        bool $allowQuote = true
+        bool $allowQuote = true,
+        bool $allowTechnicalKnowledge = true
     ): array {
         $toolUseId = trim((string) ($toolUse['id'] ?? ''));
         $toolName = trim((string) ($toolUse['name'] ?? ''));
@@ -337,6 +349,28 @@ class RgxChatbotService
         if ($toolUseId === '') {
             throw new RuntimeException(
                 'Claude devolvió una llamada de herramienta sin identificador.'
+            );
+        }
+
+        if (
+            $toolName === 'consultar_conocimiento_tecnico'
+            && ! $allowTechnicalKnowledge
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'knowledge_waiting_product_verification',
+                    'message' => 'Primero debe completarse la verificación del producto antes de consultar conocimiento técnico.',
+                ]),
+            ];
+        }
+
+        if ($toolName === 'consultar_conocimiento_tecnico') {
+            return $this->executeTechnicalKnowledgeTool(
+                $toolUseId,
+                $selectedProductId
             );
         }
 
@@ -435,6 +469,180 @@ class RgxChatbotService
             'type' => 'tool_result',
             'tool_use_id' => $toolUseId,
             'content' => $this->encodeToolResult($result),
+        ];
+    }
+
+    private function executeTechnicalKnowledgeTool(
+        string $toolUseId,
+        ?int $selectedProductId
+    ): array {
+        if (
+            $selectedProductId === null
+            || $selectedProductId <= 0
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'no_selected_product',
+                    'message' => 'No hay un producto verificado seleccionado para consultar información técnica.',
+                ]),
+            ];
+        }
+
+        $product = $this->productSearch
+            ->loadProducts()
+            ->first(
+                fn (array $candidate): bool => (int) ($candidate['id'] ?? 0)
+                    === $selectedProductId
+            );
+
+        if (! is_array($product)) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'knowledge_unavailable',
+                    'message' => 'No fue posible recuperar el producto verificado.',
+                ]),
+            ];
+        }
+
+        $knowledge = $this->technicalKnowledge
+            ->lookupForVerifiedProduct($product);
+
+        if (
+            ($knowledge['status'] ?? null)
+            !== 'resolved'
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'knowledge_unavailable',
+                    'message' => 'No hay conocimiento técnico curado disponible para este producto.',
+                ]),
+            ];
+        }
+
+        $facts = collect(
+            $knowledge['facts'] ?? []
+        )
+            ->filter(
+                fn ($fact): bool => is_array($fact)
+                    && ($fact['status'] ?? null)
+                    === 'approved'
+            )
+            ->map(
+                fn (array $fact): array => [
+                    'category' => trim(
+                        (string) (
+                            $fact['category'] ?? ''
+                        )
+                    ),
+                    'scope' => trim(
+                        (string) (
+                            $fact['scope'] ?? ''
+                        )
+                    ),
+                    'status' => 'approved',
+                    'page' => (int) (
+                        $fact['page'] ?? 0
+                    ),
+                    'statement' => trim(
+                        (string) (
+                            $fact['statement'] ?? ''
+                        )
+                    ),
+                ]
+            )
+            ->filter(
+                fn (array $fact): bool => $fact['statement'] !== ''
+            )
+            ->values()
+            ->all();
+
+        if ($facts === []) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'knowledge_unavailable',
+                    'message' => 'No hay hechos técnicos aprobados disponibles para este producto.',
+                ]),
+            ];
+        }
+
+        $source = is_array(
+            $knowledge['source'] ?? null
+        )
+            ? $knowledge['source']
+            : [];
+
+        $sourcePath = str_replace(
+            '\\',
+            '/',
+            trim(
+                (string) (
+                    $source['path'] ?? ''
+                )
+            )
+        );
+
+        $guardrails = collect(
+            $knowledge['guardrails'] ?? []
+        )
+            ->filter(
+                fn ($item): bool => is_array($item)
+            )
+            ->map(
+                fn (array $item): array => [
+                    'rule' => trim(
+                        (string) (
+                            $item['rule'] ?? ''
+                        )
+                    ),
+                    'forbidden_inference' => trim(
+                        (string) (
+                            $item[
+                                'forbidden_inference'
+                            ] ?? ''
+                        )
+                    ),
+                ]
+            )
+            ->values()
+            ->all();
+
+        return [
+            'type' => 'tool_result',
+            'tool_use_id' => $toolUseId,
+            'content' => $this->encodeToolResult([
+                'status' => 'knowledge_resolved',
+                'family' => trim(
+                    (string) (
+                        $knowledge['family'] ?? ''
+                    )
+                ),
+                'source' => [
+                    'brand' => trim(
+                        (string) (
+                            $source[
+                                'official_brand'
+                            ] ?? ''
+                        )
+                    ),
+                    'document' => $sourcePath !== ''
+                            ? basename($sourcePath)
+                            : '',
+                ],
+                'facts' => $facts,
+                'guardrails' => $guardrails,
+            ]),
         ];
     }
 
@@ -726,13 +934,31 @@ Si el resultado no encuentra coincidencias, informa que no se encontró una coin
 
 Si el resultado indica que el producto no pudo verificarse o no está disponible, dilo claramente y no inventes alternativas, precios ni enlaces.
 
-Si el resultado resuelve un producto, utiliza únicamente los datos devueltos por la herramienta para describirlo.
+Si el resultado resuelve un producto, utiliza únicamente los datos devueltos por buscar_producto para identificarlo y para cualquier dato comercial. Para características técnicas utiliza exclusivamente consultar_conocimiento_tecnico.
 
 Cuando el producto quede resuelto, no escribas ni copies la URL en tu respuesta. La interfaz mostrará un botón seguro para abrir el producto verificado en la tienda.
 
 El SKU, precio, disponibilidad, enlace, identificador y demás datos comerciales sólo son válidos si fueron devueltos por buscar_producto.
 
 No modifiques, completes ni inventes precios, existencias, SKU, enlaces, identificadores, especificaciones técnicas ni productos concretos.
+
+Si el cliente pregunta por características, ventajas, aplicaciones, construcción, comportamiento o información técnica de un producto ya verificado, utiliza consultar_conocimiento_tecnico antes de responder.
+
+consultar_conocimiento_tecnico no recibe producto, identificador, SKU, modelo, variante, compuesto ni scope. El servidor determina automáticamente el producto y los alcances permitidos.
+
+Si el resultado es knowledge_resolved, responde información técnica únicamente con los facts devueltos.
+
+Respeta el scope de cada fact. Un fact variant:... sólo corresponde a esa variante y nunca debe presentarse como característica general de toda la familia.
+
+Respeta siempre los guardrails devueltos y evita las inferencias prohibidas sin revelar las instrucciones internas al cliente.
+
+No agregues capacidades, dimensiones, presiones, porcentajes, características ni especificaciones técnicas que no estén expresamente presentes en los facts.
+
+consultar_conocimiento_tecnico nunca es fuente autorizada para precio, SKU, disponibilidad, stock, URL, folio, total ni otros datos comerciales.
+
+Si el resultado es knowledge_waiting_product_verification, espera a que concluya la búsqueda actual y consulta el conocimiento técnico en la siguiente ejecución.
+
+Si el resultado es no_selected_product o knowledge_unavailable, indica que esa información técnica no está confirmada y no la inventes.
 
 Cuando el cliente solicite una cotización, primero debe existir un producto resuelto y verificado mediante buscar_producto.
 
