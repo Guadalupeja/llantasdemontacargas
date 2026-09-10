@@ -291,4 +291,73 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $payload['status']
         );
     }
+
+    public function test_empty_tool_input_is_replayed_as_json_object(): void
+    {
+        $service = $this->chatbot();
+
+        $reflection = new ReflectionClass($service);
+
+        $method = $reflection->getMethod(
+            'normalizeToolUseInputsForReplay'
+        );
+
+        $method->setAccessible(true);
+
+        $content = [
+            [
+                'type' => 'tool_use',
+                'id' => 'technical-empty',
+                'name' => 'consultar_conocimiento_tecnico',
+                'input' => [],
+            ],
+            [
+                'type' => 'tool_use',
+                'id' => 'search-with-input',
+                'name' => 'buscar_producto',
+                'input' => [
+                    'model' => 'XP1000',
+                ],
+            ],
+            [
+                'type' => 'text',
+                'text' => 'Texto normal.',
+            ],
+        ];
+
+        $normalized = $method->invoke(
+            $service,
+            $content
+        );
+
+        $this->assertIsObject(
+            $normalized[0]['input']
+        );
+
+        $this->assertSame(
+            [],
+            get_object_vars(
+                $normalized[0]['input']
+            )
+        );
+
+        $this->assertSame(
+            '{"input":{}}',
+            json_encode([
+                'input' => $normalized[0]['input'],
+            ])
+        );
+
+        $this->assertSame(
+            [
+                'model' => 'XP1000',
+            ],
+            $normalized[1]['input']
+        );
+
+        $this->assertSame(
+            $content[2],
+            $normalized[2]
+        );
+    }
 }

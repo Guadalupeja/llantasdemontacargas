@@ -89,7 +89,9 @@ class RgxChatbotService
 
             $messages[] = [
                 'role' => 'assistant',
-                'content' => $content,
+                'content' => $this->normalizeToolUseInputsForReplay(
+                    $content
+                ),
             ];
 
             $toolResults = [];
@@ -309,6 +311,32 @@ class RgxChatbotService
                 ],
             ],
         ];
+    }
+
+    private function normalizeToolUseInputsForReplay(
+        array $content
+    ): array {
+        return array_map(
+            function ($part) {
+                if (
+                    ! is_array($part)
+                    || ($part['type'] ?? null) !== 'tool_use'
+                ) {
+                    return $part;
+                }
+
+                if (
+                    array_key_exists('input', $part)
+                    && is_array($part['input'])
+                    && $part['input'] === []
+                ) {
+                    $part['input'] = (object) [];
+                }
+
+                return $part;
+            },
+            $content
+        );
     }
 
     private function extractToolUses(array $response): array
