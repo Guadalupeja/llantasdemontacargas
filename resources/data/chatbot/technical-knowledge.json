@@ -1,0 +1,638 @@
+{
+  "schema_version": 1,
+  "purpose": "Curated technical knowledge for the RGX chatbot. Commercial data must never be sourced from this file.",
+  "authority": {
+    "commercial": "WooCommerce / RGX verified product engine",
+    "product_matching": "resources/data/chatbot/montacargas-products.json",
+    "technical": "Official Trelleborg catalogs listed per family"
+  },
+  "rules": [
+    "Use only facts explicitly present in this file.",
+    "Never infer a family characteristic from a variant or compound.",
+    "Never use this file as authority for price, stock, SKU or product URL.",
+    "Conditional claims must preserve their stated comparison context.",
+    "Do not use flattened PDF tables as authority for numeric load capacities, dimensions or inflation pressures.",
+    "If the requested technical fact is not present, state that it is not confirmed instead of inventing it."
+  ],
+  "excluded_topics": [
+    {
+      "topic": "load_capacity_tables",
+      "reason": "Flattened PDF extraction can associate numeric values with the wrong tire size."
+    },
+    {
+      "topic": "dimension_tables",
+      "reason": "Requires a later structured table extraction and validation."
+    },
+    {
+      "topic": "inflation_pressure_tables",
+      "reason": "Requires a later structured table extraction and validation."
+    }
+  ],
+  "guardrails": [
+    {
+      "family": "PS1000",
+      "rule": "The phrase radial sipes describes tread geometry. It does not mean PS1000 is a radial tire.",
+      "forbidden_inference": "PS1000 is a radial tire."
+    },
+    {
+      "family": "TR-900",
+      "rule": "Anti-static properties may be described as reducing the risk of sparks in potentially explosive atmospheres.",
+      "forbidden_inference": "TR-900 is explosion proof."
+    }
+  ],
+  "families": {
+    "XP800": {
+      "match_models": [
+        "XP800"
+      ],
+      "source": {
+        "path": "public/pdfs/TWS_XP800_ENG.pdf",
+        "official_brand": "Trelleborg",
+        "pages": 8
+      },
+      "facts": [
+        {
+          "id": "xp800-intensity",
+          "category": "intensity",
+          "scope": "family",
+          "status": "approved",
+          "page": 2,
+          "statement": "XP800 is designed for medium intensity applications."
+        },
+        {
+          "id": "xp800-indoor-outdoor",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 4,
+          "statement": "XP800 tread design is intended to support both indoor and outdoor performance."
+        },
+        {
+          "id": "xp800-indoor-handling",
+          "category": "tread",
+          "scope": "family",
+          "status": "approved",
+          "page": 4,
+          "statement": "Its wide central contact area with zig-zag profile is designed to minimize vibration and improve handling indoors."
+        },
+        {
+          "id": "xp800-outdoor-traction",
+          "category": "tread",
+          "scope": "family",
+          "status": "approved",
+          "page": 4,
+          "statement": "Deep lateral lugs are designed to provide traction in outdoor applications."
+        },
+        {
+          "id": "xp800-tread-life",
+          "category": "durability",
+          "scope": "family",
+          "status": "approved",
+          "page": 4,
+          "statement": "Extra-deep tread is designed to increase longevity and service life."
+        },
+        {
+          "id": "xp800-stability",
+          "category": "stability",
+          "scope": "family",
+          "status": "approved",
+          "page": 4,
+          "statement": "Extra-wide tread width is designed to improve stability."
+        },
+        {
+          "id": "xp800-rim-protection",
+          "category": "protection",
+          "scope": "family",
+          "status": "approved",
+          "page": 4,
+          "statement": "A protruding rim protector is designed to minimize wheel damage."
+        },
+        {
+          "id": "xp800-multipurpose",
+          "category": "compound",
+          "scope": "variant:Multipurpose",
+          "status": "approved",
+          "page": 5,
+          "statement": "Multipurpose is the standard black compound intended for balanced overall performance."
+        },
+        {
+          "id": "xp800-non-marking",
+          "category": "compound",
+          "scope": "variant:Non Marking",
+          "status": "approved",
+          "page": 5,
+          "statement": "Non Marking is a specialized compound designed to keep floors clean from tire marks."
+        },
+        {
+          "id": "xp800-cost-comparison",
+          "category": "cost_of_ownership",
+          "scope": "comparison",
+          "status": "conditional",
+          "page": 6,
+          "statement": "The catalog reports potential cost-of-ownership savings of up to 11 percent versus compared competitors in a medium-intensity scenario.",
+          "condition": "Present only as a catalog comparison in its tested scenario, never as guaranteed customer savings."
+        }
+      ]
+    },
+    "XP1000": {
+      "match_models": [
+        "XP1000"
+      ],
+      "source": {
+        "path": "public/pdfs/Trelleborg-XP1000-EN.pdf",
+        "official_brand": "Trelleborg",
+        "pages": 12
+      },
+      "facts": [
+        {
+          "id": "xp1000-intensity",
+          "category": "intensity",
+          "scope": "family",
+          "status": "approved",
+          "page": 2,
+          "statement": "XP1000 is specifically designed for maximum intensity applications."
+        },
+        {
+          "id": "xp1000-applications",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 2,
+          "statement": "The catalog identifies warehouse operations, port yards, shop floors and material-handling ground service as XP1000 applications."
+        },
+        {
+          "id": "xp1000-indoor-handling",
+          "category": "tread",
+          "scope": "family",
+          "status": "approved",
+          "page": 4,
+          "statement": "The central contact area and circumferential rib profile are designed to reduce vibration and improve indoor handling."
+        },
+        {
+          "id": "xp1000-outdoor-traction",
+          "category": "tread",
+          "scope": "family",
+          "status": "approved",
+          "page": 4,
+          "statement": "Very deep lugs are designed to provide traction in outdoor applications."
+        },
+        {
+          "id": "xp1000-service-life",
+          "category": "durability",
+          "scope": "family",
+          "status": "approved",
+          "page": 4,
+          "statement": "The extra-deep tread profile is designed to maximize service life."
+        },
+        {
+          "id": "xp1000-rim-protection",
+          "category": "protection",
+          "scope": "family",
+          "status": "approved",
+          "page": 4,
+          "statement": "A protruding rim protector is designed to minimize wheel damage."
+        },
+        {
+          "id": "xp1000-cushion-layer",
+          "category": "temperature_comfort",
+          "scope": "family",
+          "status": "approved",
+          "page": 5,
+          "statement": "The middle cushion layer is designed to control internal temperature, absorb road roughness and reduce vibration for operator comfort."
+        },
+        {
+          "id": "xp1000-prohd",
+          "category": "compound",
+          "scope": "variant:ProHD",
+          "status": "approved",
+          "page": 6,
+          "statement": "ProHD is a specialized compound for heavy-duty applications."
+        },
+        {
+          "id": "xp1000-proenergy",
+          "category": "compound",
+          "scope": "variant:ProEnergy",
+          "status": "approved",
+          "page": 6,
+          "statement": "ProEnergy is a cool-running compound intended for long-distance operations at consistently high speeds."
+        },
+        {
+          "id": "xp1000-heatshield",
+          "category": "compound",
+          "scope": "variant:Heatshield",
+          "status": "approved",
+          "page": 6,
+          "statement": "Heatshield is a flame-retardant compound designed to withstand high ambient temperatures."
+        },
+        {
+          "id": "xp1000-non-marking",
+          "category": "compound",
+          "scope": "variant:Non Marking",
+          "status": "approved",
+          "page": 6,
+          "statement": "Non Marking is a premium white compound designed to keep floors free from tire marks."
+        },
+        {
+          "id": "xp1000-electrically-conducting",
+          "category": "compound",
+          "scope": "variant:Electrically Conducting",
+          "status": "approved",
+          "page": 6,
+          "statement": "Electrically Conducting is a specialized black compound intended to enhance safety in flammable and explosive environments."
+        },
+        {
+          "id": "xp1000-temperature-comparison",
+          "category": "comparison",
+          "scope": "comparison",
+          "status": "conditional",
+          "page": 9,
+          "statement": "The catalog reports 21 percent higher temperature resistance and 13 percent higher comfort versus the compared premium competitors.",
+          "condition": "Present only as a manufacturer catalog comparison and never as a universal performance guarantee."
+        }
+      ]
+    },
+    "PS800": {
+      "match_models": [
+        "PS800 SM PL",
+        "PS800 SM PL NM",
+        "PS800 TR MG",
+        "PS800 TR MG NM"
+      ],
+      "source": {
+        "path": "public/pdfs/Trelleborg-PS800-ES.pdf",
+        "official_brand": "Trelleborg",
+        "pages": 5
+      },
+      "facts": [
+        {
+          "id": "ps800-intensity",
+          "category": "intensity",
+          "scope": "family",
+          "status": "approved",
+          "page": 2,
+          "statement": "PS800 is designed for medium intensity applications."
+        },
+        {
+          "id": "ps800-indoor-outdoor",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 2,
+          "statement": "PS800 is intended for everyday work in both indoor and outdoor conditions."
+        },
+        {
+          "id": "ps800-pattern-options",
+          "category": "tread",
+          "scope": "family",
+          "status": "approved",
+          "page": 3,
+          "statement": "PS800 is available in smooth and traction versions."
+        },
+        {
+          "id": "ps800-smooth",
+          "category": "tread",
+          "scope": "variant:Smooth",
+          "status": "approved",
+          "page": 3,
+          "statement": "The smooth version is intended to provide high performance in indoor applications."
+        },
+        {
+          "id": "ps800-traction",
+          "category": "tread",
+          "scope": "variant:Traction",
+          "status": "approved",
+          "page": 3,
+          "statement": "The traction version is intended to provide grip in outdoor applications."
+        },
+        {
+          "id": "ps800-stability",
+          "category": "stability",
+          "scope": "family",
+          "status": "approved",
+          "page": 3,
+          "statement": "Its wide and flat contact profile is designed to improve stability during load handling."
+        },
+        {
+          "id": "ps800-outdoor-lugs",
+          "category": "tread",
+          "scope": "variant:Traction",
+          "status": "approved",
+          "page": 3,
+          "statement": "Deep tread blocks are designed to increase traction outdoors."
+        },
+        {
+          "id": "ps800-tread-life",
+          "category": "durability",
+          "scope": "family",
+          "status": "approved",
+          "page": 3,
+          "statement": "Deep durable tread is designed to increase tire life."
+        },
+        {
+          "id": "ps800-multipurpose",
+          "category": "compound",
+          "scope": "variant:Multipurpose",
+          "status": "approved",
+          "page": 3,
+          "statement": "Multipurpose is a standard black compound intended for balanced overall performance."
+        },
+        {
+          "id": "ps800-non-marking",
+          "category": "compound",
+          "scope": "variant:Non Marking",
+          "status": "approved",
+          "page": 3,
+          "statement": "Non Marking is a specialized compound designed to keep floors clean from tire marks."
+        },
+        {
+          "id": "ps800-wet-traction",
+          "category": "traction",
+          "scope": "variant:Traction",
+          "status": "approved",
+          "page": 4,
+          "statement": "The traction version is designed to provide grip outdoors on wet pavement."
+        },
+        {
+          "id": "ps800-life-comparison",
+          "category": "comparison",
+          "scope": "comparison",
+          "status": "conditional",
+          "page": 4,
+          "statement": "The catalog reports longer service life than compared competitors in medium-intensity applications.",
+          "condition": "Present only as a catalog comparison, not as a guaranteed service-life result."
+        }
+      ]
+    },
+    "PS1000": {
+      "match_models": [
+        "PS1000 SM FL MP",
+        "PS1000 SM FL NM",
+        "PS1000 TR GS MP",
+        "PS1000 TR GS NM"
+      ],
+      "source": {
+        "path": "public/pdfs/Trelleborg_PS1000_ENG-1.pdf",
+        "official_brand": "Trelleborg",
+        "pages": 8
+      },
+      "facts": [
+        {
+          "id": "ps1000-type",
+          "category": "type",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "PS1000 is a press-on solid tire."
+        },
+        {
+          "id": "ps1000-intensity",
+          "category": "intensity",
+          "scope": "family",
+          "status": "approved",
+          "page": 7,
+          "statement": "PS1000 is positioned for maximum intensity applications."
+        },
+        {
+          "id": "ps1000-pattern-options",
+          "category": "tread",
+          "scope": "family",
+          "status": "approved",
+          "page": 3,
+          "statement": "PS1000 is offered in smooth and traction configurations."
+        },
+        {
+          "id": "ps1000-design-benefits",
+          "category": "design",
+          "scope": "family",
+          "status": "approved",
+          "page": 3,
+          "statement": "Its design uses a concave sidewall, deep wearable tread, wide contact area and cushion construction to support stability, comfort, wear resistance and heat control."
+        },
+        {
+          "id": "ps1000-wet-traction",
+          "category": "traction",
+          "scope": "variant:Traction",
+          "status": "approved",
+          "page": 4,
+          "statement": "The traction version uses deep lugs with radial sipes to improve traction in wet conditions."
+        },
+        {
+          "id": "ps1000-pit-stop",
+          "category": "maintenance",
+          "scope": "family",
+          "status": "approved",
+          "page": 5,
+          "statement": "PS1000 integrates the Trelleborg Pit Stop Line to indicate tire replacement timing."
+        },
+        {
+          "id": "ps1000-pit-stop-hours",
+          "category": "maintenance",
+          "scope": "family",
+          "status": "approved",
+          "page": 5,
+          "statement": "The Pit Stop Line orange strip appears approximately 100 operating hours before tire replacement is needed."
+        },
+        {
+          "id": "ps1000-multipurpose",
+          "category": "compound",
+          "scope": "variant:Multipurpose",
+          "status": "approved",
+          "page": 3,
+          "statement": "Multipurpose is a premium two-stage compound with wear and rolling-resistance characteristics."
+        },
+        {
+          "id": "ps1000-non-marking",
+          "category": "compound",
+          "scope": "variant:Non Marking",
+          "status": "approved",
+          "page": 3,
+          "statement": "Non Marking is a premium white compound designed to keep floors clean from tire marks."
+        },
+        {
+          "id": "ps1000-protex",
+          "category": "compound",
+          "scope": "variant:ProTEX",
+          "status": "approved",
+          "page": 3,
+          "statement": "ProTEX is a non-marking compound with electrically conducting properties."
+        },
+        {
+          "id": "ps1000-electrically-conducting",
+          "category": "compound",
+          "scope": "variant:Electrically Conducting",
+          "status": "approved",
+          "page": 3,
+          "statement": "Electrically Conducting is a specialized black compound intended to enhance safety in flammable and explosive environments."
+        },
+        {
+          "id": "ps1000-prohd",
+          "category": "compound",
+          "scope": "variant:ProHD",
+          "status": "approved",
+          "page": 3,
+          "statement": "ProHD is a specialized compound for heavy-duty applications."
+        }
+      ]
+    },
+    "T-900": {
+      "match_models": [
+        "T-900"
+      ],
+      "source": {
+        "path": "public/pdfs/Trelleborg-Tires-T-900-EN.pdf",
+        "official_brand": "Trelleborg",
+        "pages": 2
+      },
+      "facts": [
+        {
+          "id": "t900-applications",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "T-900 is designed for demanding applications."
+        },
+        {
+          "id": "t900-tread",
+          "category": "tread",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its block tread design and large footprint are designed to lower specific pressure and maximize tire life."
+        },
+        {
+          "id": "t900-impact-protection",
+          "category": "protection",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its shock-absorbing structure, reinforced sidewalls and rim guards are designed to protect against impact damage."
+        },
+        {
+          "id": "t900-bead-stability",
+          "category": "stability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its anti-slip bead wire system is designed to improve stability."
+        },
+        {
+          "id": "t900-handling",
+          "category": "stability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "The catalog describes greater stability for faster load positioning and improved cornering."
+        },
+        {
+          "id": "t900-temperature",
+          "category": "temperature",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "The tire is designed to maintain a low internal temperature during operation."
+        }
+      ]
+    },
+    "TR-900": {
+      "match_models": [
+        "TR-900"
+      ],
+      "source": {
+        "path": "public/pdfs/Trelleborg-TR-900-A4-EN-Oct19-LR.pdf",
+        "official_brand": "Trelleborg",
+        "pages": 2
+      },
+      "facts": [
+        {
+          "id": "tr900-type",
+          "category": "type",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "TR-900 is a radial pneumatic tire."
+        },
+        {
+          "id": "tr900-intensity",
+          "category": "intensity",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "TR-900 is positioned for maximum intensity applications."
+        },
+        {
+          "id": "tr900-radial-use",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its radial technology is intended for high-speed and long-distance applications."
+        },
+        {
+          "id": "tr900-tread",
+          "category": "tread",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its block tread design and large footprint are designed to lower stress and maximize tire life."
+        },
+        {
+          "id": "tr900-sidewall",
+          "category": "protection",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its reinforced sidewall is designed to reduce impact damage."
+        },
+        {
+          "id": "tr900-energy",
+          "category": "energy",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Low rolling resistance is used to improve energy efficiency."
+        },
+        {
+          "id": "tr900-wear",
+          "category": "durability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Wear-resistant technology is intended to extend tire life and reduce downtime."
+        },
+        {
+          "id": "tr900-shock",
+          "category": "comfort",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "The tire is designed to absorb shocks from obstacles."
+        },
+        {
+          "id": "tr900-rim",
+          "category": "protection",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "The design includes rim protection and anti-slip bead wires."
+        },
+        {
+          "id": "tr900-stability",
+          "category": "stability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Enhanced stability is intended to support faster load positioning and cornering."
+        },
+        {
+          "id": "tr900-antistatic",
+          "category": "safety",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its anti-static characteristic is intended to reduce the risk of sparks in potentially explosive atmospheres."
+        }
+      ]
+    }
+  }
+}
