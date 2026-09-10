@@ -256,4 +256,189 @@ class TechnicalKnowledgeServiceTest extends TestCase
             $forbidden
         );
     }
+
+    public function test_verified_ps800_derives_explicit_non_marking_and_traction_scopes(): void
+    {
+        $service = app(
+            TechnicalKnowledgeService::class
+        );
+
+        $scopes = $service
+            ->deriveScopesForVerifiedProduct([
+                'model' => 'PS800 TR MG NM',
+                'function' => 'no_manchante',
+                'tread' => 'traccion',
+                'service' => 'medio',
+            ]);
+
+        $this->assertSame(
+            [
+                'variant:Non Marking',
+                'variant:Traction',
+            ],
+            $scopes
+        );
+    }
+
+    public function test_verified_ps800_smooth_scope_comes_from_explicit_tread(): void
+    {
+        $service = app(
+            TechnicalKnowledgeService::class
+        );
+
+        $scopes = $service
+            ->deriveScopesForVerifiedProduct([
+                'model' => 'PS800 SM PL',
+                'function' => 'estandar',
+                'tread' => 'lisa',
+                'service' => 'medio',
+            ]);
+
+        $this->assertSame(
+            ['variant:Smooth'],
+            $scopes
+        );
+
+        $this->assertNotContains(
+            'variant:Multipurpose',
+            $scopes
+        );
+    }
+
+    public function test_standard_function_does_not_infer_multipurpose(): void
+    {
+        $service = app(
+            TechnicalKnowledgeService::class
+        );
+
+        $scopes = $service
+            ->deriveScopesForVerifiedProduct([
+                'model' => 'XP800',
+                'function' => 'estandar',
+                'tread' => 'traccion',
+                'service' => 'medio',
+            ]);
+
+        $this->assertNotContains(
+            'variant:Multipurpose',
+            $scopes
+        );
+
+        $this->assertSame([], $scopes);
+    }
+
+    public function test_xp1000_does_not_create_unsupported_traction_scope(): void
+    {
+        $service = app(
+            TechnicalKnowledgeService::class
+        );
+
+        $scopes = $service
+            ->deriveScopesForVerifiedProduct([
+                'model' => 'XP1000',
+                'function' => 'no_manchante',
+                'tread' => 'traccion',
+                'service' => 'extra_pesado',
+            ]);
+
+        $this->assertSame(
+            ['variant:Non Marking'],
+            $scopes
+        );
+
+        $this->assertNotContains(
+            'variant:Traction',
+            $scopes
+        );
+
+        $this->assertNotContains(
+            'variant:ProHD',
+            $scopes
+        );
+    }
+
+    public function test_heavy_service_does_not_infer_prohd(): void
+    {
+        $service = app(
+            TechnicalKnowledgeService::class
+        );
+
+        $scopes = $service
+            ->deriveScopesForVerifiedProduct([
+                'model' => 'XP1000',
+                'function' => 'estandar',
+                'tread' => 'traccion',
+                'service' => 'extra_pesado',
+            ]);
+
+        $this->assertNotContains(
+            'variant:ProHD',
+            $scopes
+        );
+
+        $this->assertSame([], $scopes);
+    }
+
+    public function test_lookup_for_verified_product_exposes_only_supported_variant_facts(): void
+    {
+        $service = app(
+            TechnicalKnowledgeService::class
+        );
+
+        $result = $service
+            ->lookupForVerifiedProduct([
+                'model' => 'PS800 TR MG NM',
+                'function' => 'no_manchante',
+                'tread' => 'traccion',
+                'service' => 'medio',
+            ]);
+
+        $this->assertSame(
+            'resolved',
+            $result['status']
+        );
+
+        $ids = array_column(
+            $result['facts'],
+            'id'
+        );
+
+        $this->assertContains(
+            'ps800-non-marking',
+            $ids
+        );
+
+        $this->assertContains(
+            'ps800-traction',
+            $ids
+        );
+
+        $this->assertNotContains(
+            'ps800-multipurpose',
+            $ids
+        );
+
+        foreach ($result['facts'] as $fact) {
+            $this->assertSame(
+                'approved',
+                $fact['status']
+            );
+        }
+    }
+
+    public function test_verified_product_with_unknown_model_returns_no_scopes(): void
+    {
+        $service = app(
+            TechnicalKnowledgeService::class
+        );
+
+        $scopes = $service
+            ->deriveScopesForVerifiedProduct([
+                'model' => 'MODELO INVENTADO',
+                'function' => 'no_manchante',
+                'tread' => 'traccion',
+            ]);
+
+        $this->assertSame([], $scopes);
+    }
 }

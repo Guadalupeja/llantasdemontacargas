@@ -206,6 +206,127 @@ class TechnicalKnowledgeService
         ];
     }
 
+    public function lookupForVerifiedProduct(
+        array $product,
+        bool $includeConditional = false
+    ): array {
+        $model = trim((string) ($product['model'] ?? ''));
+
+        $scopes = $this->deriveScopesForVerifiedProduct(
+            $product
+        );
+
+        return $this->lookupByModel(
+            $model,
+            $scopes,
+            $includeConditional
+        );
+    }
+
+    public function deriveScopesForVerifiedProduct(
+        array $product
+    ): array {
+        $model = trim((string) ($product['model'] ?? ''));
+
+        $resolution = $this->resolveFamilyForModel(
+            $model
+        );
+
+        if ($resolution['status'] !== 'resolved') {
+            return [];
+        }
+
+        $knowledge = $this->loadKnowledge();
+
+        if ($knowledge === null) {
+            return [];
+        }
+
+        $familyName = $resolution['family'];
+
+        $family = $knowledge['families'][$familyName]
+            ?? null;
+
+        if (! is_array($family)) {
+            return [];
+        }
+
+        $availableScopes = collect(
+            $family['facts'] ?? []
+        )
+            ->filter(fn ($fact) => is_array($fact))
+            ->pluck('scope')
+            ->filter(
+                fn ($scope) => is_string($scope)
+                    && Str::startsWith(
+                        $scope,
+                        'variant:'
+                    )
+            )
+            ->unique()
+            ->values()
+            ->all();
+
+        $candidateScopes = [];
+
+        $function = $this->normalizeAttribute(
+            $product['function'] ?? null
+        );
+
+        if ($function === 'no manchante') {
+            $candidateScopes[] =
+                'variant:Non Marking';
+        }
+
+        $tread = $this->normalizeAttribute(
+            $product['tread'] ?? null
+        );
+
+        if ($tread === 'traccion') {
+            $candidateScopes[] =
+                'variant:Traction';
+        }
+
+        if ($tread === 'lisa') {
+            $candidateScopes[] =
+                'variant:Smooth';
+        }
+
+        return collect($candidateScopes)
+            ->filter(
+                fn (string $scope) => in_array(
+                    $scope,
+                    $availableScopes,
+                    true
+                )
+            )
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function normalizeAttribute(
+        mixed $value
+    ): string {
+        $normalized = Str::lower(
+            Str::ascii(trim((string) $value))
+        );
+
+        $normalized = str_replace(
+            ['_', '-'],
+            ' ',
+            $normalized
+        );
+
+        $normalized = preg_replace(
+            '/\s+/',
+            ' ',
+            $normalized
+        );
+
+        return trim($normalized);
+    }
+
     private function loadKnowledge(): ?array
     {
         if ($this->loaded) {
