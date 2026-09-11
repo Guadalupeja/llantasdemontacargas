@@ -33,7 +33,7 @@
     <div x-show="!open" x-transition class="flex items-center gap-3">
         <button
             type="button"
-            @click="open = true"
+            @click="openChat()"
             class="flex items-center gap-3 rounded-full bg-white px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.16)] ring-1 ring-black/5 transition hover:-translate-y-[1px] hover:shadow-[0_14px_34px_rgba(0,0,0,0.22)]"
         >
             <span class="text-sm font-semibold text-slate-700">
@@ -148,6 +148,7 @@
 
                                             <a
                                                 :href="message.product.url"
+                                                @click="trackStoreClick(message.product)"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 class="mt-3 block rounded-full bg-[#e76a3e] px-4 py-2.5 text-center text-sm font-bold text-white transition hover:opacity-90"
@@ -187,6 +188,62 @@
                                         >
                                             Ver cotizaci&oacute;n PDF &rarr;
                                         </a>
+                                    </div>
+                                </template>
+
+                                <template x-if="message.advisorContact">
+                                    <div class="mt-4 rounded-[16px] border border-slate-200 bg-white p-3">
+                                        <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                                            Atenci&oacute;n con especialista
+                                        </p>
+
+                                        <p
+                                            x-show="message.advisorContact.business_hours"
+                                            class="mt-2 text-sm leading-5 text-slate-600"
+                                        >
+                                            Puedes comunicarte ahora o dejar tus datos para que un especialista te contacte.
+                                        </p>
+
+                                        <p
+                                            x-show="!message.advisorContact.business_hours"
+                                            class="mt-2 text-sm leading-5 text-slate-600"
+                                        >
+                                            En este momento estamos fuera del horario de atenci&oacute;n inmediata. Puedes dejar tus datos para que un especialista te contacte posteriormente.
+                                        </p>
+
+                                        <div class="mt-3 space-y-2">
+                                            <a
+                                                x-show="message.advisorContact.business_hours && message.advisorContact.whatsapp_url"
+                                                :href="message.advisorContact.whatsapp_url"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="block rounded-full bg-[#25D366] px-4 py-2.5 text-center text-sm font-bold text-white transition hover:opacity-90"
+                                            >
+                                                WhatsApp
+                                            </a>
+
+                                            <a
+                                                x-show="message.advisorContact.business_hours && message.advisorContact.tel_url"
+                                                :href="message.advisorContact.tel_url"
+                                                class="block rounded-full border border-[#e76a3e] bg-white px-4 py-2.5 text-center text-sm font-bold text-[#e76a3e] transition hover:bg-[#fff4ef]"
+                                            >
+                                                Llamar
+                                                <span
+                                                    x-show="message.advisorContact.phone_display"
+                                                    x-text="message.advisorContact.phone_display"
+                                                ></span>
+                                            </a>
+
+                                            <button
+                                                x-show="message.advisorContact.callback_available"
+                                                type="button"
+                                                @click="requestAdvisorCallback()"
+                                                :disabled="isChatting"
+                                                class="w-full rounded-full bg-[#e76a3e] px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                                            >
+                                                Que me contacten
+                                            </button>
+                                        </div>
                                     </div>
                                 </template>
                             </div>
@@ -240,6 +297,7 @@
                         <span aria-hidden="true">➤</span>
                     </button>
                 </form>
+
             </div>
 
             {{-- Opciones --}}
@@ -254,64 +312,6 @@
                         ></button>
                     </template>
                 </div>
-            </template>
-
-            {{-- Formulario --}}
-            <template x-if="showSpecialistForm">
-                <form @submit.prevent="submitSpecialistForm()" class="mt-4 space-y-3">
-                    <input
-                        x-model="specialistForm.name"
-                        name="name"
-                        type="text"
-                        placeholder="Nombre"
-                        autocomplete="name"
-                        class="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#e76a3e]"
-                    >
-
-                    <input
-                        x-model="specialistForm.company"
-                        name="company"
-                        type="text"
-                        placeholder="Empresa"
-                        autocomplete="organization"
-                        class="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#e76a3e]"
-                    >
-
-                    <input
-                        x-model="specialistForm.phone"
-                        name="phone"
-                        type="text"
-                        placeholder="Teléfono"
-                        autocomplete="tel"
-                        class="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#e76a3e]"
-                    >
-
-                    <input
-                        x-model="specialistForm.email"
-                        name="email"
-                        type="email"
-                        placeholder="Correo"
-                        autocomplete="email"
-                        class="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#e76a3e]"
-                    >
-
-                    <textarea
-                        x-model="specialistForm.message"
-                        name="message"
-                        rows="4"
-                        placeholder="Cuéntanos la medida, el tipo de montacargas o el uso que le darás y te ayudamos a identificar la opción adecuada."
-                        class="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#e76a3e]"
-                    ></textarea>
-
-                    <button
-                        type="submit"
-                        :disabled="isSubmitting"
-                        class="w-full rounded-[16px] bg-[#e76a3e] px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                        <span x-show="!isSubmitting">Solicitar asesoría</span>
-                        <span x-show="isSubmitting">Enviando...</span>
-                    </button>
-                </form>
             </template>
 
             {{-- Resultados --}}
@@ -362,23 +362,7 @@
                             Empezar de nuevo
                         </button>
 
-                        <button
-                            type="button"
-                            @click="askSpecialistHelp('Si necesitas apoyo adicional, un asesor puede ayudarte a elegir la opción correcta.')"
-                            class="rounded-full bg-[#e76a3e] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
-                        >
-                            Hablar con un asesor
-                        </button>
 
-                        <template x-if="isBusinessHours()">
-                            <button
-                                type="button"
-                                @click="window.open(getWhatsAppUrl(), '_blank', 'noopener')"
-                                class="rounded-full border border-[#e76a3e] bg-white px-4 py-2 text-sm font-semibold text-[#e76a3e] transition hover:bg-[#fff4ef]"
-                            >
-                                Pregúntanos por WhatsApp
-                            </button>
-                        </template>
                     </div>
                 </div>
             </template>

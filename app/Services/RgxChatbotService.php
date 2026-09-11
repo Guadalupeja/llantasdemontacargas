@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Mail\ChatbotSpecialistRequestMail;
+use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
 use JsonException;
 use RuntimeException;
@@ -19,7 +21,8 @@ class RgxChatbotService
         string $message,
         array $history = [],
         ?int $selectedProductId = null,
-        ?array $existingQuoteContext = null
+        ?array $existingQuoteContext = null,
+        ?array $existingAdvisorContext = null
     ): array {
         $message = trim($message);
 
@@ -47,7 +50,18 @@ class RgxChatbotService
         $resolvedQuote = null;
         $productSearchStatus = null;
         $quoteContext = $existingQuoteContext;
+        $advisorContext = $existingAdvisorContext;
+        $resolvedAdvisorContact = null;
+        $resolvedAdvisorRequest = null;
+        $resolvedAdvisorAnswer = null;
         $technicalKnowledgeContext = null;
+
+        $allowAdvisorContact =
+            $this->messageRequestsAdvisor($message)
+            || (
+                is_array($advisorContext)
+                && ($advisorContext['contact_requested'] ?? false) === true
+            );
 
         for ($iteration = 0; $iteration < 3; $iteration++) {
             $response = $this->anthropic->messages([
@@ -75,6 +89,9 @@ class RgxChatbotService
                     'product_search_status' => $productSearchStatus,
                     'quote' => $resolvedQuote,
                     'quote_context' => $quoteContext,
+                    'advisor_context' => $advisorContext,
+                    'advisor_contact' => $resolvedAdvisorContact,
+                    'advisor_request' => $resolvedAdvisorRequest,
                     'model' => $response['model'] ?? null,
                     'usage' => $response['usage'] ?? null,
                 ];
@@ -126,7 +143,9 @@ class RgxChatbotService
                     ! $hasProductSearch,
                     ! $hasProductSearch,
                     $technicalKnowledgeContext,
-                    ! $hasProductSearch && ! $hasQuoteRequest
+                    ! $hasProductSearch && ! $hasQuoteRequest,
+                    $advisorContext,
+                    $allowAdvisorContact
                 );
 
                 $toolResults[] = $toolResult;
@@ -138,6 +157,19 @@ class RgxChatbotService
 
                 if (is_array($toolPayload)) {
                     $status = $toolPayload['status'] ?? null;
+
+                    if (in_array(
+                        $status,
+                        [
+                            'not_found',
+                            'unavailable',
+                            'knowledge_unavailable',
+                            'quote_error',
+                        ],
+                        true
+                    )) {
+                        $allowAdvisorContact = true;
+                    }
 
                     if ($status === 'technical_answer_resolved') {
                         $technicalAnswer = trim(
@@ -156,6 +188,9 @@ class RgxChatbotService
                             'product_search_status' => $productSearchStatus,
                             'quote' => $resolvedQuote,
                             'quote_context' => $quoteContext,
+                            'advisor_context' => $advisorContext,
+                            'advisor_contact' => $resolvedAdvisorContact,
+                            'advisor_request' => $resolvedAdvisorRequest,
                             'model' => $response['model'] ?? null,
                             'usage' => $response['usage'] ?? null,
                         ];
@@ -170,6 +205,37 @@ class RgxChatbotService
 
                     if ($status === 'knowledge_resolved') {
                         $technicalKnowledgeContext = $toolPayload;
+                    }
+
+                    if (
+                        $status === 'advisor_contact_available'
+                        && is_array($toolPayload['contact'] ?? null)
+                    ) {
+                        $resolvedAdvisorContact =
+                            $toolPayload['contact'];
+                    }
+
+                    if (
+                        in_array(
+                            $status,
+                            [
+                                'advisor_submitted',
+                                'advisor_already_submitted',
+                            ],
+                            true
+                        )
+                    ) {
+                        $resolvedAdvisorRequest = [
+                            'status' =>
+                                $status === 'advisor_submitted'
+                                    ? 'submitted'
+                                    : 'already_submitted',
+                        ];
+
+                        $resolvedAdvisorAnswer =
+                            $status === 'advisor_submitted'
+                                ? 'Listo. Tu solicitud de contacto fue enviada correctamente al equipo de RUGUEX para seguimiento.'
+                                : 'Tu solicitud de contacto ya había sido enviada al equipo de RUGUEX para seguimiento.';
                     }
 
                     if (
@@ -236,6 +302,21 @@ class RgxChatbotService
                         }
                     }
                 }
+            }
+
+            if ($resolvedAdvisorAnswer !== null) {
+                return [
+                    'answer' => $resolvedAdvisorAnswer,
+                    'product' => $resolvedProduct,
+                    'product_search_status' => $productSearchStatus,
+                    'quote' => $resolvedQuote,
+                    'quote_context' => $quoteContext,
+                    'advisor_context' => $advisorContext,
+                    'advisor_contact' => $resolvedAdvisorContact,
+                    'advisor_request' => $resolvedAdvisorRequest,
+                    'model' => $response['model'] ?? null,
+                    'usage' => $response['usage'] ?? null,
+                ];
             }
 
             $messages[] = [
@@ -331,6 +412,50 @@ class RgxChatbotService
                     'required' => [
                         'fact_ids',
                         'guardrail_ids',
+                    ],
+                    'additionalProperties' => false,
+                ],
+            ],
+            [
+                'name' => 'mostrar_contacto_asesor',
+                'description' => 'Obtiene del servidor los medios reales de contacto humano de RUGUEX. Úsala únicamente cuando el handoff humano ya esté autorizado: porque el cliente pidió explícitamente atención humana o porque una herramienta devolvió not_found, unavailable, knowledge_unavailable o quote_error y la necesidad ya no puede resolverse de forma segura dentro del chatbot. No la uses mientras todavía exista una aclaración o herramienta capaz de continuar resolviendo la solicitud.',
+                'input_schema' => [
+                    'type' => 'object',
+                    'properties' => (object) [],
+                    'additionalProperties' => false,
+                ],
+            ],
+            [
+                'name' => 'solicitar_asesoria',
+                'description' => 'Envía realmente una solicitud para que un asesor contacte al cliente. Úsala sólo después de haber mostrado las opciones de contacto y cuando el cliente haya elegido dejar sus datos para ser contactado.',
+                'input_schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'description' => 'Nombre proporcionado por el cliente.',
+                        ],
+                        'company' => [
+                            'type' => 'string',
+                            'description' => 'Empresa, sólo si fue proporcionada.',
+                        ],
+                        'phone' => [
+                            'type' => 'string',
+                            'description' => 'Teléfono proporcionado por el cliente.',
+                        ],
+                        'email' => [
+                            'type' => 'string',
+                            'description' => 'Correo electrónico proporcionado por el cliente.',
+                        ],
+                        'message' => [
+                            'type' => 'string',
+                            'description' => 'Motivo del contacto usando únicamente información proporcionada por el cliente.',
+                        ],
+                    ],
+                    'required' => [
+                        'name',
+                        'phone',
+                        'email',
                     ],
                     'additionalProperties' => false,
                 ],
@@ -442,7 +567,9 @@ class RgxChatbotService
         bool $allowQuote = true,
         bool $allowTechnicalKnowledge = true,
         ?array $technicalKnowledgeContext = null,
-        bool $allowTechnicalSelection = true
+        bool $allowTechnicalSelection = true,
+        ?array &$advisorContext = null,
+        bool $allowAdvisorContact = false
     ): array {
         $toolUseId = trim((string) ($toolUse['id'] ?? ''));
         $toolName = trim((string) ($toolUse['name'] ?? ''));
@@ -510,6 +637,22 @@ class RgxChatbotService
                 $toolUseId,
                 $toolUse['input'] ?? [],
                 $technicalKnowledgeContext
+            );
+        }
+
+        if ($toolName === 'mostrar_contacto_asesor') {
+            return $this->executeAdvisorContactTool(
+                $toolUseId,
+                $advisorContext,
+                $allowAdvisorContact
+            );
+        }
+
+        if ($toolName === 'solicitar_asesoria') {
+            return $this->executeAdvisorRequestTool(
+                $toolUseId,
+                $toolUse['input'] ?? [],
+                $advisorContext
             );
         }
 
@@ -1023,6 +1166,381 @@ class RgxChatbotService
             ]),
         ];
     }
+    private function messageRequestsAdvisor(string $message): bool
+    {
+        $normalized = mb_strtolower(trim($message));
+
+        $normalized = strtr($normalized, [
+            'á' => 'a',
+            'é' => 'e',
+            'í' => 'i',
+            'ó' => 'o',
+            'ú' => 'u',
+            'ü' => 'u',
+        ]);
+
+        foreach ([
+            'asesor',
+            'asesora',
+            'asesoria',
+            'atencion humana',
+            'hablar con alguien',
+            'hablar con una persona',
+            'hablar con un vendedor',
+            'hablar con una vendedora',
+            'hablar con un ejecutivo',
+            'hablar con una ejecutiva',
+            'whatsapp',
+            'su telefono',
+            'telefono de ustedes',
+            'telefono de ventas',
+            'telefono de ruguex',
+            'numero de ventas',
+            'numero de ruguex',
+            'llamenme',
+            'contactenme',
+            'quiero que me llamen',
+            'quiero que me contacten',
+            'necesito que me llamen',
+            'necesito que me contacten',
+            'prefiero que me llamen',
+            'prefiero que me contacten',
+        ] as $needle) {
+            if (str_contains($normalized, $needle)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function advisorBusinessHoursAvailable(): bool
+    {
+        $timezone = (string) config(
+            'app.timezone',
+            'America/Mexico_City'
+        );
+
+        $now = now($timezone);
+
+        $allowedDays = array_values(
+            array_map(
+                'intval',
+                (array) config(
+                    'whatsapp.schedule.days',
+                    [1, 2, 3, 4, 5]
+                )
+            )
+        );
+
+        if (! in_array(
+            $now->dayOfWeekIso,
+            $allowedDays,
+            true
+        )) {
+            return false;
+        }
+
+        $startHour = (int) config(
+            'whatsapp.schedule.start_hour',
+            9
+        );
+
+        $endHour = (int) config(
+            'whatsapp.schedule.end_hour',
+            18
+        );
+
+        if (
+            $startHour < 0
+            || $startHour > 23
+            || $endHour < 1
+            || $endHour > 24
+            || $endHour <= $startHour
+        ) {
+            return false;
+        }
+
+        $currentMinutes =
+            ($now->hour * 60)
+            + $now->minute;
+
+        return
+            $currentMinutes >= ($startHour * 60)
+            && $currentMinutes < ($endHour * 60);
+    }
+
+    private function executeAdvisorContactTool(
+        string $toolUseId,
+        ?array &$advisorContext,
+        bool $allowAdvisorContact
+    ): array {
+        if (! $allowAdvisorContact) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'advisor_contact_not_requested',
+                    'message' => 'La conversación todavía no requiere atención humana.',
+                ]),
+            ];
+        }
+
+        $businessHours =
+            $this->advisorBusinessHoursAvailable();
+
+        $advisorContext = [
+            'contact_requested' => true,
+            'submitted' => (bool) (
+                $advisorContext['submitted']
+                ?? false
+            ),
+        ];
+
+        if (! $businessHours) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'content' => $this->encodeToolResult([
+                    'status' => 'advisor_contact_available',
+                    'contact' => [
+                        'business_hours' => false,
+                        'phone' => null,
+                        'phone_display' => null,
+                        'whatsapp_url' => null,
+                        'callback_available' => true,
+                    ],
+                    'message' => 'La atención inmediata no está disponible en este momento. Ofrece únicamente que el cliente deje sus datos para ser contactado posteriormente.',
+                ]),
+            ];
+        }
+
+        $digits = preg_replace(
+            '/\D+/',
+            '',
+            (string) config(
+                'whatsapp.phone',
+                ''
+            )
+        );
+
+        if (
+            ! is_string($digits)
+            || strlen($digits) < 8
+            || strlen($digits) > 15
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'content' => $this->encodeToolResult([
+                    'status' => 'advisor_contact_available',
+                    'contact' => [
+                        'business_hours' => true,
+                        'phone' => null,
+                        'phone_display' => null,
+                        'whatsapp_url' => null,
+                        'callback_available' => true,
+                    ],
+                    'message' => 'No hay un medio de atención inmediata configurado. Ofrece que el cliente deje sus datos para ser contactado posteriormente.',
+                ]),
+            ];
+        }
+
+        $phone = '+'.$digits;
+        $phoneDisplay = $phone;
+
+        if (
+            strlen($digits) === 12
+            && str_starts_with(
+                $digits,
+                '52'
+            )
+        ) {
+            $phoneDisplay = sprintf(
+                '+52 %s %s %s',
+                substr($digits, 2, 3),
+                substr($digits, 5, 3),
+                substr($digits, 8, 4)
+            );
+        }
+
+        $whatsappUrl =
+            'https://wa.me/'
+            .$digits
+            .'?text='
+            .rawurlencode(
+                (string) config(
+                    'whatsapp.message',
+                    'Hola RUGUEX'
+                )
+            );
+
+        return [
+            'type' => 'tool_result',
+            'tool_use_id' => $toolUseId,
+            'content' => $this->encodeToolResult([
+                'status' => 'advisor_contact_available',
+                'contact' => [
+                    'business_hours' => true,
+                    'phone' => $phone,
+                    'phone_display' => $phoneDisplay,
+                    'whatsapp_url' => $whatsappUrl,
+                    'callback_available' => true,
+                ],
+                'message' => 'La atención humana está disponible. Puede elegir WhatsApp, llamada telefónica o dejar sus datos para ser contactado posteriormente.',
+            ]),
+        ];
+    }
+
+    private function executeAdvisorRequestTool(
+        string $toolUseId,
+        mixed $rawInput,
+        ?array &$advisorContext
+    ): array {
+        if (
+            ! is_array($advisorContext)
+            || ($advisorContext['contact_requested'] ?? false) !== true
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'advisor_submission_waiting_contact_options',
+                    'message' => 'Primero deben mostrarse los medios de contacto humano solicitados por el cliente.',
+                ]),
+            ];
+        }
+
+        if (($advisorContext['submitted'] ?? false) === true) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'content' => $this->encodeToolResult([
+                    'status' => 'advisor_already_submitted',
+                    'message' => 'La solicitud de contacto ya había sido enviada.',
+                ]),
+            ];
+        }
+
+        $input = is_array($rawInput)
+            ? $rawInput
+            : [];
+
+        $data = [
+            'name' => trim((string) ($input['name'] ?? '')),
+            'company' => trim((string) ($input['company'] ?? '')),
+            'phone' => trim((string) ($input['phone'] ?? '')),
+            'email' => mb_strtolower(
+                trim((string) ($input['email'] ?? ''))
+            ),
+            'message' => trim((string) ($input['message'] ?? '')),
+        ];
+
+        $missing = [];
+
+        foreach ([
+            'name',
+            'phone',
+            'email',
+        ] as $field) {
+            if ($data[$field] === '') {
+                $missing[] = $field;
+            }
+        }
+
+        if ($missing !== []) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'advisor_missing_required',
+                    'missing_fields' => $missing,
+                    'message' => 'Faltan datos obligatorios para solicitar contacto.',
+                ]),
+            ];
+        }
+
+        foreach ([
+            'name' => 120,
+            'company' => 120,
+            'phone' => 40,
+            'email' => 120,
+            'message' => 2000,
+        ] as $field => $limit) {
+            if (mb_strlen($data[$field]) > $limit) {
+                return [
+                    'type' => 'tool_result',
+                    'tool_use_id' => $toolUseId,
+                    'is_error' => true,
+                    'content' => $this->encodeToolResult([
+                        'status' => 'advisor_invalid_input',
+                        'message' => 'Uno de los datos excede la longitud permitida.',
+                    ]),
+                ];
+            }
+        }
+
+        if (
+            filter_var(
+                $data['email'],
+                FILTER_VALIDATE_EMAIL
+            ) === false
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'advisor_invalid_email',
+                    'message' => 'El correo electrónico no es válido.',
+                ]),
+            ];
+        }
+
+        try {
+            Mail::to(
+                'bshgroupcrm@gmail.com'
+            )->send(
+                new ChatbotSpecialistRequestMail([
+                    'name' => $data['name'],
+                    'company' => $data['company'],
+                    'phone' => $data['phone'],
+                    'email' => $data['email'],
+                    'message' => $data['message'],
+                    'type' => null,
+                    'measure' => null,
+                ])
+            );
+        } catch (\Throwable) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'advisor_error',
+                    'message' => 'No fue posible enviar la solicitud al asesor en este momento.',
+                ]),
+            ];
+        }
+
+        $advisorContext = [
+            'contact_requested' => true,
+            'submitted' => true,
+        ];
+
+        return [
+            'type' => 'tool_result',
+            'tool_use_id' => $toolUseId,
+            'content' => $this->encodeToolResult([
+                'status' => 'advisor_submitted',
+                'message' => 'La solicitud de contacto fue enviada correctamente.',
+            ]),
+        ];
+    }
+
     private function executeQuoteTool(
         string $toolUseId,
         mixed $input,
@@ -1398,6 +1916,28 @@ Nunca afirmes que una cotización fue enviada por correo, entregada, recibida, n
 No menciones, copies ni escribas el campo pdf_url en tu respuesta. Tampoco afirmes que existe un botón, enlace, descarga o elemento de interfaz para abrir el PDF. La interfaz gestionará el PDF independientemente cuando esa función esté disponible.
 
 No infieras efectos secundarios de generar_cotizacion. Sólo puedes afirmar acciones que estén expresamente confirmadas por el resultado de la herramienta.
+
+Tu objetivo principal es resolver la necesidad del cliente dentro del chatbot: identificar la llanta correcta, responder consultas técnicas con conocimiento autorizado y generar una cotización formal cuando corresponda.
+
+No ofrezcas contacto humano prematuramente. Mientras exista una pregunta de aclaración, información pendiente o una herramienta capaz de continuar resolviendo la solicitud, continúa atendiendo al cliente dentro del chatbot.
+
+Puedes escalar a un especialista únicamente en dos situaciones: (1) el cliente solicita explícitamente hablar con una persona, asesor o vendedor, usar WhatsApp, llamar por teléfono o que alguien lo contacte; o (2) una herramienta autorizada devuelve not_found, unavailable, knowledge_unavailable o quote_error y por ello la necesidad ya no puede resolverse de forma segura dentro del chatbot.
+
+Los estados needs_clarification, missing_required, no_selected_product, knowledge_waiting_product_verification, technical_selection_waiting_product_verification y technical_selection_waiting_quote NO son motivo para escalar. En esos casos continúa preguntando o completando el flujo necesario.
+
+Cuando el handoff esté autorizado, usa mostrar_contacto_asesor.
+
+Siempre usa mostrar_contacto_asesor antes de solicitar_asesoria. Los medios devueltos por mostrar_contacto_asesor son la única fuente autorizada para las opciones humanas.
+
+Respeta estrictamente business_hours del resultado de mostrar_contacto_asesor. Si business_hours es true, puedes ofrecer únicamente las opciones que el servidor haya devuelto: WhatsApp, llamada telefónica y dejar datos para ser contactado. Si business_hours es false, no ofrezcas WhatsApp ni llamada telefónica y ofrece únicamente dejar los datos para ser contactado posteriormente.
+
+Nunca calcules por tu cuenta el día, la hora ni el horario de atención. No inventes, reconstruyas ni modifiques números o enlaces.
+
+Si el cliente elige que lo contacten, recopila únicamente nombre, teléfono y correo electrónico. Empresa y mensaje son opcionales. Pregunta únicamente por los campos obligatorios que falten.
+
+Cuando ya tengas los datos obligatorios y el cliente haya elegido ser contactado, usa solicitar_asesoria.
+
+Nunca afirmes que registraste o enviaste una solicitud antes de recibir advisor_submitted o advisor_already_submitted.
 
 Nunca inventes ni modifiques folios, totales, precios, enlaces, estados de envío ni resultados de la cotización.
 

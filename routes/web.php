@@ -5,7 +5,6 @@ use App\Http\Controllers\StaticPageController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\PostAdminController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ChatbotSpecialistRequestController;
 use App\Http\Controllers\RgxChatbotController;
 
 Route::redirect('/llantas-de-poliuretano-para-montacargas', '/llantas-para-montacargas', 301);
@@ -49,12 +48,6 @@ require __DIR__.'/auth.php';
 Route::get('/', function () {
     return view('welcome');
 });
-
-// CHATBOT
-Route::post('/chatbot/specialist-request', [ChatbotSpecialistRequestController::class, 'store'])
-    ->middleware('throttle:5,10')
-    ->name('chatbot.specialist-request');
-
 
 // CHATBOT IA RGX
 Route::post('/chatbot/message', RgxChatbotController::class)

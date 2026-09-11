@@ -9,11 +9,14 @@ export default function forkliftChatbot(dataset, csrfToken) {
         results: [],
         fallbackImage: '/img/home/shop/650-10-500.png',
         csrfToken: csrfToken || '',
-        isSubmitting: false,
         isChatting: false,
         chatInput: '',
         claudeHistory: [],
         conversationId: null,
+        chatStartedTracked: false,
+        trackedProductKeys: [],
+        trackedQuoteKeys: [],
+        advisorSubmissionTracked: false,
 
         state: {
             type: null,
@@ -23,14 +26,6 @@ export default function forkliftChatbot(dataset, csrfToken) {
         rawProducts: dataset?.products ?? [],
         products: [],
 
-        showSpecialistForm: false,
-        specialistForm: {
-            name: '',
-            company: '',
-            phone: '',
-            email: '',
-            message: '',
-        },
 
         init() {
             this.products = this.normalizeProducts(this.rawProducts);
@@ -88,31 +83,158 @@ export default function forkliftChatbot(dataset, csrfToken) {
             ).sort((a, b) => a.localeCompare(b, 'es', { numeric: true, sensitivity: 'base' }));
         },
 
-        isBusinessHours() {
-            const now = new Date();
-            const day = now.getDay();
-            const hour = now.getHours();
-            const minute = now.getMinutes();
-            const currentTime = hour + (minute / 60);
+        pushChatbotEvent(event, product = null) {
+            const allowedEvents = [
+                'rgx_chatbot_started',
+                'rgx_chatbot_product_resolved',
+                'rgx_chatbot_store_click',
+                'rgx_chatbot_quote_generated',
+                'rgx_chatbot_specialist_submitted',
+            ];
 
-            return day >= 1 && day <= 5 && currentTime >= 9 && currentTime < 18;
-        },
+            if (!allowedEvents.includes(event)) {
+                return;
+            }
 
-        getWhatsAppUrl() {
-            const text = encodeURIComponent(
-                'Hola, necesito ayuda para encontrar la llanta correcta para mi montacargas.'
+            const payload = {
+                event,
+                brand: 'RUGUEX',
+                channel: 'Chatbot IA',
+            };
+
+            const productId = Number(
+                product?.product_id
             );
 
-            return `https://wa.me/528332395885?text=${text}`;
+            if (
+                Number.isInteger(productId)
+                && productId > 0
+                && [
+                    'rgx_chatbot_product_resolved',
+                    'rgx_chatbot_store_click',
+                    'rgx_chatbot_quote_generated',
+                ].includes(event)
+            ) {
+                payload.product_id = productId;
+            }
+
+            window.dataLayer =
+                window.dataLayer || [];
+
+            window.dataLayer.push(payload);
         },
 
-        bot(text, product = null, quote = null) {
+        trackChatStarted() {
+            if (this.chatStartedTracked) {
+                return;
+            }
+
+            this.chatStartedTracked = true;
+
+            this.pushChatbotEvent(
+                'rgx_chatbot_started'
+            );
+        },
+
+        openChat() {
+            this.open = true;
+            this.trackChatStarted();
+        },
+
+        trackProductResolved(product) {
+            if (!product) {
+                return;
+            }
+
+            const key = String(
+                product.product_id
+                || product.url
+                || ''
+            ).trim();
+
+            if (
+                !key
+                || this.trackedProductKeys.includes(key)
+            ) {
+                return;
+            }
+
+            this.trackedProductKeys.push(key);
+
+            this.pushChatbotEvent(
+                'rgx_chatbot_product_resolved',
+                product
+            );
+        },
+
+        trackQuoteGenerated(quote, product = null) {
+            const key = String(
+                quote?.folio || ''
+            ).trim();
+
+            if (
+                !key
+                || this.trackedQuoteKeys.includes(key)
+            ) {
+                return;
+            }
+
+            this.trackedQuoteKeys.push(key);
+
+            this.pushChatbotEvent(
+                'rgx_chatbot_quote_generated',
+                product
+            );
+        },
+
+        trackStoreClick(product) {
+            this.pushChatbotEvent(
+                'rgx_chatbot_store_click',
+                product
+            );
+        },
+
+        trackAdvisorSubmitted(advisorRequest) {
+            if (
+                this.advisorSubmissionTracked
+                || advisorRequest?.status !== 'submitted'
+            ) {
+                return;
+            }
+
+            this.advisorSubmissionTracked = true;
+
+            this.pushChatbotEvent(
+                'rgx_chatbot_specialist_submitted'
+            );
+        },
+
+        requestAdvisorCallback() {
+            if (this.isChatting) {
+                return;
+            }
+
+            this.chatInput =
+                'Prefiero dejar mis datos para que un especialista me contacte.';
+
+            this.sendChatMessage();
+        },
+
+        bot(
+            text,
+            product = null,
+            quote = null,
+            advisorContact = null,
+            advisorRequest = null
+        ) {
             this.messages.push({
                 id: crypto.randomUUID(),
                 role: 'bot',
                 text,
                 product,
                 quote,
+                advisorContact,
+                advisorRequest,
             });
         },
 
@@ -128,30 +250,29 @@ export default function forkliftChatbot(dataset, csrfToken) {
             this.step = 'chat';
             this.results = [];
             this.currentOptions = [];
-            this.showSpecialistForm = false;
-            this.isSubmitting = false;
             this.isChatting = false;
             this.chatInput = '';
             this.claudeHistory = [];
             this.conversationId = crypto.randomUUID();
+            this.chatStartedTracked = false;
+            this.trackedProductKeys = [];
+            this.trackedQuoteKeys = [];
+            this.advisorSubmissionTracked = false;
 
             this.state = {
                 type: null,
                 measure: null,
             };
 
-            this.specialistForm = {
-                name: '',
-                company: '',
-                phone: '',
-                email: '',
-                message: '',
-            };
 
             this.messages = [];
             this.bot(
                 'Hola. Soy el asistente virtual de RUGUEX. Cuéntame qué llanta necesitas y te ayudaré a identificar la información necesaria.'
             );
+
+            if (this.open) {
+                this.trackChatStarted();
+            }
         },
 
         resetAndClose() {
@@ -161,7 +282,6 @@ export default function forkliftChatbot(dataset, csrfToken) {
 
         askType() {
             this.step = 'type';
-            this.showSpecialistForm = false;
             this.bot('Para empezar, dime qué tipo de llanta necesitas.');
 
             this.currentOptions = [
@@ -172,12 +292,11 @@ export default function forkliftChatbot(dataset, csrfToken) {
 
         askMeasure() {
             this.step = 'measure';
-            this.showSpecialistForm = false;
 
             const measures = this.getAvailableMeasures(this.state.type);
 
             if (!measures.length) {
-                this.askSpecialistHelp('No encontré medidas configuradas para ese tipo. Te ayudo mejor con un asesor.');
+                this.continueInChat();
                 return;
             }
 
@@ -217,7 +336,6 @@ export default function forkliftChatbot(dataset, csrfToken) {
         showResults() {
             this.step = 'results';
             this.currentOptions = [];
-            this.showSpecialistForm = false;
 
             const exact = this.filteredProducts(this.state);
             const fallbackByType = this.filteredProducts({
@@ -237,25 +355,17 @@ export default function forkliftChatbot(dataset, csrfToken) {
             }
 
             this.results = [];
-            this.askSpecialistHelp('No encontré una opción exacta en este momento. Te ayudo a cotizarla con un asesor.');
+            this.continueInChat();
         },
 
-        askSpecialistHelp(customMessage = null) {
-            this.step = 'specialist';
+        continueInChat() {
+            this.step = 'chat';
             this.currentOptions = [];
-            this.showSpecialistForm = false;
+            this.results = [];
 
             this.bot(
-                customMessage ||
-                'Si no tienes clara la medida o el tipo de llanta, uno de nuestros asesores puede ayudarte a elegir la opción correcta.'
+                'No pude completar esa selección con esas opciones. Cuéntame en el chat qué tipo de llanta, medida, modelo o equipo tienes y lo revisamos contigo.'
             );
-
-            this.currentOptions = [
-                { value: 'form', label: 'Solicitar asesoría especializada' },
-                ...(this.isBusinessHours()
-                    ? [{ value: 'whatsapp', label: 'Atención inmediata por WhatsApp' }]
-                    : []),
-            ];
         },
 
         selectOption(option) {
@@ -263,7 +373,7 @@ export default function forkliftChatbot(dataset, csrfToken) {
 
             if (this.step === 'type') {
                 if (option.value === 'no_se') {
-                    this.askSpecialistHelp();
+                    this.continueInChat();
                     return;
                 }
 
@@ -274,7 +384,7 @@ export default function forkliftChatbot(dataset, csrfToken) {
 
             if (this.step === 'measure') {
                 if (option.value === 'no_se') {
-                    this.askSpecialistHelp('Si no tienes clara la medida, te ayudo a encontrar la opción correcta con un asesor.');
+                    this.continueInChat();
                     return;
                 }
 
@@ -283,18 +393,6 @@ export default function forkliftChatbot(dataset, csrfToken) {
                 return;
             }
 
-            if (this.step === 'specialist') {
-                if (option.value === 'form') {
-                    this.showSpecialistForm = true;
-                    this.bot('Déjanos tus datos y un asesor especializado te ayudará a identificar la opción adecuada para tu equipo.');
-                    this.currentOptions = [];
-                    return;
-                }
-
-                if (option.value === 'whatsapp') {
-                    window.open(this.getWhatsAppUrl(), '_blank', 'noopener');
-                }
-            }
         },
 
         async sendChatMessage() {
@@ -312,17 +410,38 @@ export default function forkliftChatbot(dataset, csrfToken) {
             this.step = 'chat';
             this.currentOptions = [];
             this.results = [];
-            this.showSpecialistForm = false;
 
             try {
-                const { answer, product, quote } = await sendRgxChatMessage({
+                const {
+                    answer,
+                    product,
+                    quote,
+                    advisorContact,
+                    advisorRequest,
+                } = await sendRgxChatMessage({
                     message,
                     history,
                     conversationId: this.conversationId,
                     csrfToken: this.csrfToken,
                 });
 
-                this.bot(answer, product, quote);
+                this.bot(
+                    answer,
+                    product,
+                    quote,
+                    advisorContact,
+                    advisorRequest
+                );
+
+                this.trackProductResolved(product);
+                this.trackQuoteGenerated(
+                    quote,
+                    product
+                );
+
+                this.trackAdvisorSubmitted(
+                    advisorRequest
+                );
 
                 this.claudeHistory.push(
                     {
@@ -346,58 +465,5 @@ export default function forkliftChatbot(dataset, csrfToken) {
             }
         },
 
-        async submitSpecialistForm() {
-            if (this.isSubmitting) return;
-
-            this.isSubmitting = true;
-
-            const payload = {
-                name: this.specialistForm.name?.trim() || '',
-                company: this.specialistForm.company?.trim() || '',
-                phone: this.specialistForm.phone?.trim() || '',
-                email: this.specialistForm.email?.trim() || '',
-                message: this.specialistForm.message?.trim() || '',
-                type: this.state.type,
-                measure: this.state.measure,
-            };
-
-            try {
-                const response = await fetch('/chatbot/specialist-request', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': this.csrfToken,
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    if (data.errors) {
-                        const firstError = Object.values(data.errors)?.[0]?.[0];
-                        throw new Error(firstError || data.message || 'No se pudo enviar la solicitud.');
-                    }
-
-                    throw new Error(data.message || 'No se pudo enviar la solicitud.');
-                }
-
-                this.showSpecialistForm = false;
-                this.bot('Gracias. Tu solicitud fue enviada correctamente y un asesor se pondrá en contacto contigo lo antes posible.');
-
-                this.specialistForm = {
-                    name: '',
-                    company: '',
-                    phone: '',
-                    email: '',
-                    message: '',
-                };
-            } catch (error) {
-                this.bot(error.message || 'Ocurrió un problema al enviar tu solicitud. Intenta nuevamente.');
-            } finally {
-                this.isSubmitting = false;
-            }
-        },
     };
 }

@@ -44,11 +44,19 @@ class RgxChatbotController extends Controller
         $conversationId = $validated['conversation_id'];
         $selectionKey = "rgx_chatbot.selected_products.{$conversationId}";
         $quoteKey = "rgx_chatbot.quotations.{$conversationId}";
+        $advisorKey = "rgx_chatbot.advisor.{$conversationId}";
 
         $existingQuoteContext = $request->session()->get($quoteKey);
 
         if (! is_array($existingQuoteContext)) {
             $existingQuoteContext = null;
+        }
+
+        $existingAdvisorContext =
+            $request->session()->get($advisorKey);
+
+        if (! is_array($existingAdvisorContext)) {
+            $existingAdvisorContext = null;
         }
 
         $selectedProductId = (int) $request->session()->get(
@@ -65,7 +73,8 @@ class RgxChatbotController extends Controller
                 $validated['message'],
                 $validated['history'] ?? [],
                 $selectedProductId,
-                $existingQuoteContext
+                $existingQuoteContext,
+                $existingAdvisorContext
             );
         } catch (Throwable $exception) {
             Log::error('RGX chatbot error', [
@@ -110,6 +119,17 @@ class RgxChatbotController extends Controller
                 );
             } else {
                 $request->session()->forget($quoteKey);
+            }
+        }
+
+        if (array_key_exists('advisor_context', $result)) {
+            if (is_array($result['advisor_context'])) {
+                $request->session()->put(
+                    $advisorKey,
+                    $result['advisor_context']
+                );
+            } else {
+                $request->session()->forget($advisorKey);
             }
         }
 
@@ -177,10 +197,119 @@ class RgxChatbotController extends Controller
             }
         }
 
+        $advisorContact = null;
+
+        if (is_array($result['advisor_contact'] ?? null)) {
+            $businessHours = (bool) (
+                $result['advisor_contact']
+                    ['business_hours']
+                ?? false
+            );
+
+            $callbackAvailable = (bool) (
+                $result['advisor_contact']
+                    ['callback_available']
+                ?? false
+            );
+
+            $advisorContact = [
+                'business_hours' => $businessHours,
+                'callback_available' => $callbackAvailable,
+                'phone' => null,
+                'phone_display' => null,
+                'tel_url' => null,
+                'whatsapp_url' => null,
+            ];
+
+            if ($businessHours) {
+                $phone = trim((string) (
+                    $result['advisor_contact']['phone']
+                    ?? ''
+                ));
+
+                $phoneDisplay = trim((string) (
+                    $result['advisor_contact']
+                        ['phone_display']
+                    ?? ''
+                ));
+
+                $whatsappUrl = trim((string) (
+                    $result['advisor_contact']
+                        ['whatsapp_url']
+                    ?? ''
+                ));
+
+                $scheme = strtolower(
+                    (string) parse_url(
+                        $whatsappUrl,
+                        PHP_URL_SCHEME
+                    )
+                );
+
+                $host = strtolower(
+                    (string) parse_url(
+                        $whatsappUrl,
+                        PHP_URL_HOST
+                    )
+                );
+
+                if (
+                    preg_match(
+                        '/^\+\d{8,15}$/',
+                        $phone
+                    ) === 1
+                    && filter_var(
+                        $whatsappUrl,
+                        FILTER_VALIDATE_URL
+                    )
+                    && $scheme === 'https'
+                    && $host === 'wa.me'
+                ) {
+                    $advisorContact['phone'] =
+                        $phone;
+
+                    $advisorContact['phone_display'] =
+                        $phoneDisplay !== ''
+                            ? $phoneDisplay
+                            : $phone;
+
+                    $advisorContact['tel_url'] =
+                        'tel:'.$phone;
+
+                    $advisorContact['whatsapp_url'] =
+                        $whatsappUrl;
+                }
+            }
+        }
+
+        $advisorRequest = null;
+
+        if (is_array($result['advisor_request'] ?? null)) {
+            $status = trim((string) (
+                $result['advisor_request']['status']
+                ?? ''
+            ));
+
+            if (in_array(
+                $status,
+                [
+                    'submitted',
+                    'already_submitted',
+                ],
+                true
+            )) {
+                $advisorRequest = [
+                    'status' => $status,
+                ];
+            }
+        }
+
         return response()->json([
             'answer' => $result['answer'],
             'product' => $product,
             'quote' => $quote,
+            'advisor_contact' => $advisorContact,
+            'advisor_request' => $advisorRequest,
         ]);
     }
 }

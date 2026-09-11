@@ -56,5 +56,7 @@ export async function sendRgxChatMessage({
         answer: data.answer,
         product: data.product ?? null,
         quote: data.quote ?? null,
+        advisorContact: data.advisor_contact ?? null,
+        advisorRequest: data.advisor_request ?? null,
     };
 }
