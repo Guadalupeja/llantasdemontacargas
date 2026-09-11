@@ -52,6 +52,7 @@ Route::get('/', function () {
 
 // CHATBOT
 Route::post('/chatbot/specialist-request', [ChatbotSpecialistRequestController::class, 'store'])
+    ->middleware('throttle:5,10')
     ->name('chatbot.specialist-request');
 
 

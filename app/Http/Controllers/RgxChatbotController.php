@@ -70,7 +70,6 @@ class RgxChatbotController extends Controller
         } catch (Throwable $exception) {
             Log::error('RGX chatbot error', [
                 'exception' => $exception::class,
-                'message' => $exception->getMessage(),
             ]);
 
             return response()->json([
