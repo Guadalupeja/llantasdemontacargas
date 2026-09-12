@@ -226,8 +226,7 @@ class RgxChatbotService
                         )
                     ) {
                         $resolvedAdvisorRequest = [
-                            'status' =>
-                                $status === 'advisor_submitted'
+                            'status' => $status === 'advisor_submitted'
                                     ? 'submitted'
                                     : 'already_submitted',
                         ];
@@ -339,6 +338,14 @@ class RgxChatbotService
                 'input_schema' => [
                     'type' => 'object',
                     'properties' => [
+                        'vertical' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'montacargas',
+                                'minicargadores',
+                            ],
+                            'description' => 'Vertical del equipo. Usa montacargas para llantas de montacargas y minicargadores para llantas de minicargador o skid steer.',
+                        ],
                         'type' => [
                             'type' => 'string',
                             'description' => 'Tipo de llanta indicado por el cliente, por ejemplo sólida, sólida con arillo, neumática o neumática radial.',
@@ -701,6 +708,7 @@ class RgxChatbotService
         $criteria = [];
 
         foreach ([
+            'vertical',
             'type',
             'measure',
             'model',
@@ -1038,6 +1046,7 @@ class RgxChatbotService
             'guardrails' => $guardrails,
         ];
     }
+
     /**
      * Construye una respuesta técnica únicamente con contenido
      * previamente autorizado por el servidor.
@@ -1057,8 +1066,7 @@ class RgxChatbotService
                 )
             )
             ->filter(
-                fn (string $statement): bool =>
-                    $statement !== ''
+                fn (string $statement): bool => $statement !== ''
             );
 
         $guardrails = collect(
@@ -1093,6 +1101,7 @@ class RgxChatbotService
                 )
                 ->implode(PHP_EOL);
     }
+
     /**
      * Resuelve una selección de IDs técnicos únicamente contra
      * el contexto autorizado previamente por el servidor.
@@ -1166,6 +1175,7 @@ class RgxChatbotService
             ]),
         ];
     }
+
     private function messageRequestsAdvisor(string $message): bool
     {
         $normalized = mb_strtolower(trim($message));
@@ -1792,7 +1802,8 @@ class RgxChatbotService
     private function systemPrompt(): string
     {
         return <<<'PROMPT'
-Eres el asistente virtual de RGX especializado en llantas industriales para montacargas.
+Eres el asistente virtual de RGX especializado en llantas industriales para
+montacargas y minicargadores.
 
 Responde siempre en español, de forma clara, profesional, breve y natural.
 
@@ -1805,9 +1816,20 @@ Los tres datos principales para iniciar una búsqueda son:
 - medida;
 - modelo o línea de la llanta.
 
-Ejemplos de modelos o líneas de llanta son XP800, XP1000, PS800, PS1000 y T-900.
+Ejemplos de modelos o líneas de llanta para montacargas son XP800, XP1000,
+PS800, PS1000 y T-900. Para minicargadores son ejemplos SK-05, SKS-900,
+BIG BOY y las líneas Brawler disponibles en el catálogo verificado.
 
-No confundas el modelo o línea de la llanta con la marca o modelo del montacargas.
+Cuando el cliente indique explícitamente que busca una llanta para
+minicargador o skid steer, usa vertical=minicargadores en buscar_producto.
+Cuando indique montacargas, usa vertical=montacargas.
+
+En este sitio, si el cliente no especifica el tipo de equipo y no existe
+ninguna señal clara de minicargador, conserva montacargas como contexto
+predeterminado.
+
+No confundas el modelo o línea de la llanta con la marca o modelo del
+equipo.
 
 Si falta alguno de los tres datos principales, pregunta únicamente por los que falten.
 

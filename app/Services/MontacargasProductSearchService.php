@@ -9,15 +9,24 @@ use Illuminate\Support\Str;
 class MontacargasProductSearchService
 {
     public function __construct(
-        private readonly RuguexFinalPriceService $finalPriceService
-    ) {
-    }
+        private readonly RuguexFinalPriceService $finalPriceService,
+        private readonly RuguexStoreCatalogService $storeCatalogService
+    ) {}
 
     /**
      * Carga los productos disponibles en el dataset local.
      */
-    public function loadProducts(): Collection
-    {
+    public function loadProducts(
+        ?string $vertical = 'montacargas'
+    ): Collection {
+        $normalizedVertical = $this->normalizeVertical($vertical)
+            ?? 'montacargas';
+
+        if ($normalizedVertical === 'minicargadores') {
+            return $this->storeCatalogService
+                ->loadMinicargadores();
+        }
+
         $path = resource_path('data/chatbot/montacargas-products.json');
 
         if (! File::exists($path)) {
@@ -41,6 +50,50 @@ class MontacargasProductSearchService
             ->filter(fn (array $product) => ! empty($product['id']))
             ->filter(fn (array $product) => ! empty($product['title']))
             ->values();
+    }
+
+    /**
+     * Normaliza el vertical comercial sin permitir que Claude
+     * invente una fuente de catálogo.
+     */
+    public function normalizeVertical(
+        ?string $value
+    ): ?string {
+        $text = $this->normalizeText($value);
+        $text = str_replace(
+            ['_', '-'],
+            ' ',
+            $text
+        );
+
+        if ($text === '') {
+            return null;
+        }
+
+        return match (true) {
+            in_array(
+                $text,
+                [
+                    'montacargas',
+                    'montacarga',
+                    'forklift',
+                ],
+                true
+            ) => 'montacargas',
+
+            in_array(
+                $text,
+                [
+                    'minicargador',
+                    'minicargadores',
+                    'skid steer',
+                    'bobcat',
+                ],
+                true
+            ) => 'minicargadores',
+
+            default => null,
+        };
     }
 
     /**
@@ -172,13 +225,16 @@ class MontacargasProductSearchService
     public function searchLocal(
         ?string $type = null,
         ?string $measure = null,
-        ?string $model = null
+        ?string $model = null,
+        ?string $vertical = 'montacargas'
     ): Collection {
         $normalizedType = $this->normalizeType($type);
         $normalizedMeasure = $this->normalizeMeasure($measure);
         $normalizedModel = $this->normalizeModel($model);
+        $normalizedVertical = $this->normalizeVertical($vertical)
+            ?? 'montacargas';
 
-        return $this->loadProducts()
+        return $this->loadProducts($normalizedVertical)
             ->filter(function (array $product) use (
                 $normalizedType,
                 $normalizedMeasure,
@@ -231,6 +287,7 @@ class MontacargasProductSearchService
             })
             ->values();
     }
+
     /**
      * Busca productos y valida sus datos comerciales
      * contra la API oficial de WooCommerce.
@@ -241,12 +298,14 @@ class MontacargasProductSearchService
     public function searchVerified(
         ?string $type = null,
         ?string $measure = null,
-        ?string $model = null
+        ?string $model = null,
+        ?string $vertical = 'montacargas'
     ): Collection {
         $candidates = $this->searchLocal(
             $type,
             $measure,
-            $model
+            $model,
+            $vertical
         );
 
         if ($candidates->isEmpty()) {
@@ -276,6 +335,7 @@ class MontacargasProductSearchService
             })
             ->values();
     }
+
     /**
      * Determina qué dato falta para distinguir varios candidatos.
      *
@@ -354,6 +414,7 @@ class MontacargasProductSearchService
 
             'rim_type' => match ($value) {
                 'estandar' => 'Estándar',
+                'estandar_solida' => 'Estándar sólida',
                 'loc' => 'LOC',
                 default => $value,
             },
@@ -375,11 +436,12 @@ class MontacargasProductSearchService
 
             'shifts' => $value === '1'
                 ? '1 turno'
-                : $value . ' turnos',
+                : $value.' turnos',
 
             default => $value,
         };
     }
+
     /**
      * Aplica la respuesta de una pregunta de desambiguación
      * sobre una colección de candidatos.
@@ -464,6 +526,15 @@ class MontacargasProductSearchService
 
                 in_array(
                     $words,
+                    [
+                        'estandar solida',
+                        'standard solid',
+                    ],
+                    true
+                ) => 'estandar_solida',
+
+                in_array(
+                    $words,
                     ['estandar', 'standard', 'normal'],
                     true
                 ) => 'estandar',
@@ -497,6 +568,7 @@ class MontacargasProductSearchService
             default => null,
         };
     }
+
     /**
      * Verifica comercialmente un producto ya resuelto.
      *
@@ -544,6 +616,7 @@ class MontacargasProductSearchService
 
         return $verified;
     }
+
     /**
      * Punto de entrada seguro para el chatbot.
      *
@@ -560,6 +633,12 @@ class MontacargasProductSearchService
     private function repairMisclassifiedModelCriteria(
         array $criteria
     ): array {
+        $vertical = $this->normalizeVertical(
+            isset($criteria['vertical'])
+                ? (string) $criteria['vertical']
+                : null
+        ) ?? 'montacargas';
+
         $model = trim(
             (string) ($criteria['model'] ?? '')
         );
@@ -598,15 +677,14 @@ class MontacargasProductSearchService
             return $criteria;
         }
 
-        $matchingModels = $this->loadProducts()
+        $matchingModels = $this->loadProducts($vertical)
             ->map(
                 fn (array $product): string => trim(
                     (string) ($product['model'] ?? '')
                 )
             )
             ->filter(
-                fn (string $candidate): bool =>
-                    $candidate !== ''
+                fn (string $candidate): bool => $candidate !== ''
                     && $this->normalizeModel(
                         $candidate
                     ) === $combinedModel
@@ -630,10 +708,20 @@ class MontacargasProductSearchService
         $criteria = $this->repairMisclassifiedModelCriteria(
             $criteria
         );
+
+        $vertical = $this->normalizeVertical(
+            isset($criteria['vertical'])
+                ? (string) $criteria['vertical']
+                : null
+        ) ?? 'montacargas';
+
+        $criteria['vertical'] = $vertical;
+
         $candidates = $this->searchLocal(
             isset($criteria['type']) ? (string) $criteria['type'] : null,
             isset($criteria['measure']) ? (string) $criteria['measure'] : null,
-            isset($criteria['model']) ? (string) $criteria['model'] : null
+            isset($criteria['model']) ? (string) $criteria['model'] : null,
+            $vertical
         );
 
         if ($candidates->isEmpty()) {
@@ -709,6 +797,9 @@ class MontacargasProductSearchService
     {
         return [
             'product_id' => (int) $product['woocommerce_id'],
+            'vertical' => (string) (
+                $product['vertical'] ?? 'montacargas'
+            ),
             'sku' => (string) ($product['sku'] ?? ''),
             'title' => (string) ($product['title'] ?? ''),
             'type' => $product['type'] ?? null,
@@ -727,4 +818,5 @@ class MontacargasProductSearchService
             'stock_status' => $product['stock_status'] ?? null,
             'is_in_stock' => (bool) ($product['is_in_stock'] ?? false),
         ];
-    }}
+    }
+}
