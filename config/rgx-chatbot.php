@@ -10,6 +10,40 @@ return [
         120
     ),
 
+
+    /*
+     * Sitios externos autorizados para consumir
+     * el RGX Assistant Core de servidor a servidor.
+     *
+     * Los tokens permanecen exclusivamente en
+     * variables de entorno del Core y del adaptador.
+     */
+    'core_sites' => [
+        'minicargadores' => [
+            'token' => env(
+                'RGX_CHATBOT_CORE_TOKEN_MINICARGADORES'
+            ),
+
+            'origin' =>
+                'llantasparaminicargadores.com',
+
+            'default_vertical' =>
+                'minicargadores',
+        ],
+
+        'bobcat' => [
+            'token' => env(
+                'RGX_CHATBOT_CORE_TOKEN_BOBCAT'
+            ),
+
+            'origin' =>
+                'llantasbobcat.com',
+
+            'default_vertical' =>
+                'minicargadores',
+        ],
+    ],
+
     'local_site' => [
         'id' => env(
             'RGX_CHATBOT_SITE_ID',

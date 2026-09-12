@@ -47,7 +47,7 @@ class RgxChatbotController extends Controller
         $conversationId =
             $validated['conversation_id'];
 
-        $site = $this->localSiteContext();
+        $site = $this->localSiteContext($request);
 
         $scope = $this->conversationScope(
             $request
@@ -291,11 +291,13 @@ class RgxChatbotController extends Controller
          * antiguas: la sesión conserva sólo
          * el scope opaco.
          */
-        $request->session()->forget([
-            "rgx_chatbot.selected_products.{$conversationId}",
-            "rgx_chatbot.quotations.{$conversationId}",
-            "rgx_chatbot.advisor.{$conversationId}",
-        ]);
+        if ($request->hasSession()) {
+            $request->session()->forget([
+                "rgx_chatbot.selected_products.{$conversationId}",
+                "rgx_chatbot.quotations.{$conversationId}",
+                "rgx_chatbot.advisor.{$conversationId}",
+            ]);
+        }
 
         $product = null;
 
@@ -474,13 +476,27 @@ class RgxChatbotController extends Controller
         ]);
     }
 
-    private function localSiteContext(): array
-    {
+    private function localSiteContext(
+        Request $request
+    ): array {
+        $trustedSite =
+            $request->attributes->get(
+                'rgx_site'
+            );
+
+        $trustedSite =
+            is_array($trustedSite)
+                ? $trustedSite
+                : [];
+
         $siteId = strtolower(
             trim(
-                (string) config(
-                    'rgx-chatbot.local_site.id',
-                    'montacargas'
+                (string) (
+                    $trustedSite['site_id']
+                    ?? config(
+                        'rgx-chatbot.local_site.id',
+                        'montacargas'
+                    )
                 )
             )
         );
@@ -495,9 +511,12 @@ class RgxChatbotController extends Controller
         }
 
         $siteOrigin = trim(
-            (string) config(
-                'rgx-chatbot.local_site.origin',
-                'llantasdemontacargas.com'
+            (string) (
+                $trustedSite['site_origin']
+                ?? config(
+                    'rgx-chatbot.local_site.origin',
+                    'llantasdemontacargas.com'
+                )
             )
         );
 
@@ -509,9 +528,12 @@ class RgxChatbotController extends Controller
         $defaultVertical =
             strtolower(
                 trim(
-                    (string) config(
-                        'rgx-chatbot.local_site.default_vertical',
-                        'montacargas'
+                    (string) (
+                        $trustedSite['default_vertical']
+                        ?? config(
+                            'rgx-chatbot.local_site.default_vertical',
+                            'montacargas'
+                        )
                     )
                 )
             );
@@ -540,6 +562,24 @@ class RgxChatbotController extends Controller
     private function conversationScope(
         Request $request
     ): string {
+        $trustedScope =
+            $request->attributes->get(
+                'rgx_scope'
+            );
+
+        if (
+            is_string($trustedScope)
+            && Str::isUuid($trustedScope)
+        ) {
+            return $trustedScope;
+        }
+
+        if (! $request->hasSession()) {
+            throw new \RuntimeException(
+                'No existe un scope confiable para el chatbot RGX.'
+            );
+        }
+
         $scope = $request
             ->session()
             ->get(
