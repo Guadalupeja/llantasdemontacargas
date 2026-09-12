@@ -22,7 +22,8 @@ class RgxChatbotService
         array $history = [],
         ?int $selectedProductId = null,
         ?array $existingQuoteContext = null,
-        ?array $existingAdvisorContext = null
+        ?array $existingAdvisorContext = null,
+        array $siteContext = []
     ): array {
         $message = trim($message);
 
@@ -65,7 +66,7 @@ class RgxChatbotService
 
         for ($iteration = 0; $iteration < 3; $iteration++) {
             $response = $this->anthropic->messages([
-                'system' => $this->systemPrompt(),
+                'system' => $this->systemPrompt($siteContext),
                 'messages' => $messages,
                 'tools' => $this->tools(),
                 'temperature' => 0.2,
@@ -1799,9 +1800,50 @@ class RgxChatbotService
         return trim(implode("\n", $text));
     }
 
-    private function systemPrompt(): string
-    {
-        return <<<'PROMPT'
+    private function systemPrompt(
+        array $siteContext = []
+    ): string {
+        $siteOrigin = trim(
+            (string) (
+                $siteContext['site_origin']
+                ?? 'llantasdemontacargas.com'
+            )
+        );
+
+        $defaultVertical = trim(
+            (string) (
+                $siteContext['default_vertical']
+                ?? 'montacargas'
+            )
+        );
+
+        if (! in_array(
+            $defaultVertical,
+            ['montacargas', 'minicargadores'],
+            true
+        )) {
+            $defaultVertical = 'montacargas';
+        }
+
+        $contextInstruction = match ($defaultVertical) {
+            'minicargadores' => "El sitio de origen es {$siteOrigin}. "
+                .'Su contexto predeterminado es minicargadores. '
+                .'Si el cliente no especifica el tipo de equipo '
+                .'y no existe una señal clara de montacargas, '
+                .'usa vertical=minicargadores. '
+                .'Una intención explícita de montacargas siempre '
+                .'prevalece sobre el contexto del sitio.',
+
+            default => "El sitio de origen es {$siteOrigin}. "
+                .'Su contexto predeterminado es montacargas. '
+                .'Si el cliente no especifica el tipo de equipo '
+                .'y no existe una señal clara de minicargador, '
+                .'usa vertical=montacargas. '
+                .'Una intención explícita de minicargador siempre '
+                .'prevalece sobre el contexto del sitio.',
+        };
+
+        $prompt = <<<'PROMPT'
 Eres el asistente virtual de RGX especializado en llantas industriales para
 montacargas y minicargadores.
 
@@ -1823,10 +1865,6 @@ BIG BOY y las líneas Brawler disponibles en el catálogo verificado.
 Cuando el cliente indique explícitamente que busca una llanta para
 minicargador o skid steer, usa vertical=minicargadores en buscar_producto.
 Cuando indique montacargas, usa vertical=montacargas.
-
-En este sitio, si el cliente no especifica el tipo de equipo y no existe
-ninguna señal clara de minicargador, conserva montacargas como contexto
-predeterminado.
 
 No confundas el modelo o línea de la llanta con la marca o modelo del
 equipo.
@@ -1856,6 +1894,18 @@ Si el resultado resuelve un producto, utiliza únicamente los datos devueltos po
 Cuando el producto quede resuelto, no escribas ni copies la URL en tu respuesta. La interfaz mostrará un botón seguro para abrir el producto verificado en la tienda.
 
 El SKU, precio, disponibilidad, enlace, identificador y demás datos comerciales sólo son válidos si fueron devueltos por buscar_producto.
+
+
+Los atributos type, measure, model, function, rim_type, tread, service y shifts
+devueltos por buscar_producto pueden mostrarse literalmente como datos de
+catálogo verificados, pero no deben convertirse por iniciativa propia en
+afirmaciones sobre desempeño, capacidad, beneficios, aplicaciones,
+durabilidad o comportamiento técnico.
+
+No afirmes que una llanta "está diseñada para", "es ideal para", "soporta",
+"tiene capacidad para" ni expresiones técnicas equivalentes basándote sólo
+en esos atributos. Para una explicación técnica utiliza exclusivamente
+consultar_conocimiento_tecnico cuando exista conocimiento autorizado.
 
 No modifiques, completes ni inventes precios, existencias, SKU, enlaces, identificadores, especificaciones técnicas ni productos concretos.
 
@@ -1969,5 +2019,9 @@ No simules procesos en segundo plano ni digas "un momento", "estoy buscando" o e
 
 Si no tienes información suficiente, dilo claramente.
 PROMPT;
+
+        return $prompt
+            ."\n\nCONTEXTO DEL SITIO:\n"
+            .$contextInstruction;
     }
 }
