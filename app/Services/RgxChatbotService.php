@@ -66,7 +66,11 @@ class RgxChatbotService
 
         for ($iteration = 0; $iteration < 3; $iteration++) {
             $response = $this->anthropic->messages([
-                'system' => $this->systemPrompt($siteContext),
+                'system' => $this->systemPrompt(
+                    $siteContext,
+                    $selectedProductId !== null
+                        && $selectedProductId > 0
+                ),
                 'messages' => $messages,
                 'tools' => $this->tools(),
                 'temperature' => 0.2,
@@ -1801,7 +1805,8 @@ class RgxChatbotService
     }
 
     private function systemPrompt(
-        array $siteContext = []
+        array $siteContext = [],
+        bool $hasSelectedProduct = false
     ): string {
         $siteOrigin = trim(
             (string) (
@@ -1842,6 +1847,20 @@ class RgxChatbotService
                 .'Una intención explícita de minicargador siempre '
                 .'prevalece sobre el contexto del sitio.',
         };
+
+        if ($hasSelectedProduct) {
+            $contextInstruction .= ' El servidor ya tiene un producto '
+                .'verificado seleccionado para esta conversación. '
+                .'Cuando el cliente se refiera a esa llanta, al mismo producto '
+                .'o al producto ya seleccionado, no vuelvas a pedir tipo, medida '
+                .'ni modelo sólo para identificarlo nuevamente. '
+                .'Si solicita información técnica de ese producto, usa '
+                .'consultar_conocimiento_tecnico. '
+                .'La herramienta resolverá internamente la identidad autorizada. '
+                .'No envíes, elijas, sustituyas ni infieras identificadores, SKU, '
+                .'modelo o variante de la selección; esas decisiones permanecen '
+                .'bajo control exclusivo del servidor.';
+        }
 
         $prompt = <<<'PROMPT'
 Eres el asistente virtual de RGX especializado en llantas industriales para

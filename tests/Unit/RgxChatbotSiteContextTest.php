@@ -91,4 +91,88 @@ class RgxChatbotSiteContextTest extends TestCase
             $prompt
         );
     }
+
+    public function test_prompt_knows_server_has_selected_product_without_exposing_identity(): void
+    {
+        $service = app(RgxChatbotService::class);
+
+        $method = new ReflectionMethod(
+            $service,
+            'systemPrompt'
+        );
+
+        $method->setAccessible(true);
+
+        $prompt = (string) $method->invoke(
+            $service,
+            [
+                'site_origin' =>
+                    'llantasdemontacargas.com',
+
+                'default_vertical' =>
+                    'montacargas',
+            ],
+            true
+        );
+
+        $this->assertStringContainsString(
+            'El servidor ya tiene un producto verificado seleccionado para esta conversación.',
+            $prompt
+        );
+
+        $this->assertStringContainsString(
+            'no vuelvas a pedir tipo, medida ni modelo',
+            $prompt
+        );
+
+        $this->assertStringContainsString(
+            'Si solicita información técnica de ese producto, usa consultar_conocimiento_tecnico.',
+            $prompt
+        );
+
+        $this->assertStringContainsString(
+            'bajo control exclusivo del servidor',
+            $prompt
+        );
+
+        $this->assertStringNotContainsString(
+            '6074',
+            $prompt
+        );
+
+        $this->assertStringNotContainsString(
+            'GX88542692',
+            $prompt
+        );
+    }
+
+    public function test_prompt_does_not_claim_server_selection_when_none_exists(): void
+    {
+        $service = app(RgxChatbotService::class);
+
+        $method = new ReflectionMethod(
+            $service,
+            'systemPrompt'
+        );
+
+        $method->setAccessible(true);
+
+        $prompt = (string) $method->invoke(
+            $service,
+            [
+                'site_origin' =>
+                    'llantasdemontacargas.com',
+
+                'default_vertical' =>
+                    'montacargas',
+            ],
+            false
+        );
+
+        $this->assertStringNotContainsString(
+            'verificado seleccionado para esta conversación.',
+            $prompt
+        );
+    }
+
 }
