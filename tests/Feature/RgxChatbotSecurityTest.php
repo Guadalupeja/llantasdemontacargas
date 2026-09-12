@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Services\RgxChatbotService;
+use App\Services\RgxChatbotStateStore;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -43,8 +45,7 @@ class RgxChatbotSecurityTest extends TestCase
 
         $payload = [
             'message' => 'Hola',
-            'conversation_id' =>
-                (string) Str::uuid(),
+            'conversation_id' => (string) Str::uuid(),
             'history' => [],
         ];
 
@@ -100,8 +101,7 @@ class RgxChatbotSecurityTest extends TestCase
             '/chatbot/message',
             [
                 'message' => 'Hola',
-                'conversation_id' =>
-                    (string) Str::uuid(),
+                'conversation_id' => (string) Str::uuid(),
                 'history' => [],
             ]
         );
@@ -109,8 +109,7 @@ class RgxChatbotSecurityTest extends TestCase
         $response
             ->assertStatus(502)
             ->assertJson([
-                'error' =>
-                    'El asistente no pudo responder en este momento.',
+                'error' => 'El asistente no pudo responder en este momento.',
             ]);
 
         Log::shouldHaveReceived('error')
@@ -119,7 +118,7 @@ class RgxChatbotSecurityTest extends TestCase
                 'RGX chatbot error',
                 Mockery::on(
                     function (array $context): bool {
-                        return (
+                        return
                             ($context['exception'] ?? null)
                                 === RuntimeException::class
                             && ! array_key_exists(
@@ -129,10 +128,229 @@ class RgxChatbotSecurityTest extends TestCase
                             && ! str_contains(
                                 json_encode($context),
                                 'SENSITIVE_UPSTREAM_RESPONSE'
-                            )
-                        );
+                            );
                     }
                 )
             );
+    }
+
+    public function test_chatbot_state_is_kept_out_of_session(): void
+    {
+        config()->set(
+            'rgx-chatbot.state_store',
+            'array'
+        );
+
+        Cache::store('array')->flush();
+
+        $conversationId =
+            (string) Str::uuid();
+
+        $scope =
+            (string) Str::uuid();
+
+        $calls = 0;
+
+        $chatbot = Mockery::mock(
+            RgxChatbotService::class
+        );
+
+        $chatbot
+            ->shouldReceive('reply')
+            ->twice()
+            ->andReturnUsing(
+                function (
+                    string $message,
+                    array $history,
+                    ?int $selectedProductId,
+                    ?array $quoteContext,
+                    ?array $advisorContext,
+                    array $siteContext
+                ) use (&$calls): array {
+                    $calls++;
+
+                    $this->assertSame(
+                        'llantasdemontacargas.com',
+                        $siteContext[
+                            'site_origin'
+                        ]
+                    );
+
+                    $this->assertSame(
+                        'montacargas',
+                        $siteContext[
+                            'default_vertical'
+                        ]
+                    );
+
+                    if ($calls === 1) {
+                        $this->assertNull(
+                            $selectedProductId
+                        );
+
+                        $this->assertNull(
+                            $quoteContext
+                        );
+
+                        $this->assertNull(
+                            $advisorContext
+                        );
+
+                        return [
+                            'answer' => 'Producto resuelto.',
+
+                            'product' => [
+                                'product_id' => 6074,
+
+                                'vertical' => 'montacargas',
+
+                                'sku' => 'TEST-6074',
+                            ],
+
+                            'product_search_status' => 'resolved',
+
+                            'quote' => null,
+
+                            'quote_context' => [
+                                'marker' => 'quote-context',
+                            ],
+
+                            'advisor_context' => [
+                                'contact_requested' => false,
+                            ],
+
+                            'advisor_contact' => null,
+
+                            'advisor_request' => null,
+                        ];
+                    }
+
+                    $this->assertSame(
+                        6074,
+                        $selectedProductId
+                    );
+
+                    $this->assertSame(
+                        'quote-context',
+                        $quoteContext[
+                            'marker'
+                        ]
+                    );
+
+                    $this->assertFalse(
+                        $advisorContext[
+                            'contact_requested'
+                        ]
+                    );
+
+                    return [
+                        'answer' => 'Estado recuperado.',
+
+                        'product' => null,
+
+                        'product_search_status' => null,
+
+                        'quote' => null,
+
+                        'quote_context' => $quoteContext,
+
+                        'advisor_context' => $advisorContext,
+
+                        'advisor_contact' => null,
+
+                        'advisor_request' => null,
+                    ];
+                }
+            );
+
+        $this->app->instance(
+            RgxChatbotService::class,
+            $chatbot
+        );
+
+        $payload = [
+            'message' => 'Hola',
+
+            'conversation_id' => $conversationId,
+
+            'history' => [],
+        ];
+
+        $this
+            ->withSession([
+                'rgx_chatbot.scope' => $scope,
+            ])
+            ->postJson(
+                '/chatbot/message',
+                $payload
+            )
+            ->assertOk();
+
+        $this
+            ->withSession([
+                'rgx_chatbot.scope' => $scope,
+            ])
+            ->postJson(
+                '/chatbot/message',
+                $payload
+            )
+            ->assertOk();
+
+        $this->assertSame(
+            2,
+            $calls
+        );
+
+        $state = app(
+            RgxChatbotStateStore::class
+        )->load(
+            'montacargas',
+            $conversationId,
+            $scope
+        );
+
+        $this->assertSame(
+            6074,
+            $state[
+                'selected_product'
+            ]['product_id']
+        );
+
+        $this->assertSame(
+            'montacargas',
+            $state[
+                'selected_product'
+            ]['vertical']
+        );
+
+        $this->assertSame(
+            'quote-context',
+            $state[
+                'quote_context'
+            ]['marker']
+        );
+
+        $this->assertSame(
+            $scope,
+            session('rgx_chatbot.scope')
+        );
+
+        $this->assertFalse(
+            session()->has(
+                "rgx_chatbot.selected_products.{$conversationId}"
+            )
+        );
+
+        $this->assertFalse(
+            session()->has(
+                "rgx_chatbot.quotations.{$conversationId}"
+            )
+        );
+
+        $this->assertFalse(
+            session()->has(
+                "rgx_chatbot.advisor.{$conversationId}"
+            )
+        );
     }
 }

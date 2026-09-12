@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Services\RgxChatbotService;
+use App\Services\RgxChatbotStateStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Throwable;
 
 class RgxChatbotController extends Controller
 {
     public function __invoke(
         Request $request,
-        RgxChatbotService $chatbot
+        RgxChatbotService $chatbot,
+        RgxChatbotStateStore $stateStore
     ): JsonResponse {
         $validated = $request->validate([
             'message' => [
@@ -41,32 +44,87 @@ class RgxChatbotController extends Controller
             ],
         ]);
 
-        $conversationId = $validated['conversation_id'];
-        $selectionKey = "rgx_chatbot.selected_products.{$conversationId}";
-        $quoteKey = "rgx_chatbot.quotations.{$conversationId}";
-        $advisorKey = "rgx_chatbot.advisor.{$conversationId}";
+        $conversationId =
+            $validated['conversation_id'];
 
-        $existingQuoteContext = $request->session()->get($quoteKey);
+        $site = $this->localSiteContext();
 
-        if (! is_array($existingQuoteContext)) {
-            $existingQuoteContext = null;
-        }
+        $scope = $this->conversationScope(
+            $request
+        );
 
-        $existingAdvisorContext =
-            $request->session()->get($advisorKey);
+        $state = $stateStore->load(
+            $site['site_id'],
+            $conversationId,
+            $scope
+        );
 
-        if (! is_array($existingAdvisorContext)) {
-            $existingAdvisorContext = null;
-        }
+        $selectedProductState =
+            is_array(
+                $state[
+                    'selected_product'
+                ] ?? null
+            )
+                ? $state[
+                    'selected_product'
+                ]
+                : null;
 
-        $selectedProductId = (int) $request->session()->get(
-            $selectionKey,
-            0
+        $selectedProductId = (int) (
+            $selectedProductState[
+                'product_id'
+            ]
+            ?? 0
         );
 
         if ($selectedProductId <= 0) {
             $selectedProductId = null;
         }
+
+        $existingQuoteContext =
+            is_array(
+                $state[
+                    'quote_context'
+                ] ?? null
+            )
+                ? $state[
+                    'quote_context'
+                ]
+                : null;
+
+        $existingAdvisorContext =
+            is_array(
+                $state[
+                    'advisor_context'
+                ] ?? null
+            )
+                ? $state[
+                    'advisor_context'
+                ]
+                : null;
+
+        $currentVertical =
+            is_string(
+                $state[
+                    'current_vertical'
+                ] ?? null
+            )
+            && in_array(
+                $state[
+                    'current_vertical'
+                ],
+                [
+                    'montacargas',
+                    'minicargadores',
+                ],
+                true
+            )
+                ? $state[
+                    'current_vertical'
+                ]
+                : $site[
+                    'default_vertical'
+                ];
 
         try {
             $result = $chatbot->reply(
@@ -74,7 +132,17 @@ class RgxChatbotController extends Controller
                 $validated['history'] ?? [],
                 $selectedProductId,
                 $existingQuoteContext,
-                $existingAdvisorContext
+                $existingAdvisorContext,
+                [
+                    'site_origin' => $site['site_origin'],
+
+                    /*
+                     * Si la conversación ya cambió
+                     * de vertical explícitamente,
+                     * conserva ese contexto.
+                     */
+                    'default_vertical' => $currentVertical,
+                ]
             );
         } catch (Throwable $exception) {
             Log::error('RGX chatbot error', [
@@ -86,18 +154,62 @@ class RgxChatbotController extends Controller
             ], 502);
         }
 
-        $searchStatus = $result['product_search_status'] ?? null;
+        $searchStatus =
+            $result[
+                'product_search_status'
+            ]
+            ?? null;
+
+        $selectedProduct =
+            $selectedProductState;
 
         if (
             $searchStatus === 'resolved'
-            && is_array($result['product'] ?? null)
+            && is_array(
+                $result['product']
+                    ?? null
+            )
         ) {
-            $productId = (int) ($result['product']['product_id'] ?? 0);
+            $productId = (int) (
+                $result['product']['product_id']
+                ?? 0
+            );
+
+            $productVertical =
+                strtolower(
+                    trim(
+                        (string) (
+                            $result[
+                                'product'
+                            ]['vertical']
+                            ?? ''
+                        )
+                    )
+                );
+
+            if (! in_array(
+                $productVertical,
+                [
+                    'montacargas',
+                    'minicargadores',
+                ],
+                true
+            )) {
+                $productVertical =
+                    $currentVertical;
+            }
 
             if ($productId > 0) {
-                $request->session()->put($selectionKey, $productId);
+                $selectedProduct = [
+                    'product_id' => $productId,
+
+                    'vertical' => $productVertical,
+                ];
+
+                $currentVertical =
+                    $productVertical;
             } else {
-                $request->session()->forget($selectionKey);
+                $selectedProduct = null;
             }
         } elseif (in_array(
             $searchStatus,
@@ -108,30 +220,82 @@ class RgxChatbotController extends Controller
             ],
             true
         )) {
-            $request->session()->forget($selectionKey);
+            $selectedProduct = null;
         }
 
-        if (array_key_exists('quote_context', $result)) {
-            if (is_array($result['quote_context'])) {
-                $request->session()->put(
-                    $quoteKey,
-                    $result['quote_context']
+        $quoteContext =
+            array_key_exists(
+                'quote_context',
+                $result
+            )
+            && is_array(
+                $result['quote_context']
+            )
+                ? $result[
+                    'quote_context'
+                ]
+                : (
+                    array_key_exists(
+                        'quote_context',
+                        $result
+                    )
+                        ? null
+                        : $existingQuoteContext
                 );
-            } else {
-                $request->session()->forget($quoteKey);
-            }
-        }
 
-        if (array_key_exists('advisor_context', $result)) {
-            if (is_array($result['advisor_context'])) {
-                $request->session()->put(
-                    $advisorKey,
-                    $result['advisor_context']
+        $advisorContext =
+            array_key_exists(
+                'advisor_context',
+                $result
+            )
+            && is_array(
+                $result[
+                    'advisor_context'
+                ]
+            )
+                ? $result[
+                    'advisor_context'
+                ]
+                : (
+                    array_key_exists(
+                        'advisor_context',
+                        $result
+                    )
+                        ? null
+                        : $existingAdvisorContext
                 );
-            } else {
-                $request->session()->forget($advisorKey);
-            }
-        }
+
+        $stateStore->put(
+            $site['site_id'],
+            $conversationId,
+            $scope,
+            [
+                'site_origin' => $site['site_origin'],
+
+                'default_vertical' => $site[
+                        'default_vertical'
+                    ],
+
+                'current_vertical' => $currentVertical,
+
+                'selected_product' => $selectedProduct,
+
+                'quote_context' => $quoteContext,
+
+                'advisor_context' => $advisorContext,
+            ]
+        );
+
+        /*
+         * Limpieza defensiva de las claves
+         * antiguas: la sesión conserva sólo
+         * el scope opaco.
+         */
+        $request->session()->forget([
+            "rgx_chatbot.selected_products.{$conversationId}",
+            "rgx_chatbot.quotations.{$conversationId}",
+            "rgx_chatbot.advisor.{$conversationId}",
+        ]);
 
         $product = null;
 
@@ -140,6 +304,7 @@ class RgxChatbotController extends Controller
                 $result['product'],
                 array_flip([
                     'product_id',
+                    'vertical',
                     'sku',
                     'title',
                     'measure',
@@ -201,14 +366,12 @@ class RgxChatbotController extends Controller
 
         if (is_array($result['advisor_contact'] ?? null)) {
             $businessHours = (bool) (
-                $result['advisor_contact']
-                    ['business_hours']
+                $result['advisor_contact']['business_hours']
                 ?? false
             );
 
             $callbackAvailable = (bool) (
-                $result['advisor_contact']
-                    ['callback_available']
+                $result['advisor_contact']['callback_available']
                 ?? false
             );
 
@@ -228,14 +391,12 @@ class RgxChatbotController extends Controller
                 ));
 
                 $phoneDisplay = trim((string) (
-                    $result['advisor_contact']
-                        ['phone_display']
+                    $result['advisor_contact']['phone_display']
                     ?? ''
                 ));
 
                 $whatsappUrl = trim((string) (
-                    $result['advisor_contact']
-                        ['whatsapp_url']
+                    $result['advisor_contact']['whatsapp_url']
                     ?? ''
                 ));
 
@@ -311,5 +472,95 @@ class RgxChatbotController extends Controller
             'advisor_contact' => $advisorContact,
             'advisor_request' => $advisorRequest,
         ]);
+    }
+
+    private function localSiteContext(): array
+    {
+        $siteId = strtolower(
+            trim(
+                (string) config(
+                    'rgx-chatbot.local_site.id',
+                    'montacargas'
+                )
+            )
+        );
+
+        if (
+            preg_match(
+                '/^[a-z0-9_-]{1,40}$/',
+                $siteId
+            ) !== 1
+        ) {
+            $siteId = 'montacargas';
+        }
+
+        $siteOrigin = trim(
+            (string) config(
+                'rgx-chatbot.local_site.origin',
+                'llantasdemontacargas.com'
+            )
+        );
+
+        if ($siteOrigin === '') {
+            $siteOrigin =
+                'llantasdemontacargas.com';
+        }
+
+        $defaultVertical =
+            strtolower(
+                trim(
+                    (string) config(
+                        'rgx-chatbot.local_site.default_vertical',
+                        'montacargas'
+                    )
+                )
+            );
+
+        if (! in_array(
+            $defaultVertical,
+            [
+                'montacargas',
+                'minicargadores',
+            ],
+            true
+        )) {
+            $defaultVertical =
+                'montacargas';
+        }
+
+        return [
+            'site_id' => $siteId,
+
+            'site_origin' => $siteOrigin,
+
+            'default_vertical' => $defaultVertical,
+        ];
+    }
+
+    private function conversationScope(
+        Request $request
+    ): string {
+        $scope = $request
+            ->session()
+            ->get(
+                'rgx_chatbot.scope'
+            );
+
+        if (
+            ! is_string($scope)
+            || ! Str::isUuid($scope)
+        ) {
+            $scope =
+                (string) Str::uuid();
+
+            $request
+                ->session()
+                ->put(
+                    'rgx_chatbot.scope',
+                    $scope
+                );
+        }
+
+        return $scope;
     }
 }
