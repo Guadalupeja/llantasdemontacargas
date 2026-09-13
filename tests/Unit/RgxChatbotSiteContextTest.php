@@ -66,6 +66,30 @@ class RgxChatbotSiteContextTest extends TestCase
         );
     }
 
+    public function test_bobcat_site_uses_minicargadores_context(): void
+    {
+        $prompt = $this->prompt([
+            'site_origin' => 'llantasbobcat.com',
+
+            'default_vertical' => 'minicargadores',
+        ]);
+
+        $this->assertStringContainsString(
+            'El sitio de origen es llantasbobcat.com.',
+            $prompt
+        );
+
+        $this->assertStringContainsString(
+            'Su contexto predeterminado es minicargadores.',
+            $prompt
+        );
+
+        $this->assertStringContainsString(
+            'usa vertical=minicargadores',
+            $prompt
+        );
+    }
+
     public function test_prompt_forbids_turning_catalog_attributes_into_technical_claims(): void
     {
         $prompt = preg_replace(
@@ -106,11 +130,9 @@ class RgxChatbotSiteContextTest extends TestCase
         $prompt = (string) $method->invoke(
             $service,
             [
-                'site_origin' =>
-                    'llantasdemontacargas.com',
+                'site_origin' => 'llantasdemontacargas.com',
 
-                'default_vertical' =>
-                    'montacargas',
+                'default_vertical' => 'montacargas',
             ],
             true
         );
@@ -160,11 +182,9 @@ class RgxChatbotSiteContextTest extends TestCase
         $prompt = (string) $method->invoke(
             $service,
             [
-                'site_origin' =>
-                    'llantasdemontacargas.com',
+                'site_origin' => 'llantasdemontacargas.com',
 
-                'default_vertical' =>
-                    'montacargas',
+                'default_vertical' => 'montacargas',
             ],
             false
         );
@@ -174,5 +194,4 @@ class RgxChatbotSiteContextTest extends TestCase
             $prompt
         );
     }
-
 }

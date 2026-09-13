@@ -27,11 +27,9 @@ class RgxCoreSiteAuthTest extends TestCase
                 'minicargadores' => [
                     'token' => $this->token,
 
-                    'origin' =>
-                        'llantasparaminicargadores.com',
+                    'origin' => 'llantasparaminicargadores.com',
 
-                    'default_vertical' =>
-                        'minicargadores',
+                    'default_vertical' => 'minicargadores',
                 ],
             ]
         );
@@ -40,14 +38,11 @@ class RgxCoreSiteAuthTest extends TestCase
     private function payload(): array
     {
         return [
-            'message' =>
-                'Necesito una llanta para minicargador.',
+            'message' => 'Necesito una llanta para minicargador.',
 
-            'conversation_id' =>
-                '550e8400-e29b-41d4-a716-446655440000',
+            'conversation_id' => '550e8400-e29b-41d4-a716-446655440000',
 
-            'scope' =>
-                '550e8400-e29b-41d4-a716-446655440001',
+            'scope' => '550e8400-e29b-41d4-a716-446655440001',
 
             'history' => [],
         ];
@@ -200,13 +195,11 @@ class RgxCoreSiteAuthTest extends TestCase
                 }
             )
             ->andReturn([
-                'answer' =>
-                    'Respuesta privada de prueba.',
+                'answer' => 'Respuesta privada de prueba.',
 
                 'product' => null,
 
-                'product_search_status' =>
-                    null,
+                'product_search_status' => null,
 
                 'quote' => null,
 
@@ -248,6 +241,98 @@ class RgxCoreSiteAuthTest extends TestCase
             );
     }
 
+    public function test_bobcat_token_derives_bobcat_minicargadores_context(): void
+    {
+        config()->set(
+            'rgx-chatbot.state_store',
+            'array'
+        );
+
+        Cache::store('array')->flush();
+
+        $bobcatToken =
+            'test-private-rgx-bobcat-token-000000000001';
+
+        config()->set(
+            'rgx-chatbot.core_sites',
+            [
+                'bobcat' => [
+                    'token' => $bobcatToken,
+
+                    'origin' => 'llantasbobcat.com',
+
+                    'default_vertical' => 'minicargadores',
+                ],
+            ]
+        );
+
+        $chatbot = Mockery::mock(
+            RgxChatbotService::class
+        );
+
+        $chatbot
+            ->shouldReceive('reply')
+            ->once()
+            ->withArgs(
+                function (
+                    string $message,
+                    array $history,
+                    ?int $selectedProductId,
+                    ?array $quoteContext,
+                    ?array $advisorContext,
+                    array $siteContext
+                ): bool {
+                    $this->assertSame(
+                        'llantasbobcat.com',
+                        $siteContext['site_origin']
+                    );
+
+                    $this->assertSame(
+                        'minicargadores',
+                        $siteContext[
+                            'default_vertical'
+                        ]
+                    );
+
+                    return true;
+                }
+            )
+            ->andReturn([
+                'answer' => 'Respuesta Bobcat de prueba.',
+
+                'product' => null,
+
+                'product_search_status' => null,
+
+                'quote' => null,
+
+                'quote_context' => null,
+
+                'advisor_context' => null,
+
+                'advisor_contact' => null,
+
+                'advisor_request' => null,
+            ]);
+
+        $this->app->instance(
+            RgxChatbotService::class,
+            $chatbot
+        );
+
+        $this
+            ->withToken($bobcatToken)
+            ->postJson(
+                '/api/rgx-assistant/v1/message',
+                $this->payload()
+            )
+            ->assertOk()
+            ->assertJsonPath(
+                'answer',
+                'Respuesta Bobcat de prueba.'
+            );
+    }
+
     public function test_duplicate_server_token_fails_closed(): void
     {
         $this->configureCore();
@@ -257,11 +342,9 @@ class RgxCoreSiteAuthTest extends TestCase
             [
                 'token' => $this->token,
 
-                'origin' =>
-                    'llantasbobcat.com',
+                'origin' => 'llantasbobcat.com',
 
-                'default_vertical' =>
-                    'minicargadores',
+                'default_vertical' => 'minicargadores',
             ]
         );
 
