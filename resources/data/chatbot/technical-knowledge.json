@@ -731,6 +731,216 @@
           "statement_es": "Su bajo índice de huecos y la profundidad mejorada del dibujo están orientados a incrementar la vida del neumático."
         }
       ]
+    },
+    "Brawler HPS": {
+      "match_models": [
+        "Brawler HPS",
+        "Brawler HPS Solidflex",
+        "Brawler HPS SS SF",
+        "Brawler HPS SS SF TR TFT",
+        "Brawler HPS SS SM",
+        "Brawler HPS SS SF TR-A",
+        "Brawler HPS SS SM-A",
+        "Brawler HPS SS SF SM-A"
+      ],
+      "source": {
+        "path": "llantasparaminicargadores/storage/app/public/originals/fichas-tecnicas/brawler-hps-solidflex.pdf",
+        "official_brand": "Trelleborg Wheel Systems",
+        "pages": 2
+      },
+      "facts": [
+        {
+          "id": "brawler-hps-extreme-environments",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Brawler HPS Skid Steer tires are designed to perform in extreme environments including scrap metal recycling, waste transfer stations and mining operations.",
+          "statement_es": "Brawler HPS est? dise?ada para trabajar en entornos extremos, incluidos reciclaje de chatarra, estaciones de transferencia de residuos y operaciones mineras."
+        },
+        {
+          "id": "brawler-hps-traction",
+          "category": "traction",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Brawler HPS provides excellent traction.",
+          "statement_es": "Brawler HPS ofrece excelente tracci?n."
+        },
+        {
+          "id": "brawler-hps-cut-resistance",
+          "category": "durability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its durable cut-resistant rubber compound eliminates downtime caused by flats and sidewall cuts.",
+          "statement_es": "Su compuesto de hule resistente a cortes ayuda a eliminar tiempos muertos causados por ponchaduras y cortes en los costados."
+        },
+        {
+          "id": "brawler-hps-solidflex-comfort",
+          "category": "comfort",
+          "scope": "variant:Solidflex",
+          "status": "approved",
+          "page": 1,
+          "statement": "Brawler HPS Solidflex features elliptical apertures to deliver a comfortable ride and reduce equipment and operator fatigue.",
+          "statement_es": "Brawler HPS Solidflex incorpora aperturas el?pticas para ofrecer una conducci?n m?s c?moda y reducir la fatiga del equipo y del operador."
+        },
+        {
+          "id": "brawler-hps-wear-comparison",
+          "category": "comparison",
+          "scope": "comparison",
+          "status": "conditional",
+          "page": 1,
+          "statement": "Its deep lug tread design offers three times more wear than a pneumatic tire.",
+          "statement_es": "Su dise?o de banda profunda ofrece hasta tres veces m?s material de desgaste que una llanta neum?tica."
+        }
+      ]
+    },
+    "Brawler HD": {
+      "match_models": [
+        "Brawler HD",
+        "Brawler HD Solidflex"
+      ],
+      "source": {
+        "path": "llantasparaminicargadores/storage/app/public/originals/fichas-tecnicas/brawler-hd-solidflex.pdf",
+        "official_brand": "Trelleborg Wheel Systems",
+        "pages": 2
+      },
+      "facts": [
+        {
+          "id": "brawler-hd-severe-duty",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Brawler Skid Steer tires are designed to eliminate downtime and provide superior vehicle performance in severe-duty applications.",
+          "statement_es": "Brawler HD est? orientada a aplicaciones de servicio severo y a reducir tiempos muertos durante la operaci?n."
+        },
+        {
+          "id": "brawler-hd-cut-chunk-resistance",
+          "category": "durability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "It features an enhanced rubber compound designed for greater resistance to cutting and chunking.",
+          "statement_es": "Utiliza un compuesto de hule mejorado dise?ado para ofrecer mayor resistencia a cortes y desprendimientos de material."
+        },
+        {
+          "id": "brawler-hd-mining-compound",
+          "category": "durability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Brawler Skid Steer uses a premium mining rubber compound that is abrasion and chunk resistant.",
+          "statement_es": "Utiliza un compuesto premium para miner?a resistente a la abrasi?n y al desprendimiento de material."
+        }
+      ]
+    },
+    "SK-800": {
+      "match_models": [
+        "SK-800"
+      ],
+      "source": {
+        "path": "llantasparaminicargadores/storage/app/public/originals/fichas-tecnicas/sk-800.pdf",
+        "official_brand": "Trelleborg Wheel Systems",
+        "pages": 1
+      },
+      "facts": [
+        {
+          "id": "sk800-general-construction",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "The SK-800 is designed for general purpose use in construction applications.",
+          "statement_es": "SK-800 est? dise?ada para uso general en aplicaciones de construcci?n."
+        },
+        {
+          "id": "sk800-multi-surface-traction",
+          "category": "traction",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its wide lug tread pattern provides optimal grip and traction on both smooth and rough surfaces.",
+          "statement_es": "Su banda de rodadura con tacos anchos proporciona agarre y tracci?n tanto en superficies lisas como rugosas."
+        },
+        {
+          "id": "sk800-life-cut-chip",
+          "category": "durability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its high quality compound promotes maximum tire life and increased cut and chip resistance.",
+          "statement_es": "Su compuesto de alta calidad est? orientado a prolongar la vida del neum?tico y aumentar la resistencia a cortes y desprendimientos."
+        },
+        {
+          "id": "sk800-stability",
+          "category": "stability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "SK-800 provides high stability and maximum safety.",
+          "statement_es": "SK-800 est? orientada a ofrecer alta estabilidad y seguridad durante la operaci?n."
+        }
+      ]
+    },
+    "SK-900": {
+      "match_models": [
+        "SK-900",
+        "SK-900 ND"
+      ],
+      "source": {
+        "path": "llantasparaminicargadores/storage/app/public/originals/fichas-tecnicas/sk-900.pdf",
+        "official_brand": "Trelleborg Wheel Systems",
+        "pages": 2
+      },
+      "facts": [
+        {
+          "id": "sk900-heavy-duty",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "The SK-900 premium tire is designed for use in heavy-duty applications.",
+          "statement_es": "SK-900 es una llanta premium dise?ada para aplicaciones de trabajo pesado."
+        },
+        {
+          "id": "sk900-multi-surface-traction",
+          "category": "traction",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its wide lug tread pattern provides optimal grip and traction on both smooth and rough surfaces.",
+          "statement_es": "Su banda de rodadura con tacos anchos proporciona agarre y tracci?n tanto en superficies lisas como rugosas."
+        },
+        {
+          "id": "sk900-life-cut-chip",
+          "category": "durability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "Its high quality compound promotes maximum tire life and increased cut and chip resistance.",
+          "statement_es": "Su compuesto de alta calidad est? orientado a prolongar la vida del neum?tico y aumentar la resistencia a cortes y desprendimientos."
+        },
+        {
+          "id": "sk900-stability",
+          "category": "stability",
+          "scope": "family",
+          "status": "approved",
+          "page": 1,
+          "statement": "SK-900 provides high stability and maximum safety.",
+          "statement_es": "SK-900 est? orientada a ofrecer alta estabilidad y seguridad durante la operaci?n."
+        },
+        {
+          "id": "sk900-nd-hard-surfaces",
+          "category": "applications",
+          "scope": "variant:ND",
+          "status": "approved",
+          "page": 1,
+          "statement": "SK-900 ND is designed for maximum performance on concrete, asphalt and other hard surfaces.",
+          "statement_es": "SK-900 ND est? dise?ada para m?ximo desempe?o sobre concreto, asfalto y otras superficies duras."
+        }
+      ]
     }
   }
 }
