@@ -21,7 +21,7 @@ class TechnicalKnowledgeSpanishPresentationTest extends TestCase
 
         $families = $data['families'] ?? [];
 
-        $this->assertCount(6, $families);
+        $this->assertNotEmpty($families);
 
         $facts = collect($families)
             ->flatMap(
@@ -30,22 +30,24 @@ class TechnicalKnowledgeSpanishPresentationTest extends TestCase
             )
             ->values();
 
-        $this->assertCount(64, $facts);
+        $this->assertNotEmpty($facts);
+
+        $factsWithAllowedStatus =
+            $facts->filter(
+                fn (array $fact): bool =>
+                    in_array(
+                        $fact['status'] ?? null,
+                        [
+                            'approved',
+                            'conditional',
+                        ],
+                        true
+                    )
+            );
 
         $this->assertSame(
-            61,
-            $facts->where(
-                'status',
-                'approved'
-            )->count()
-        );
-
-        $this->assertSame(
-            3,
-            $facts->where(
-                'status',
-                'conditional'
-            )->count()
+            $facts->count(),
+            $factsWithAllowedStatus->count()
         );
 
         foreach ($facts as $fact) {

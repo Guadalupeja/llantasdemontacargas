@@ -81,6 +81,17 @@ class RgxChatbotController extends Controller
             $selectedProductId = null;
         }
 
+        $selectedProductVertical =
+            is_string(
+                $selectedProductState[
+                    'vertical'
+                ] ?? null
+            )
+                ? $selectedProductState[
+                    'vertical'
+                ]
+                : null;
+
         $existingQuoteContext =
             is_array(
                 $state[
@@ -142,7 +153,8 @@ class RgxChatbotController extends Controller
                      * conserva ese contexto.
                      */
                     'default_vertical' => $currentVertical,
-                ]
+                ],
+                $selectedProductVertical
             );
         } catch (Throwable $exception) {
             Log::error('RGX chatbot error', [

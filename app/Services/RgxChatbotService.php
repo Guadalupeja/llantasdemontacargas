@@ -23,9 +23,17 @@ class RgxChatbotService
         ?int $selectedProductId = null,
         ?array $existingQuoteContext = null,
         ?array $existingAdvisorContext = null,
-        array $siteContext = []
+        array $siteContext = [],
+        ?string $selectedProductVertical = null
     ): array {
         $message = trim($message);
+
+        $selectedProductVertical =
+            $selectedProductVertical !== null
+                ? $this->productSearch->normalizeVertical(
+                    $selectedProductVertical
+                )
+                : null;
 
         if ($message === '') {
             throw new InvalidArgumentException(
@@ -150,7 +158,8 @@ class RgxChatbotService
                     $technicalKnowledgeContext,
                     ! $hasProductSearch && ! $hasQuoteRequest,
                     $advisorContext,
-                    $allowAdvisorContact
+                    $allowAdvisorContact,
+                    $selectedProductVertical
                 );
 
                 $toolResults[] = $toolResult;
@@ -281,6 +290,7 @@ class RgxChatbotService
                         true
                     )) {
                         $selectedProductId = null;
+                        $selectedProductVertical = null;
                         $quoteContext = null;
                     }
 
@@ -303,6 +313,19 @@ class RgxChatbotService
 
                         if ($resolvedProductId > 0) {
                             $selectedProductId = $resolvedProductId;
+
+                            $selectedProductVertical =
+                                $this->productSearch->normalizeVertical(
+                                    is_string(
+                                        $resolvedProduct[
+                                            'vertical'
+                                        ] ?? null
+                                    )
+                                        ? $resolvedProduct[
+                                            'vertical'
+                                        ]
+                                        : null
+                                );
                         }
                     }
                 }
@@ -581,7 +604,8 @@ class RgxChatbotService
         ?array $technicalKnowledgeContext = null,
         bool $allowTechnicalSelection = true,
         ?array &$advisorContext = null,
-        bool $allowAdvisorContact = false
+        bool $allowAdvisorContact = false,
+        ?string $selectedProductVertical = null
     ): array {
         $toolUseId = trim((string) ($toolUse['id'] ?? ''));
         $toolName = trim((string) ($toolUse['name'] ?? ''));
@@ -610,7 +634,8 @@ class RgxChatbotService
         if ($toolName === 'consultar_conocimiento_tecnico') {
             return $this->executeTechnicalKnowledgeTool(
                 $toolUseId,
-                $selectedProductId
+                $selectedProductId,
+                $selectedProductVertical
             );
         }
 
@@ -769,7 +794,8 @@ class RgxChatbotService
 
     private function executeTechnicalKnowledgeTool(
         string $toolUseId,
-        ?int $selectedProductId
+        ?int $selectedProductId,
+        ?string $selectedProductVertical = null
     ): array {
         if (
             $selectedProductId === null
@@ -787,7 +813,7 @@ class RgxChatbotService
         }
 
         $product = $this->productSearch
-            ->loadProducts()
+            ->loadProducts($selectedProductVertical)
             ->first(
                 fn (array $candidate): bool => (int) ($candidate['id'] ?? 0)
                     === $selectedProductId

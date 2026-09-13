@@ -479,4 +479,114 @@ class TechnicalKnowledgeServiceTest extends TestCase
             $guardrail['rule_es'] ?? null
         );
     }
+
+    public function test_sk05_verified_product_resolves_curated_family_knowledge(): void
+    {
+        $service = app(
+            TechnicalKnowledgeService::class
+        );
+
+        $result = $service
+            ->lookupForVerifiedProduct([
+                'model' => 'SK-05',
+                'function' => 'estandar',
+                'tread' => 'traccion',
+                'service' => 'medio',
+            ]);
+
+        $this->assertSame(
+            'resolved',
+            $result['status']
+        );
+
+        $this->assertSame(
+            'SK-05',
+            $result['family']
+        );
+
+        $this->assertSame(
+            'Mitas / Trelleborg Wheel Systems',
+            $result['source']['official_brand']
+                ?? null
+        );
+
+        $ids = array_column(
+            $result['facts'],
+            'id'
+        );
+
+        $this->assertContains(
+            'sk05-extreme-conditions',
+            $ids
+        );
+
+        $this->assertContains(
+            'sk05-tread-life',
+            $ids
+        );
+
+        foreach (
+            $result['facts']
+            as $fact
+        ) {
+            $this->assertSame(
+                'family',
+                $fact['scope']
+            );
+
+            $this->assertSame(
+                'approved',
+                $fact['status']
+            );
+
+            $this->assertNotSame(
+                '',
+                trim(
+                    (string) (
+                        $fact['statement_es']
+                        ?? ''
+                    )
+                )
+            );
+        }
+
+        $this->assertSame(
+            [],
+            $result['guardrails']
+        );
+    }
+
+    public function test_sk05_model_normalization_accepts_common_punctuation_variants(): void
+    {
+        $service = app(
+            TechnicalKnowledgeService::class
+        );
+
+        foreach (
+            [
+                'SK-05',
+                'SK 05',
+                'sk05',
+            ]
+            as $model
+        ) {
+            $result =
+                $service->lookupByModel(
+                    $model
+                );
+
+            $this->assertSame(
+                'resolved',
+                $result['status'],
+                "No resolvió {$model}"
+            );
+
+            $this->assertSame(
+                'SK-05',
+                $result['family'],
+                "Familia incorrecta para {$model}"
+            );
+        }
+    }
+
 }

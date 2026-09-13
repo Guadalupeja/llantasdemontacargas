@@ -701,6 +701,36 @@
           "statement_es": "Su característica antiestática está destinada a reducir el riesgo de chispas en atmósferas potencialmente explosivas."
         }
       ]
+    },
+    "SK-05": {
+      "match_models": [
+        "SK-05"
+      ],
+      "source": {
+        "path": "mitas_leporelo_con-mh_2020-21_esp_lr.pdf",
+        "official_brand": "Mitas / Trelleborg Wheel Systems",
+        "pages": 2
+      },
+      "facts": [
+        {
+          "id": "sk05-extreme-conditions",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 2,
+          "statement": "SK-05 is a robust tire for extreme conditions.",
+          "statement_es": "SK-05 es un neumático robusto para condiciones extremas."
+        },
+        {
+          "id": "sk05-tread-life",
+          "category": "durability",
+          "scope": "family",
+          "status": "approved",
+          "page": 2,
+          "statement": "Its low void ratio and improved tread depth are intended to increase tire life.",
+          "statement_es": "Su bajo índice de huecos y la profundidad mejorada del dibujo están orientados a incrementar la vida del neumático."
+        }
+      ]
     }
   }
 }

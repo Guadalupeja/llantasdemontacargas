@@ -2,8 +2,13 @@
 
 namespace Tests\Unit;
 
+use App\Services\AnthropicClient;
+use App\Services\MontacargasProductSearchService;
 use App\Services\RgxChatbotService;
+use App\Services\RuguexFormalQuoteService;
+use App\Services\TechnicalKnowledgeService;
 use Illuminate\Support\Facades\Http;
+use Mockery;
 use ReflectionClass;
 use Tests\TestCase;
 
@@ -361,6 +366,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $normalized[2]
         );
     }
+
     public function test_system_prompt_forbids_technical_expansion_beyond_curated_knowledge(): void
     {
         $service = $this->chatbot();
@@ -415,6 +421,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $prompt
         );
     }
+
     public function test_technical_tool_preserves_stable_guardrail_ids(): void
     {
         $service = $this->chatbot();
@@ -463,8 +470,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $guardrail = collect(
                 $payload['guardrails'] ?? []
             )->first(
-                fn ($item): bool =>
-                    is_array($item)
+                fn ($item): bool => is_array($item)
                     && ($item['id'] ?? null) === $guardrailId
             );
 
@@ -485,6 +491,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             );
         }
     }
+
     public function test_server_whitelists_selected_technical_ids(): void
     {
         $service = $this->chatbot();
@@ -567,6 +574,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $selected['guardrails'][0]['forbidden_inference'] ?? null
         );
     }
+
     public function test_server_renders_only_whitelisted_technical_content(): void
     {
         $service = $this->chatbot();
@@ -653,6 +661,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $answer
         );
     }
+
     public function test_private_selection_executor_uses_only_authorized_server_content(): void
     {
         $service = $this->chatbot();
@@ -741,6 +750,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $answer
         );
     }
+
     public function test_reply_replays_verified_technical_knowledge_to_anthropic(): void
     {
         config([
@@ -834,6 +844,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             }
         );
     }
+
     public function test_hidden_selection_dispatcher_requires_server_knowledge_context(): void
     {
         $service = $this->chatbot();
@@ -920,6 +931,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $withoutContextPayload['status'] ?? null
         );
     }
+
     public function test_reply_returns_server_rendered_technical_answer_without_another_anthropic_call(): void
     {
         config([
@@ -1000,6 +1012,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
 
         Http::assertSentCount(2);
     }
+
     public function test_technical_tool_preserves_curated_spanish_presentation(): void
     {
         $service = $this->chatbot();
@@ -1053,6 +1066,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $guardrail['rule_es'] ?? null
         );
     }
+
     public function test_renderer_never_falls_back_to_original_language(): void
     {
         $service = $this->chatbot();
@@ -1100,6 +1114,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $answer
         );
     }
+
     public function test_technical_selection_tool_accepts_only_authorized_ids(): void
     {
         $service = $this->chatbot();
@@ -1249,6 +1264,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $prompt
         );
     }
+
     public function test_technical_selection_is_deferred_when_quote_is_in_same_batch(): void
     {
         $service = $this->chatbot();
@@ -1342,6 +1358,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
             $prompt
         );
     }
+
     public function test_reply_processes_quote_before_deferred_technical_selection_regardless_of_tool_order(): void
     {
         config([
@@ -1535,8 +1552,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
         $statuses = [];
 
         foreach (
-            $thirdAnthropicPayload['messages'] ?? []
-            as $message
+            $thirdAnthropicPayload['messages'] ?? [] as $message
         ) {
             if (
                 ($message['role'] ?? null) !== 'user'
@@ -1584,6 +1600,63 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
         $this->assertSame(
             5977,
             $result['quote_context']['product_id'] ?? null
+        );
+    }
+
+    public function test_technical_tool_reloads_selected_minicargador_from_its_authoritative_vertical(): void
+    {
+        $productSearch = Mockery::mock(
+            MontacargasProductSearchService::class
+        );
+
+        $productSearch
+            ->shouldReceive('loadProducts')
+            ->once()
+            ->with('minicargadores')
+            ->andReturn(
+                collect([
+                    [
+                        'id' => 6375,
+                        'model' => 'SK-05',
+                    ],
+                ])
+            );
+
+        $service = new RgxChatbotService(
+            app(AnthropicClient::class),
+            $productSearch,
+            app(RuguexFormalQuoteService::class),
+            app(TechnicalKnowledgeService::class)
+        );
+
+        $reflection = new ReflectionClass($service);
+
+        $method = $reflection->getMethod(
+            'executeTechnicalKnowledgeTool'
+        );
+
+        $method->setAccessible(true);
+
+        $result = $method->invoke(
+            $service,
+            'technical-sk05-regression',
+            6375,
+            'minicargadores'
+        );
+
+        $content = (string) (
+            $result['content']
+            ?? ''
+        );
+
+        $this->assertStringContainsString(
+            'sk05-extreme-conditions',
+            $content
+        );
+
+        $this->assertStringContainsString(
+            'sk05-tread-life',
+            $content
         );
     }
 }
