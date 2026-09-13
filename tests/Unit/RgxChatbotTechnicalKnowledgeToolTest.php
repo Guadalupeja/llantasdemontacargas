@@ -751,7 +751,7 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
         );
     }
 
-    public function test_reply_replays_verified_technical_knowledge_to_anthropic(): void
+    public function test_reply_replays_verified_technical_knowledge_and_forces_selection(): void
     {
         config([
             'services.anthropic.api_key' => 'test-key',
@@ -777,71 +777,73 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
                 'content' => [
                     [
                         'type' => 'text',
-                        'text' => 'Respuesta final de prueba.',
+                        'text' => 'TEXTO TECNICO PARAFRASEADO NO AUTORIZADO',
                     ],
                 ],
                 'stop_reason' => 'end_turn',
+            ], 200)
+            ->push([
+                'id' => 'msg-technical-3',
+                'model' => 'test-model',
+                'content' => [
+                    [
+                        'type' => 'tool_use',
+                        'id' => 'technical-selection-forced',
+                        'name' => 'seleccionar_informacion_tecnica',
+                        'input' => [
+                            'fact_ids' => [
+                                'ps1000-type',
+                            ],
+                            'guardrail_ids' => [
+                                'ps1000-radial-sipes-not-radial',
+                            ],
+                        ],
+                    ],
+                ],
+                'stop_reason' => 'tool_use',
             ], 200);
 
-        $result = $this->chatbot()->reply(
-            '¿Qué características técnicas tiene?',
-            [],
-            5977
-        );
+        $result =
+            $this->chatbot()->reply(
+                'Pregunta tecnica',
+                [],
+                5977
+            );
+
+        $answer =
+            (string) ($result['answer'] ?? '');
 
         $this->assertSame(
-            'Respuesta final de prueba.',
-            $result['answer'] ?? null
+            "Informaci\u{00F3}n t\u{00E9}cnica verificada:"
+                .PHP_EOL
+                ."- PS1000 es una llanta s\u{00F3}lida tipo press-on."
+                .PHP_EOL
+                ."- La expresi\u{00F3}n \u{00AB}laminillas radiales\u{00BB} describe la geometr\u{00ED}a de la banda de rodamiento. No significa que la PS1000 sea una llanta radial.",
+            $answer
         );
 
-        Http::assertSentCount(2);
+        $this->assertStringNotContainsString(
+            'TEXTO TECNICO PARAFRASEADO NO AUTORIZADO',
+            $answer
+        );
 
-        Http::assertSent(
-            function ($request): bool {
-                $payload = $request->data();
+        $requests =
+            Http::recorded();
 
-                $messages = $payload['messages'] ?? [];
+        $this->assertCount(
+            3,
+            $requests
+        );
 
-                foreach ($messages as $message) {
-                    if (
-                        ($message['role'] ?? null) !== 'user'
-                        || ! is_array($message['content'] ?? null)
-                    ) {
-                        continue;
-                    }
+        $forcedPayload =
+            $requests[2][0]->data();
 
-                    foreach ($message['content'] as $part) {
-                        if (! is_array($part)) {
-                            continue;
-                        }
-
-                        if (
-                            ($part['type'] ?? null)
-                                !== 'tool_result'
-                        ) {
-                            continue;
-                        }
-
-                        $toolPayload = json_decode(
-                            (string) (
-                                $part['content'] ?? ''
-                            ),
-                            true
-                        );
-
-                        if (
-                            ($toolPayload['status'] ?? null)
-                                === 'knowledge_resolved'
-                            && ($toolPayload['family'] ?? null)
-                                === 'PS1000'
-                        ) {
-                            return true;
-                        }
-                    }
-                }
-
-                return false;
-            }
+        $this->assertSame(
+            [
+                'type' => 'tool',
+                'name' => 'seleccionar_informacion_tecnica',
+            ],
+            $forcedPayload['tool_choice'] ?? null
         );
     }
 
@@ -1064,6 +1066,69 @@ class RgxChatbotTechnicalKnowledgeToolTest extends TestCase
         $this->assertSame(
             'La expresión «laminillas radiales» describe la geometría de la banda de rodamiento. No significa que la PS1000 sea una llanta radial.',
             $guardrail['rule_es'] ?? null
+        );
+    }
+
+    public function test_sk05_renderer_preserves_exact_authorized_spanish(): void
+    {
+        $service =
+            $this->chatbot();
+
+        $knowledge =
+            app(
+                TechnicalKnowledgeService::class
+            )->lookupByModel(
+                'SK-05'
+            );
+
+        $reflection =
+            new ReflectionClass(
+                $service
+            );
+
+        $select =
+            $reflection->getMethod(
+                'selectAuthorizedTechnicalItems'
+            );
+
+        $select->setAccessible(true);
+
+        $selection =
+            $select->invoke(
+                $service,
+                $knowledge,
+                [
+                    'sk05-extreme-conditions',
+                    'sk05-tread-life',
+                ],
+                []
+            );
+
+        $render =
+            $reflection->getMethod(
+                'renderAuthorizedTechnicalSelection'
+            );
+
+        $render->setAccessible(true);
+
+        $answer =
+            $render->invoke(
+                $service,
+                $selection
+            );
+
+        $this->assertSame(
+            "Informaci\u{00F3}n t\u{00E9}cnica verificada:"
+                .PHP_EOL
+                ."- SK-05 es un neum\u{00E1}tico robusto para condiciones extremas."
+                .PHP_EOL
+                ."- Su bajo \u{00ED}ndice de huecos y la profundidad mejorada del dibujo est\u{00E1}n orientados a incrementar la vida del neum\u{00E1}tico.",
+            $answer
+        );
+
+        $this->assertStringNotContainsString(
+            "dise\u{00F1}ado para condiciones extremas",
+            $answer
         );
     }
 

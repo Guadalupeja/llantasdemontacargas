@@ -88,6 +88,50 @@ class RgxChatbotService
 
             $toolUses = $this->extractToolUses($response);
 
+            if (
+                $toolUses === []
+                && $technicalKnowledgeContext !== null
+            ) {
+                $response = $this->anthropic->messages([
+                    'system' => $this->systemPrompt(
+                        $siteContext,
+                        $selectedProductId !== null
+                            && $selectedProductId > 0
+                    ),
+                    'messages' => $messages,
+                    'tools' => $this->tools(),
+                    'tool_choice' => [
+                        'type' => 'tool',
+                        'name' => 'seleccionar_informacion_tecnica',
+                    ],
+                    'temperature' => 0.2,
+                    'max_tokens' => 550,
+                ]);
+
+                $toolUses =
+                    $this->extractToolUses(
+                        $response
+                    );
+
+                if ($toolUses === []) {
+                    throw new RuntimeException(
+                        'El modelo no ejecuto la seleccion tecnica obligatoria.'
+                    );
+                }
+
+                foreach ($toolUses as $forcedToolUse) {
+                    if (
+                        trim((string) ($forcedToolUse['name'] ?? ''))
+                            !==
+                            'seleccionar_informacion_tecnica'
+                    ) {
+                        throw new RuntimeException(
+                            'El modelo intento ejecutar una herramienta no autorizada durante la seleccion tecnica.'
+                        );
+                    }
+                }
+            }
+
             if ($toolUses === []) {
                 $answer = $this->extractText($response);
 
