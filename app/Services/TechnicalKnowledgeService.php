@@ -119,23 +119,25 @@ class TechnicalKnowledgeService
             fn ($fact) => is_array($fact)
         ));
 
-        $availableVariantScopes = collect($facts)
+        $availableServerScopes = collect($facts)
             ->pluck('scope')
             ->filter(
                 fn ($scope) => is_string($scope)
-                    && Str::startsWith($scope, 'variant:')
+                    && $this->isServerControlledFactScope(
+                        trim($scope)
+                    )
             )
             ->unique()
             ->values()
             ->all();
 
-        $explicitVariantScopes = collect($requestedScopes)
+        $explicitServerScopes = collect($requestedScopes)
             ->filter(fn ($scope) => is_string($scope))
             ->map(fn ($scope) => trim($scope))
             ->filter(
                 fn (string $scope) => in_array(
                     $scope,
-                    $availableVariantScopes,
+                    $availableServerScopes,
                     true
                 )
             )
@@ -145,7 +147,7 @@ class TechnicalKnowledgeService
 
         $allowedScopes = array_merge(
             ['family'],
-            $explicitVariantScopes
+            $explicitServerScopes
         );
 
         if ($includeConditional) {
@@ -264,9 +266,8 @@ class TechnicalKnowledgeService
             ->pluck('scope')
             ->filter(
                 fn ($scope) => is_string($scope)
-                    && Str::startsWith(
-                        $scope,
-                        'variant:'
+                    && $this->isServerControlledFactScope(
+                        trim($scope)
                     )
             )
             ->unique()
@@ -274,6 +275,57 @@ class TechnicalKnowledgeService
             ->all();
 
         $candidateScopes = [];
+
+        $measure =
+            $this->normalizeMeasureScope(
+                $product['measure']
+                    ?? null
+            );
+
+        if ($measure !== null) {
+            $candidateScopes[] =
+                'measure:'.$measure;
+        }
+
+        $normalizedModel =
+            $this->normalizeAttribute(
+                $model
+            );
+
+        if (
+            $familyName === 'SK-900'
+            && preg_match(
+                '/(?:^|\s)nd(?:\s|$)/',
+                $normalizedModel
+            ) === 1
+        ) {
+            $candidateScopes[] =
+                'variant:ND';
+        }
+
+        if (
+            in_array(
+                $familyName,
+                [
+                    'Brawler HPS',
+                    'Brawler HD',
+                ],
+                true
+            )
+            && (
+                Str::contains(
+                    $normalizedModel,
+                    'solidflex'
+                )
+                || preg_match(
+                    '/(?:^|\s)sf(?:\s|$)/',
+                    $normalizedModel
+                ) === 1
+            )
+        ) {
+            $candidateScopes[] =
+                'variant:Solidflex';
+        }
 
         $function = $this->normalizeAttribute(
             $product['function'] ?? null
@@ -309,6 +361,111 @@ class TechnicalKnowledgeService
             ->unique()
             ->values()
             ->all();
+    }
+
+    /**
+     * Scopes que pueden ser activados exclusivamente por datos
+     * del producto verificado por el servidor.
+     *
+     * ply: permanece fuera de esta lista hasta que el catalogo
+     * comercial entregue un ply rating inequivoco por producto.
+     */
+    private function isServerControlledFactScope(
+        string $scope
+    ): bool {
+        return Str::startsWith(
+            $scope,
+            [
+                'variant:',
+                'measure:',
+            ]
+        );
+    }
+
+    /**
+     * Convierte la medida autoritativa del producto a una clave
+     * estable de scope tecnico.
+     *
+     * No interpreta equivalencias entre medidas diferentes.
+     */
+    private function normalizeMeasureScope(
+        mixed $value
+    ): ?string {
+        $value = trim(
+            (string) $value
+        );
+
+        if ($value === '') {
+            return null;
+        }
+
+        $value = str_replace(
+            [
+                '×',
+                '–',
+                '—',
+                ',',
+            ],
+            [
+                'x',
+                '-',
+                '-',
+                '.',
+            ],
+            $value
+        );
+
+        $value = Str::lower(
+            Str::ascii($value)
+        );
+
+        $value = preg_replace(
+            '/\s+/',
+            '',
+            $value
+        );
+
+        if (! is_string($value)) {
+            return null;
+        }
+
+        /*
+         * Mantiene una sola representacion:
+         * 31x10-20/7.50 -> 31-10-20/7.5
+         * 10x16.5       -> 10-16.5
+         */
+        $value = str_replace(
+            'x',
+            '-',
+            $value
+        );
+
+        $value =
+            preg_replace_callback(
+                '/\d+\.\d+/',
+                function (
+                    array $matches
+                ): string {
+                    return rtrim(
+                        rtrim(
+                            $matches[0],
+                            '0'
+                        ),
+                        '.'
+                    );
+                },
+                $value
+            );
+
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return $value !== ''
+            ? $value
+            : null;
     }
 
     private function normalizeAttribute(
