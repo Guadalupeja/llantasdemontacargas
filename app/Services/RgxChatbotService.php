@@ -390,7 +390,7 @@ class RgxChatbotService
                         ],
                         'model' => [
                             'type' => 'string',
-                            'description' => 'Modelo o línea de la llanta, por ejemplo XP800, XP1000, PS800, PS1000 o T-900.',
+                            'description' => 'Modelo o linea de la llanta indicado por el cliente. No inventes ni sugieras modelos de una vertical distinta a la efectiva para esta conversacion.',
                         ],
                         'function' => [
                             'type' => 'string',
@@ -1947,6 +1947,30 @@ class RgxChatbotService
                 .'prevalece sobre el contexto del sitio.',
         };
 
+        $contextInstruction .= match ($defaultVertical) {
+            'minicargadores' => ' La vertical predeterminada ya esta resuelta por el servidor. '
+                .'Si el cliente no expresa explicitamente montacargas o forklift, '
+                .'la vertical efectiva sigue siendo minicargadores. '
+                .'No preguntes si el equipo es para montacargas o minicargador. '
+                .'La vertical no es un dato faltante que debas solicitar. '
+                .'Si necesitas pedir modelo o linea, pregunta unicamente por ese dato. '
+                .'Si das ejemplos, usa unicamente ejemplos de minicargadores como '
+                .'SK-05, SKS-900, BIG BOY o Brawler. '
+                .'No sugieras XP800, XP1000, PS800, PS1000 ni T-900 '
+                .'mientras siga vigente la vertical minicargadores.',
+
+            default => ' La vertical predeterminada ya esta resuelta por el servidor. '
+                .'Si el cliente no expresa explicitamente minicargador o skid steer, '
+                .'la vertical efectiva sigue siendo montacargas. '
+                .'No preguntes si el equipo es para montacargas o minicargador. '
+                .'La vertical no es un dato faltante que debas solicitar. '
+                .'Si necesitas pedir modelo o linea, pregunta unicamente por ese dato. '
+                .'Si das ejemplos, usa unicamente ejemplos de montacargas como '
+                .'XP800, XP1000, PS800, PS1000 o T-900. '
+                .'No sugieras SK-05, SKS-900, BIG BOY ni Brawler '
+                .'mientras siga vigente la vertical montacargas.',
+        };
+
         if ($hasSelectedProduct) {
             $contextInstruction .= ' El servidor ya tiene un producto '
                 .'verificado seleccionado para esta conversación. '
@@ -1976,9 +2000,9 @@ Los tres datos principales para iniciar una búsqueda son:
 - medida;
 - modelo o línea de la llanta.
 
-Ejemplos de modelos o líneas de llanta para montacargas son XP800, XP1000,
-PS800, PS1000 y T-900. Para minicargadores son ejemplos SK-05, SKS-900,
-BIG BOY y las líneas Brawler disponibles en el catálogo verificado.
+Los ejemplos de modelo o linea usados al pedir una aclaracion deben
+corresponder exclusivamente a la vertical efectiva de la conversacion.
+Nunca mezcles ejemplos de montacargas y minicargadores en la misma aclaracion.
 
 Cuando el cliente indique explícitamente que busca una llanta para
 minicargador o skid steer, usa vertical=minicargadores en buscar_producto.
@@ -1989,6 +2013,9 @@ equipo.
 
 Si falta alguno de los tres datos principales, pregunta únicamente por los que falten.
 
+La vertical efectiva ya fue determinada por el contexto autenticado del sitio.
+No pidas al cliente elegir entre montacargas y minicargador salvo que su mensaje
+exprese explicitamente una vertical contraria a la predeterminada.
 Cuando ya conozcas tipo, medida y modelo o línea, usa inmediatamente la herramienta buscar_producto. No preguntes al cliente si desea que busques o verifiques.
 
 No inventes valores para completar una llamada a la herramienta.

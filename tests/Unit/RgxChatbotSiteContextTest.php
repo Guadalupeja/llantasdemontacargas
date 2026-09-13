@@ -90,6 +90,105 @@ class RgxChatbotSiteContextTest extends TestCase
         );
     }
 
+    public function test_bobcat_default_vertical_is_not_reasked(): void
+    {
+        $prompt = $this->prompt([
+            'site_origin' => 'llantasbobcat.com',
+
+            'default_vertical' => 'minicargadores',
+        ]);
+
+        $this->assertStringContainsString(
+            'La vertical predeterminada ya esta resuelta por el servidor.',
+            $prompt
+        );
+
+        $this->assertStringContainsString(
+            'No preguntes si el equipo es para montacargas o minicargador.',
+            $prompt
+        );
+
+        $this->assertStringContainsString(
+            'usa unicamente ejemplos de minicargadores',
+            $prompt
+        );
+
+        $this->assertStringContainsString(
+            'SK-05',
+            $prompt
+        );
+
+        $this->assertStringContainsString(
+            'No sugieras XP800',
+            $prompt
+        );
+    }
+
+    public function test_product_search_model_schema_is_vertical_neutral(): void
+    {
+        $reflection = new \ReflectionClass(
+            \App\Services\RgxChatbotService::class
+        );
+
+        $service =
+            $reflection->newInstanceWithoutConstructor();
+
+        $method =
+            $reflection->getMethod(
+                'tools'
+            );
+
+        $method->setAccessible(true);
+
+        $tools =
+            $method->invoke(
+                $service
+            );
+
+        $searchTool = null;
+
+        foreach ($tools as $tool) {
+            if (
+                ($tool['name'] ?? null)
+                === 'buscar_producto'
+            ) {
+                $searchTool = $tool;
+
+                break;
+            }
+        }
+
+        $this->assertIsArray(
+            $searchTool
+        );
+
+        $description =
+            $searchTool[
+                'input_schema'
+            ][
+                'properties'
+            ][
+                'model'
+            ][
+                'description'
+            ] ?? '';
+
+        $this->assertStringContainsString(
+            'No inventes ni sugieras modelos de una vertical distinta',
+            $description
+        );
+
+        $this->assertStringNotContainsString(
+            'XP800',
+            $description
+        );
+
+        $this->assertStringNotContainsString(
+            'SK-05',
+            $description
+        );
+    }
+
     public function test_prompt_forbids_turning_catalog_attributes_into_technical_claims(): void
     {
         $prompt = preg_replace(
