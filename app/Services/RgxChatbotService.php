@@ -14,7 +14,8 @@ class RgxChatbotService
         private AnthropicClient $anthropic,
         private MontacargasProductSearchService $productSearch,
         private RuguexFormalQuoteService $formalQuote,
-        private TechnicalKnowledgeService $technicalKnowledge
+        private TechnicalKnowledgeService $technicalKnowledge,
+        private ?SiteKnowledgeService $siteKnowledge = null
     ) {}
 
     public function reply(
@@ -65,6 +66,7 @@ class RgxChatbotService
         $resolvedAdvisorRequest = null;
         $resolvedAdvisorAnswer = null;
         $technicalKnowledgeContext = null;
+        $siteKnowledgeContext = null;
 
         $allowAdvisorContact =
             $this->messageRequestsAdvisor($message)
@@ -132,6 +134,58 @@ class RgxChatbotService
                 }
             }
 
+            if (
+                $toolUses === []
+                && $technicalKnowledgeContext === null
+                && $siteKnowledgeContext !== null
+            ) {
+                $response = $this->anthropic->messages([
+                    'system' => $this->systemPrompt(
+                        $siteContext,
+                        $selectedProductId !== null
+                            && $selectedProductId > 0
+                    ),
+                    'messages' => $messages,
+                    'tools' => $this->tools(),
+                    'tool_choice' => [
+                        'type' => 'tool',
+                        'name' => 'seleccionar_informacion_del_sitio',
+                    ],
+                    'temperature' => 0.2,
+                    'max_tokens' => 550,
+                ]);
+
+                $toolUses =
+                    $this->extractToolUses(
+                        $response
+                    );
+
+                if ($toolUses === []) {
+                    throw new RuntimeException(
+                        'El modelo no ejecuto la seleccion editorial obligatoria.'
+                    );
+                }
+
+                foreach (
+                    $toolUses as $forcedToolUse
+                ) {
+                    if (
+                        trim(
+                            (string) (
+                                $forcedToolUse['name']
+                                ?? ''
+                            )
+                        )
+                        !==
+                        'seleccionar_informacion_del_sitio'
+                    ) {
+                        throw new RuntimeException(
+                            'El modelo intento ejecutar una herramienta no autorizada durante la seleccion editorial.'
+                        );
+                    }
+                }
+            }
+
             if ($toolUses === []) {
                 $answer = $this->extractText($response);
 
@@ -178,6 +232,8 @@ class RgxChatbotService
 
             $hasProductSearch = false;
             $hasQuoteRequest = false;
+            $hasTechnicalRequest = false;
+            $hasSiteKnowledgeRequest = false;
 
             foreach ($toolUses as $candidateToolUse) {
                 if (! is_array($candidateToolUse)) {
@@ -195,6 +251,26 @@ class RgxChatbotService
                 if ($candidateToolName === 'generar_cotizacion') {
                     $hasQuoteRequest = true;
                 }
+
+                if (
+                    in_array(
+                        $candidateToolName,
+                        [
+                            'consultar_conocimiento_tecnico',
+                            'seleccionar_informacion_tecnica',
+                        ],
+                        true
+                    )
+                ) {
+                    $hasTechnicalRequest = true;
+                }
+
+                if (
+                    $candidateToolName
+                    === 'consultar_conocimiento_del_sitio'
+                ) {
+                    $hasSiteKnowledgeRequest = true;
+                }
             }
 
             foreach ($toolUses as $toolUse) {
@@ -208,7 +284,18 @@ class RgxChatbotService
                     ! $hasProductSearch && ! $hasQuoteRequest,
                     $advisorContext,
                     $allowAdvisorContact,
-                    $selectedProductVertical
+                    $selectedProductVertical,
+                    $siteContext,
+                    $siteKnowledgeContext,
+                    $technicalKnowledgeContext === null
+                        && ! $hasProductSearch
+                        && ! $hasQuoteRequest
+                        && ! $hasTechnicalRequest,
+                    $technicalKnowledgeContext === null
+                        && ! $hasProductSearch
+                        && ! $hasQuoteRequest
+                        && ! $hasTechnicalRequest
+                        && ! $hasSiteKnowledgeRequest
                 );
 
                 $toolResults[] = $toolResult;
@@ -232,6 +319,36 @@ class RgxChatbotService
                         true
                     )) {
                         $allowAdvisorContact = true;
+                    }
+
+                    if ($status === 'site_answer_resolved') {
+                        $siteAnswer = trim(
+                            (string) (
+                                $toolPayload['answer']
+                                ?? ''
+                            )
+                        );
+
+                        if ($siteAnswer === '') {
+                            throw new RuntimeException(
+                                'El servidor produjo una respuesta editorial vacia.'
+                            );
+                        }
+
+                        return [
+                            'answer' => $siteAnswer,
+                            'product' => $resolvedProduct,
+                            'product_search_status' => $productSearchStatus,
+                            'quote' => $resolvedQuote,
+                            'quote_context' => $quoteContext,
+                            'advisor_context' => $advisorContext,
+                            'advisor_contact' => $resolvedAdvisorContact,
+                            'advisor_request' => $resolvedAdvisorRequest,
+                            'model' => $response['model']
+                                ?? null,
+                            'usage' => $response['usage']
+                                ?? null,
+                        ];
                     }
 
                     if ($status === 'technical_answer_resolved') {
@@ -259,15 +376,56 @@ class RgxChatbotService
                         ];
                     }
 
+                    $executedToolName = trim(
+                        (string) (
+                            $toolUse['name']
+                            ?? ''
+                        )
+                    );
+
                     if (
-                        trim((string) ($toolUse['name'] ?? ''))
-                            === 'buscar_producto'
+                        $executedToolName
+                        === 'buscar_producto'
                     ) {
                         $technicalKnowledgeContext = null;
+                        $siteKnowledgeContext = null;
                     }
 
-                    if ($status === 'knowledge_resolved') {
-                        $technicalKnowledgeContext = $toolPayload;
+                    if (
+                        $executedToolName
+                        === 'consultar_conocimiento_del_sitio'
+                    ) {
+                        $siteKnowledgeContext = null;
+                    }
+
+                    if (
+                        in_array(
+                            $executedToolName,
+                            [
+                                'consultar_conocimiento_tecnico',
+                                'seleccionar_informacion_tecnica',
+                            ],
+                            true
+                        )
+                    ) {
+                        $siteKnowledgeContext = null;
+                    }
+
+                    if (
+                        $status === 'knowledge_resolved'
+                    ) {
+                        $technicalKnowledgeContext =
+                            $toolPayload;
+
+                        $siteKnowledgeContext = null;
+                    }
+
+                    if (
+                        $status
+                        === 'site_knowledge_resolved'
+                    ) {
+                        $siteKnowledgeContext =
+                            $toolPayload;
                     }
 
                     if (
@@ -313,6 +471,7 @@ class RgxChatbotService
                     ) {
                         $resolvedQuote = $toolPayload['quote'];
                         $resolvedQuoteStatus = $status;
+                        $siteKnowledgeContext = null;
                     }
 
                     if (in_array(
@@ -462,6 +621,45 @@ class RgxChatbotService
                         'measure',
                         'model',
                     ],
+                ],
+            ],
+            [
+                'name' => 'consultar_conocimiento_del_sitio',
+                'description' => 'Consulta contenido editorial publicado en las paginas publicas del sitio RGX autenticado. Sirve para FAQs, orientacion general, medidas comunes, compatibilidades publicadas, servicios y explicaciones del sitio. No es autoridad tecnica ni comercial. El sitio lo determina exclusivamente el servidor.',
+                'input_schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'query' => [
+                            'type' => 'string',
+                            'maxLength' => 180,
+                            'description' => 'Consulta breve basada unicamente en la pregunta actual del cliente.',
+                        ],
+                    ],
+                    'required' => [
+                        'query',
+                    ],
+                    'additionalProperties' => false,
+                ],
+            ],
+            [
+                'name' => 'seleccionar_informacion_del_sitio',
+                'description' => 'Selecciona unicamente por ID uno o dos fragmentos editoriales del ultimo resultado site_knowledge_resolved. No recibe sitio, URL, producto, modelo, precio, SKU, especificaciones ni texto libre. El servidor construye la respuesta final.',
+                'input_schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'document_ids' => [
+                            'type' => 'array',
+                            'maxItems' => 2,
+                            'items' => [
+                                'type' => 'string',
+                            ],
+                            'description' => 'Uno o dos IDs exactos del ultimo resultado site_knowledge_resolved.',
+                        ],
+                    ],
+                    'required' => [
+                        'document_ids',
+                    ],
+                    'additionalProperties' => false,
                 ],
             ],
             [
@@ -655,7 +853,11 @@ class RgxChatbotService
         bool $allowTechnicalSelection = true,
         ?array &$advisorContext = null,
         bool $allowAdvisorContact = false,
-        ?string $selectedProductVertical = null
+        ?string $selectedProductVertical = null,
+        array $siteContext = [],
+        ?array $siteKnowledgeContext = null,
+        bool $allowSiteKnowledge = true,
+        bool $allowSiteSelection = true
     ): array {
         $toolUseId = trim((string) ($toolUse['id'] ?? ''));
         $toolName = trim((string) ($toolUse['name'] ?? ''));
@@ -664,6 +866,61 @@ class RgxChatbotService
             throw new RuntimeException(
                 'Claude devolvió una llamada de herramienta sin identificador.'
             );
+        }
+
+        if (
+            $toolName
+                === 'consultar_conocimiento_del_sitio'
+            && ! $allowSiteKnowledge
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'site_knowledge_waiting_higher_authority',
+                    'message' => 'La consulta editorial debe esperar a que termine la accion de mayor autoridad en curso.',
+                ]),
+            ];
+        }
+
+        if (
+            $toolName
+            === 'consultar_conocimiento_del_sitio'
+        ) {
+            return $this->executeSiteKnowledgeTool(
+                $toolUseId,
+                $toolUse['input'] ?? [],
+                $siteContext
+            );
+        }
+
+        if (
+            $toolName
+                === 'seleccionar_informacion_del_sitio'
+            && ! $allowSiteSelection
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'site_selection_waiting_higher_authority',
+                    'message' => 'La seleccion editorial debe esperar a que termine la accion de mayor autoridad en curso.',
+                ]),
+            ];
+        }
+
+        if (
+            $toolName
+            === 'seleccionar_informacion_del_sitio'
+        ) {
+            return $this
+                ->executeSiteKnowledgeSelectionTool(
+                    $toolUseId,
+                    $toolUse['input'] ?? [],
+                    $siteKnowledgeContext
+                );
         }
 
         if (
@@ -839,6 +1096,470 @@ class RgxChatbotService
             'type' => 'tool_result',
             'tool_use_id' => $toolUseId,
             'content' => $this->encodeToolResult($result),
+        ];
+    }
+
+    private function trustedSiteKnowledgeId(
+        array $siteContext
+    ): ?string {
+        $siteId = mb_strtolower(
+            trim(
+                (string) (
+                    $siteContext['site_id']
+                    ?? ''
+                )
+            )
+        );
+
+        return match ($siteId) {
+            'montacargas' => 'montacargas',
+            'minicargadores' => 'minicargadores',
+            'bobcat' => 'bobcat',
+            default => null,
+        };
+    }
+
+    private function siteKnowledgeOrigin(
+        string $siteId
+    ): string {
+        return match ($siteId) {
+            'minicargadores' => 'llantasparaminicargadores.com',
+
+            'bobcat' => 'llantasbobcat.com',
+
+            default => 'llantasdemontacargas.com',
+        };
+    }
+
+    private function sanitizeSiteKnowledgeExcerpt(
+        string $content
+    ): string {
+        $content = trim(
+            preg_replace(
+                '/\s+/u',
+                ' ',
+                $content
+            )
+            ?? ''
+        );
+
+        $content =
+            preg_replace(
+                '~https?://[^\s]+~iu',
+                '[enlace omitido]',
+                $content
+            )
+            ?? $content;
+
+        $content =
+            preg_replace(
+                '/\$\s*\d[\d.,]*(?:\s*MXN)?/iu',
+                '[dato comercial omitido]',
+                $content
+            )
+            ?? $content;
+
+        $content =
+            preg_replace(
+                '/\b\d[\d.,]*\s*MXN\b/iu',
+                '[dato comercial omitido]',
+                $content
+            )
+            ?? $content;
+
+        $content =
+            preg_replace(
+                '/\bSKU\s*[:#-]?\s*(?=[A-Z0-9._-]*\d)[A-Z0-9._-]+\b/iu',
+                'SKU [omitido]',
+                $content
+            )
+            ?? $content;
+
+        return trim(
+            mb_substr(
+                $content,
+                0,
+                700
+            )
+        );
+    }
+
+    private function executeSiteKnowledgeTool(
+        string $toolUseId,
+        mixed $input,
+        array $siteContext
+    ): array {
+        if (! is_array($input)) {
+            $input = [];
+        }
+
+        $query =
+            $input['query']
+            ?? null;
+
+        if (! is_scalar($query)) {
+            $query = '';
+        }
+
+        $query = trim(
+            mb_substr(
+                (string) $query,
+                0,
+                180
+            )
+        );
+
+        if ($query === '') {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'site_knowledge_missing_query',
+                    'message' => 'Falta la consulta editorial.',
+                ]),
+            ];
+        }
+
+        $siteId =
+            $this->trustedSiteKnowledgeId(
+                $siteContext
+            );
+
+        if ($siteId === null) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'site_knowledge_unavailable',
+                    'message' => 'El contexto autenticado del sitio no permite consultar conocimiento editorial.',
+                ]),
+            ];
+        }
+
+        $siteKnowledge =
+            $this->siteKnowledge
+            ?? app(
+                SiteKnowledgeService::class
+            );
+
+        $documents = collect(
+            $siteKnowledge->search(
+                $query,
+                $siteId,
+                5
+            )
+        )
+            ->filter(
+                fn ($document): bool => is_array($document)
+                    && (
+                        $document['site']
+                        ?? null
+                    ) === $siteId
+                    && (
+                        $document['authority']
+                        ?? null
+                    ) ===
+                        'site_editorial'
+            )
+            ->map(
+                function (
+                    array $document
+                ): ?array {
+                    $id = trim(
+                        (string) (
+                            $document['id']
+                            ?? ''
+                        )
+                    );
+
+                    $excerpt =
+                        $this
+                            ->sanitizeSiteKnowledgeExcerpt(
+                                (string) (
+                                    $document['content']
+                                    ?? ''
+                                )
+                            );
+
+                    if (
+                        $id === ''
+                        || $excerpt === ''
+                    ) {
+                        return null;
+                    }
+
+                    return [
+                        'id' => $id,
+                        'authority' => 'site_editorial',
+                        'models' => array_values(
+                            array_filter(
+                                (array) (
+                                    $document['models']
+                                    ?? []
+                                ),
+                                'is_string'
+                            )
+                        ),
+                        'measures' => array_values(
+                            array_filter(
+                                (array) (
+                                    $document['measures']
+                                    ?? []
+                                ),
+                                'is_string'
+                            )
+                        ),
+                        'excerpt' => $excerpt,
+                    ];
+                }
+            )
+            ->filter(
+                fn ($document): bool => is_array($document)
+            )
+            ->values()
+            ->all();
+
+        if ($documents === []) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'content' => $this->encodeToolResult([
+                    'status' => 'site_knowledge_not_found',
+                    'authority' => 'site_editorial',
+                    'site' => $siteId,
+                    'message' => 'No se encontro contenido editorial relevante en el sitio autenticado.',
+                ]),
+            ];
+        }
+
+        return [
+            'type' => 'tool_result',
+            'tool_use_id' => $toolUseId,
+            'content' => $this->encodeToolResult([
+                'status' => 'site_knowledge_resolved',
+                'authority' => 'site_editorial',
+                'site' => $siteId,
+                'documents' => $documents,
+            ]),
+        ];
+    }
+
+    private function selectAuthorizedSiteDocuments(
+        array $knowledge,
+        array $documentIds
+    ): array {
+        $requestedIds =
+            collect($documentIds)
+                ->filter(
+                    fn ($id): bool => is_string($id)
+                )
+                ->map(
+                    fn (string $id): string => trim($id)
+                )
+                ->filter(
+                    fn (string $id): bool => $id !== ''
+                )
+                ->unique()
+                ->take(2)
+                ->values();
+
+        $documentsById =
+            collect(
+                $knowledge['documents']
+                ?? []
+            )
+                ->filter(
+                    fn ($document): bool => is_array($document)
+                        && (
+                            $document['authority']
+                            ?? null
+                        ) ===
+                            'site_editorial'
+                        && trim(
+                            (string) (
+                                $document['id']
+                                ?? ''
+                            )
+                        ) !== ''
+                )
+                ->keyBy(
+                    fn (
+                        array $document
+                    ): string => trim(
+                        (string) (
+                            $document['id']
+                            ?? ''
+                        )
+                    )
+                );
+
+        return $requestedIds
+            ->map(
+                fn (string $id) => $documentsById->get(
+                    $id
+                )
+            )
+            ->filter(
+                fn ($document): bool => is_array($document)
+            )
+            ->values()
+            ->all();
+    }
+
+    private function renderAuthorizedSiteSelection(
+        array $knowledge,
+        array $documents
+    ): string {
+        $siteId = trim(
+            (string) (
+                $knowledge['site']
+                ?? ''
+            )
+        );
+
+        if (
+            ! in_array(
+                $siteId,
+                [
+                    'montacargas',
+                    'minicargadores',
+                    'bobcat',
+                ],
+                true
+            )
+        ) {
+            return 'No hay informacion editorial autorizada disponible para responder esta consulta.';
+        }
+
+        $lines =
+            collect($documents)
+                ->filter(
+                    fn ($document): bool => is_array($document)
+                        && (
+                            $document['authority']
+                            ?? null
+                        ) ===
+                            'site_editorial'
+                )
+                ->map(
+                    fn (
+                        array $document
+                    ): string => trim(
+                        (string) (
+                            $document['excerpt']
+                            ?? ''
+                        )
+                    )
+                )
+                ->filter(
+                    fn (
+                        string $excerpt
+                    ): bool => $excerpt !== ''
+                )
+                ->unique()
+                ->values();
+
+        if ($lines->isEmpty()) {
+            return 'No hay informacion editorial autorizada disponible para responder esta consulta.';
+        }
+
+        $origin =
+            $this->siteKnowledgeOrigin(
+                $siteId
+            );
+
+        return
+            'Informacion publicada en '
+            .$origin
+            .':'
+            .PHP_EOL
+            .$lines
+                ->map(
+                    fn (
+                        string $line
+                    ): string => '- '.$line
+                )
+                ->implode(PHP_EOL)
+            .PHP_EOL
+            .PHP_EOL
+            .'Nota: este contenido es editorial del sitio. '
+            .'Las especificaciones tecnicas se confirman con la ficha oficial '
+            .'y los datos comerciales con la tienda verificada.';
+    }
+
+    private function executeSiteKnowledgeSelectionTool(
+        string $toolUseId,
+        mixed $input,
+        ?array $knowledge
+    ): array {
+        if (
+            ! is_array($knowledge)
+            || (
+                $knowledge['status']
+                ?? null
+            ) !==
+                'site_knowledge_resolved'
+            || (
+                $knowledge['authority']
+                ?? null
+            ) !==
+                'site_editorial'
+        ) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'site_selection_unavailable',
+                    'message' => 'No existe un contexto editorial autorizado para seleccionar informacion.',
+                ]),
+            ];
+        }
+
+        if (! is_array($input)) {
+            $input = [];
+        }
+
+        $documentIds =
+            is_array(
+                $input['document_ids']
+                ?? null
+            )
+                ? $input['document_ids']
+                : [];
+
+        $documents =
+            $this
+                ->selectAuthorizedSiteDocuments(
+                    $knowledge,
+                    $documentIds
+                );
+
+        if ($documents === []) {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'is_error' => true,
+                'content' => $this->encodeToolResult([
+                    'status' => 'site_selection_empty',
+                    'message' => 'La seleccion no contiene contenido editorial autorizado.',
+                ]),
+            ];
+        }
+
+        return [
+            'type' => 'tool_result',
+            'tool_use_id' => $toolUseId,
+            'content' => $this->encodeToolResult([
+                'status' => 'site_answer_resolved',
+                'answer' => $this
+                    ->renderAuthorizedSiteSelection(
+                        $knowledge,
+                        $documents
+                    ),
+            ]),
         ];
     }
 
@@ -2063,6 +2784,28 @@ exprese explicitamente una vertical contraria a la predeterminada.
 Cuando ya conozcas tipo, medida y modelo o línea, usa inmediatamente la herramienta buscar_producto. No preguntes al cliente si desea que busques o verifiques.
 
 No inventes valores para completar una llamada a la herramienta.
+
+Para preguntas generales o editoriales sobre contenido publicado en el sitio actual, como FAQs, orientacion general, medidas comunes, compatibilidades publicadas, servicios o explicaciones de las paginas, usa consultar_conocimiento_del_sitio.
+
+consultar_conocimiento_del_sitio recibe unicamente query. Nunca envies site, site_id, dominio, URL ni origen. El servidor determina exclusivamente el sitio autenticado.
+
+Si consultar_conocimiento_del_sitio devuelve site_knowledge_resolved, authority=site_editorial significa que el contenido es editorial publicado por RGX. No es una fuente tecnica autorizada ni una fuente comercial.
+
+Despues de site_knowledge_resolved no redactes, resumas, traduzcas ni parafrasees los fragmentos. Usa inmediatamente seleccionar_informacion_del_sitio con uno o dos document_ids exactos del ultimo resultado.
+
+seleccionar_informacion_del_sitio solo recibe document_ids. El servidor construye la respuesta editorial final.
+
+No uses seleccionar_informacion_del_sitio antes de site_knowledge_resolved ni en la misma ejecucion de herramientas que consultar_conocimiento_del_sitio, buscar_producto, generar_cotizacion, consultar_conocimiento_tecnico o seleccionar_informacion_tecnica.
+
+El contenido site_editorial nunca sustituye conocimiento tecnico oficial. No lo uses por si solo para confirmar capacidad, desempeno, construccion, beneficios tecnicos, durabilidad, seguridad, especificaciones ni comparaciones tecnicas.
+
+Si una pregunta solicita informacion tecnica de una llanta ya verificada, usa consultar_conocimiento_tecnico y no conocimiento editorial del sitio.
+
+Si una pregunta tecnica requiere primero identificar la llanta correcta, completa la identificacion mediante buscar_producto antes de afirmar datos tecnicos.
+
+Para precio, SKU, stock, disponibilidad, URL y otros datos comerciales usa exclusivamente la autoridad devuelta por buscar_producto.
+
+Si consultar_conocimiento_del_sitio no encuentra contenido, no inventes contenido editorial ausente.
 
 No pidas capacidad de carga, lugar de uso, marca del montacargas, aplicación, turnos ni otros datos adicionales por iniciativa propia.
 
