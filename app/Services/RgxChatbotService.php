@@ -57,6 +57,7 @@ class RgxChatbotService
         $response = null;
         $resolvedProduct = null;
         $resolvedQuote = null;
+        $resolvedQuoteStatus = null;
         $productSearchStatus = null;
         $quoteContext = $existingQuoteContext;
         $advisorContext = $existingAdvisorContext;
@@ -97,7 +98,11 @@ class RgxChatbotService
                 }
 
                 return [
-                    'answer' => $answer,
+                    'answer' => $this->finalizeAnswer(
+                        $answer,
+                        $resolvedQuote,
+                        $resolvedQuoteStatus
+                    ),
                     'product' => $resolvedProduct,
                     'product_search_status' => $productSearchStatus,
                     'quote' => $resolvedQuote,
@@ -263,6 +268,7 @@ class RgxChatbotService
                         && is_array($toolPayload['quote'] ?? null)
                     ) {
                         $resolvedQuote = $toolPayload['quote'];
+                        $resolvedQuoteStatus = $status;
                     }
 
                     if (in_array(
@@ -1830,6 +1836,73 @@ class RgxChatbotService
         return trim(implode("\n", $text));
     }
 
+    private function finalizeAnswer(
+        string $answer,
+        ?array $resolvedQuote,
+        ?string $resolvedQuoteStatus
+    ): string {
+        if (
+            ! in_array(
+                $resolvedQuoteStatus,
+                [
+                    'quoted',
+                    'already_quoted',
+                ],
+                true
+            )
+            || ! is_array($resolvedQuote)
+        ) {
+            return $answer;
+        }
+
+        return $this->renderQuoteAnswer(
+            $resolvedQuote,
+            $resolvedQuoteStatus
+        );
+    }
+
+    private function renderQuoteAnswer(
+        array $quote,
+        string $status
+    ): string {
+        $parts = [];
+
+        $parts[] = $status === 'already_quoted'
+            ? 'Esta cotización ya había sido generada.'
+            : 'Excelente, tu cotización fue generada correctamente.';
+
+        $folio = trim(
+            (string) ($quote['folio'] ?? '')
+        );
+
+        if ($folio !== '') {
+            $parts[] = 'Folio: '.$folio;
+        }
+
+        $total = $quote['total'] ?? null;
+
+        if (is_numeric($total)) {
+            $parts[] =
+                'Total: $'
+                .number_format(
+                    (float) $total,
+                    2,
+                    '.',
+                    ','
+                )
+                .' MXN';
+        }
+
+        $parts[] = $status === 'already_quoted'
+            ? 'Los datos de tu cotización ya están registrados. ¿Hay algo más en lo que pueda ayudarte?'
+            : 'Los datos de tu cotización han sido registrados. ¿Hay algo más en lo que pueda ayudarte?';
+
+        return implode(
+            "\n\n",
+            $parts
+        );
+    }
+
     private function systemPrompt(
         array $siteContext = [],
         bool $hasSelectedProduct = false
@@ -2025,6 +2098,8 @@ Si el resultado es invalid_email, solicita un correo electrónico válido.
 Si el resultado es quote_error, informa que no fue posible generar la cotización en ese momento y no inventes folio, total ni PDF.
 
 Si el resultado es quoted, informa al cliente que su cotización fue generada correctamente. En el texto de respuesta puedes mencionar únicamente el folio y el total devueltos por generar_cotizacion, además de datos que el propio cliente ya haya proporcionado como la cantidad solicitada.
+
+Los estados quoted y already_quoted NO autorizan handoff humano. No afirmes ni sugieras que un asesor, vendedor o persona se pondrá en contacto con el cliente, que lo llamará, que procesará su pedido ni que realizará seguimiento, salvo que una solicitud de asesoría haya sido realmente autorizada y confirmada por las herramientas correspondientes.
 
 Si el resultado es already_quoted, no generes otra cotización. Informa que la cotización ya había sido generada y utiliza únicamente el folio y total existentes devueltos por la herramienta.
 
