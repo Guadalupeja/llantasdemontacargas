@@ -969,6 +969,47 @@
           "statement_es": "SK-900 ND est? dise?ada para m?ximo desempe?o sobre concreto, asfalto y otras superficies duras."
         }
       ]
+    },
+    "BIG BOY": {
+      "facts": [
+        {
+          "id": "big-boy-industrial-resistance",
+          "category": "applications",
+          "scope": "family",
+          "status": "approved",
+          "page": 72,
+          "statement": "BIG BOY is a robust tire for industrial use with increased resistance to punctures and wear.",
+          "statement_es": "BIG BOY es un neumático robusto para uso industrial con mayor resistencia a los pinchazos y al desgaste."
+        },
+        {
+          "id": "big-boy-10-16-5-8pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:10-16.5:8pr",
+          "status": "approved",
+          "page": 77,
+          "statement": "For BIG BOY 10-16.5 8 PR, LI/SS 131 A3, at 3.75 bar the official table lists load capacities of 2090 kg at 10 km/h, 1950 kg at 15 km/h, 1740 kg at 20 km/h and 1525 kg at 30 km/h.",
+          "statement_es": "Para BIG BOY 10-16.5 8 PR, LI/SS 131 A3, a 3.75 bar la tabla oficial indica capacidades de carga de 2090 kg a 10 km/h, 1950 kg a 15 km/h, 1740 kg a 20 km/h y 1525 kg a 30 km/h."
+        },
+        {
+          "id": "big-boy-12-16-5-10pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:12-16.5:10pr",
+          "status": "approved",
+          "page": 77,
+          "statement": "For BIG BOY 12-16.5 10 PR, LI/SS 140 A3, at 4.50 bar the official table lists load capacities of 2690 kg at 10 km/h, 2500 kg at 15 km/h, 2240 kg at 20 km/h and 1965 kg at 30 km/h.",
+          "statement_es": "Para BIG BOY 12-16.5 10 PR, LI/SS 140 A3, a 4.50 bar la tabla oficial indica capacidades de carga de 2690 kg a 10 km/h, 2500 kg a 15 km/h, 2240 kg a 20 km/h y 1965 kg a 30 km/h."
+        }
+      ],
+      "match_models": [
+        "BIG BOY",
+        "BIGBOY",
+        "Big Boy"
+      ],
+      "source": {
+        "path": "mitas_con-mh_2019-20_es_lr.pdf",
+        "official_brand": "Mitas / Trelleborg Wheel Systems",
+        "pages": 72
+      }
     }
   }
 }
