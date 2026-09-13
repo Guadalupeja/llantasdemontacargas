@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "authority": "curated_product_identity",
+  "policy": "Maps verified WooCommerce SKU identity to exact technical size and ply rating. Values are never inferred from customer text, generic measure, model name or editorial site content.",
+  "sources": [
+    {
+      "name": "comparativo_guia_rgx_vs_tienda_15jul2026.xlsx",
+      "role": "SKU-to-product identity"
+    },
+    {
+      "name": "mitas_con-mh_2019-20_es_lr.pdf",
+      "pages": [
+        76,
+        77
+      ],
+      "role": "Official model, size, PR and load-table validation"
+    }
+  ],
+  "products": {
+    "5001514680000": {
+      "model": "BIG BOY",
+      "technical_measure": "10-16.5",
+      "store_measures": [
+        "10-16.5",
+        "31x10-20/7.5"
+      ],
+      "ply_rating": 8
+    },
+    "5001514690000": {
+      "model": "BIG BOY",
+      "technical_measure": "12-16.5",
+      "store_measures": [
+        "12-16.5",
+        "33x12-20/7.5"
+      ],
+      "ply_rating": 10
+    },
+    "5001514750000": {
+      "model": "SK-05",
+      "technical_measure": "10-16.5",
+      "store_measures": [
+        "10-16.5",
+        "31x10-20/7.5"
+      ],
+      "ply_rating": 10
+    },
+    "5001514760000": {
+      "model": "SK-05",
+      "technical_measure": "12-16.5",
+      "store_measures": [
+        "12-16.5",
+        "33x12-20/7.5"
+      ],
+      "ply_rating": 12
+    }
+  }
+}

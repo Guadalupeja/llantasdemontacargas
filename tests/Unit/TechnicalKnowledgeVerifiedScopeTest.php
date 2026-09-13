@@ -281,9 +281,11 @@ class TechnicalKnowledgeVerifiedScopeTest extends TestCase
                 ]);
 
         foreach ($scopes as $scope) {
-            $this->assertStringNotStartsWith(
-                'ply:',
-                $scope
+            $this->assertFalse(
+                str_starts_with(
+                    $scope,
+                    'ply:'
+                )
             );
         }
 

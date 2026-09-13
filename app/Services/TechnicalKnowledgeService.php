@@ -278,13 +278,32 @@ class TechnicalKnowledgeService
 
         $measure =
             $this->normalizeMeasureScope(
-                $product['measure']
+                $product['technical_measure']
+                    ?? $product['measure']
                     ?? null
             );
 
         if ($measure !== null) {
             $candidateScopes[] =
                 'measure:'.$measure;
+        }
+
+        $plyRating =
+            $this->normalizePlyRating(
+                $product['ply_rating']
+                    ?? null
+            );
+
+        if (
+            $measure !== null
+            && $plyRating !== null
+        ) {
+            $candidateScopes[] =
+                'spec:'
+                .$measure
+                .':'
+                .$plyRating
+                .'pr';
         }
 
         $normalizedModel =
@@ -378,6 +397,7 @@ class TechnicalKnowledgeService
             [
                 'variant:',
                 'measure:',
+                'spec:',
             ]
         );
     }
@@ -388,6 +408,50 @@ class TechnicalKnowledgeService
      *
      * No interpreta equivalencias entre medidas diferentes.
      */
+    private function normalizePlyRating(
+        mixed $value
+    ): ?int {
+        if (
+            is_int($value)
+            || is_float($value)
+        ) {
+            $rating =
+                (int) $value;
+
+            return $rating > 0
+                && $rating <= 40
+                    ? $rating
+                    : null;
+        }
+
+        $value =
+            trim(
+                (string) $value
+            );
+
+        if (
+            $value === ''
+            || preg_match(
+                '/^(\d{1,2})(?:\s*pr)?$/i',
+                $value,
+                $matches
+            ) !== 1
+        ) {
+            return null;
+        }
+
+        $rating =
+            (int) (
+                $matches[1]
+                ?? 0
+            );
+
+        return $rating > 0
+            && $rating <= 40
+                ? $rating
+                : null;
+    }
+
     private function normalizeMeasureScope(
         mixed $value
     ): ?string {

@@ -729,6 +729,34 @@
           "page": 2,
           "statement": "Its low void ratio and improved tread depth are intended to increase tire life.",
           "statement_es": "Su bajo índice de huecos y la profundidad mejorada del dibujo están orientados a incrementar la vida del neumático."
+        },
+        {
+          "id": "sk05-10-16-5-10pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:10-16.5:10pr",
+          "status": "approved",
+          "page": 77,
+          "statement": "For SK-05 10-16.5 10 PR, LI/SS 135 A3, at 5.00 bar the official table lists load capacities of 2330 kg at 10 km/h, 2180 kg at 15 km/h, 1945 kg at 20 km/h and 1710 kg at 30 km/h.",
+          "statement_es": "Para SK-05 10-16.5 10 PR, LI/SS 135 A3, a 5.00 bar la tabla oficial indica capacidades de carga de 2330 kg a 10 km/h, 2180 kg a 15 km/h, 1945 kg a 20 km/h y 1710 kg a 30 km/h.",
+          "source": {
+            "path": "mitas_con-mh_2019-20_es_lr.pdf",
+            "official_brand": "Mitas / Trelleborg Wheel Systems",
+            "page": 77
+          }
+        },
+        {
+          "id": "sk05-12-16-5-12pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:12-16.5:12pr",
+          "status": "approved",
+          "page": 77,
+          "statement": "For SK-05 12-16.5 12 PR, LI/SS 144 A3, at 5.50 bar the official table lists load capacities of 3025 kg at 10 km/h, 2800 kg at 15 km/h, 2520 kg at 20 km/h and 2220 kg at 30 km/h.",
+          "statement_es": "Para SK-05 12-16.5 12 PR, LI/SS 144 A3, a 5.50 bar la tabla oficial indica capacidades de carga de 3025 kg a 10 km/h, 2800 kg a 15 km/h, 2520 kg a 20 km/h y 2220 kg a 30 km/h.",
+          "source": {
+            "path": "mitas_con-mh_2019-20_es_lr.pdf",
+            "official_brand": "Mitas / Trelleborg Wheel Systems",
+            "page": 77
+          }
         }
       ]
     },
