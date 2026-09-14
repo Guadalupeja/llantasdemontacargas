@@ -978,6 +978,141 @@
           "page": 1,
           "statement": "Brawler Skid Steer uses a premium mining rubber compound that is abrasion and chunk resistant.",
           "statement_es": "Utiliza un compuesto premium para miner?a resistente a la abrasi?n y al desprendimiento de material."
+        },
+        {
+          "id": "brawler-hd-solidflex-traction-31x6x10-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-solidflex-traction:31x6x10",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Solidflex Traction 31x6x10, pneumatic equivalent 10-16.5, the official table lists overall diameter 785 mm, section width 254 mm, rubber thickness 158 mm, tread depth 48 mm and load capacity 3000 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Solidflex Traction 31x6x10, equivalente neumático 10-16.5, la tabla oficial indica diámetro exterior 785 mm, ancho de sección 254 mm, espesor de hule 158 mm, profundidad de dibujo 48 mm y capacidad de carga 3000 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-solidflex-traction-33x6x11-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-solidflex-traction:33x6x11",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Solidflex Traction 33x6x11, pneumatic equivalent 12-16.5, the official table lists overall diameter 840 mm, section width 279 mm, rubber thickness 155 mm, tread depth 61 mm and load capacity 3600 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Solidflex Traction 33x6x11, equivalente neumático 12-16.5, la tabla oficial indica diámetro exterior 840 mm, ancho de sección 279 mm, espesor de hule 155 mm, profundidad de dibujo 61 mm y capacidad de carga 3600 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-solidflex-traction-36x7x11-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-solidflex-traction:36x7x11",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Solidflex Traction 36x7x11, pneumatic equivalent 14-17.5, the official table lists overall diameter 915 mm, section width 279 mm, rubber thickness 168 mm, tread depth 71 mm and load capacity 3885 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Solidflex Traction 36x7x11, equivalente neumático 14-17.5, la tabla oficial indica diámetro exterior 915 mm, ancho de sección 279 mm, espesor de hule 168 mm, profundidad de dibujo 71 mm y capacidad de carga 3885 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-solidflex-smooth-31x5x9-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-solidflex-smooth:31x5x9",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Solidflex Smooth 31x5x9, pneumatic equivalent 10-16.5, the official table lists overall diameter 785 mm, section width 229 mm, rubber thickness 131 mm, tread depth 48 mm and load capacity 2690 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Solidflex Smooth 31x5x9, equivalente neumático 10-16.5, la tabla oficial indica diámetro exterior 785 mm, ancho de sección 229 mm, espesor de hule 131 mm, profundidad de dibujo 48 mm y capacidad de carga 2690 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-solidflex-smooth-33x6x8-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-solidflex-smooth:33x6x8",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Solidflex Smooth 33x6x8, pneumatic equivalent 8-16, the official table lists overall diameter 840 mm, section width 203 mm, rubber thickness 156 mm, tread depth 61 mm and load capacity 2500 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Solidflex Smooth 33x6x8, equivalente neumático 8-16, la tabla oficial indica diámetro exterior 840 mm, ancho de sección 203 mm, espesor de hule 156 mm, profundidad de dibujo 61 mm y capacidad de carga 2500 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-solidflex-smooth-33x6x10-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-solidflex-smooth:33x6x10",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Solidflex Smooth 33x6x10, pneumatic equivalent 12-16.5, the official table lists overall diameter 840 mm, section width 254 mm, rubber thickness 156 mm, tread depth 61 mm and load capacity 3340 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Solidflex Smooth 33x6x10, equivalente neumático 12-16.5, la tabla oficial indica diámetro exterior 840 mm, ancho de sección 254 mm, espesor de hule 156 mm, profundidad de dibujo 61 mm y capacidad de carga 3340 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-traction-31x5x7-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-traction:31x5x7",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Traction 31x5x7, pneumatic equivalent 7.50-16, the official table lists overall diameter 785 mm, section width 178 mm, rubber thickness 131 mm, tread depth 38 mm and load capacity 2460 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Traction 31x5x7, equivalente neumático 7.50-16, la tabla oficial indica diámetro exterior 785 mm, ancho de sección 178 mm, espesor de hule 131 mm, profundidad de dibujo 38 mm y capacidad de carga 2460 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-traction-31x5x8-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-traction:31x5x8",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Traction 31x5x8, pneumatic equivalent 10-16.5, the official table lists overall diameter 785 mm, section width 229 mm, rubber thickness 131 mm, tread depth 38 mm and load capacity 3290 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Traction 31x5x8, equivalente neumático 10-16.5, la tabla oficial indica diámetro exterior 785 mm, ancho de sección 229 mm, espesor de hule 131 mm, profundidad de dibujo 38 mm y capacidad de carga 3290 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-traction-33x6x8-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-traction:33x6x8",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Traction 33x6x8, pneumatic equivalent 8-16, the official table lists overall diameter 840 mm, section width 203 mm, rubber thickness 156 mm, tread depth 46 mm and load capacity 2875 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Traction 33x6x8, equivalente neumático 8-16, la tabla oficial indica diámetro exterior 840 mm, ancho de sección 203 mm, espesor de hule 156 mm, profundidad de dibujo 46 mm y capacidad de carga 2875 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-traction-33x6x10-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-traction:33x6x10",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Traction 33x6x10, pneumatic equivalent 12-16.5, the official table lists overall diameter 840 mm, section width 254 mm, rubber thickness 156 mm, tread depth 46 mm and load capacity 3705 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Traction 33x6x10, equivalente neumático 12-16.5, la tabla oficial indica diámetro exterior 840 mm, ancho de sección 254 mm, espesor de hule 156 mm, profundidad de dibujo 46 mm y capacidad de carga 3705 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-smooth-31x5x7-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-smooth:31x5x7",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Smooth 31x5x7, pneumatic equivalent 7.50-16, the official table lists overall diameter 785 mm, section width 178 mm, rubber thickness 131 mm, tread depth 48 mm and load capacity 2460 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Smooth 31x5x7, equivalente neumático 7.50-16, la tabla oficial indica diámetro exterior 785 mm, ancho de sección 178 mm, espesor de hule 131 mm, profundidad de dibujo 48 mm y capacidad de carga 2460 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-smooth-31x5x9-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-smooth:31x5x9",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Smooth 31x5x9, pneumatic equivalent 10-16.5, the official table lists overall diameter 785 mm, section width 229 mm, rubber thickness 131 mm, tread depth 48 mm and load capacity 3290 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Smooth 31x5x9, equivalente neumático 10-16.5, la tabla oficial indica diámetro exterior 785 mm, ancho de sección 229 mm, espesor de hule 131 mm, profundidad de dibujo 48 mm y capacidad de carga 3290 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-smooth-33x6x8-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-smooth:33x6x8",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Smooth 33x6x8, pneumatic equivalent 8-16, the official table lists overall diameter 840 mm, section width 203 mm, rubber thickness 156 mm, tread depth 61 mm and load capacity 2875 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Smooth 33x6x8, equivalente neumático 8-16, la tabla oficial indica diámetro exterior 840 mm, ancho de sección 203 mm, espesor de hule 156 mm, profundidad de dibujo 61 mm y capacidad de carga 2875 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-smooth-33x6x10-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-smooth:33x6x10",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Smooth 33x6x10, pneumatic equivalent 12-16.5, the official table lists overall diameter 840 mm, section width 254 mm, rubber thickness 156 mm, tread depth 61 mm and load capacity 3705 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Smooth 33x6x10, equivalente neumático 12-16.5, la tabla oficial indica diámetro exterior 840 mm, ancho de sección 254 mm, espesor de hule 156 mm, profundidad de dibujo 61 mm y capacidad de carga 3705 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hd-smooth-36x7x11-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hd-smooth:36x7x11",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HD HD Smooth 36x7x11, pneumatic equivalent 14-17.5, the official table lists overall diameter 915 mm, section width 279 mm, rubber thickness 169 mm, tread depth 117 mm and load capacity 4245 kg at 10 km/h.",
+          "statement_es": "Para Brawler HD HD Smooth 36x7x11, equivalente neumático 14-17.5, la tabla oficial indica diámetro exterior 915 mm, ancho de sección 279 mm, espesor de hule 169 mm, profundidad de dibujo 117 mm y capacidad de carga 4245 kg a 10 km/h."
         }
       ]
     },
