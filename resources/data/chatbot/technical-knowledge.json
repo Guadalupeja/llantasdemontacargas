@@ -909,6 +909,51 @@
           "page": 1,
           "statement": "SK-800 provides high stability and maximum safety.",
           "statement_es": "SK-800 est? orientada a ofrecer alta estabilidad y seguridad durante la operaci?n."
+        },
+        {
+          "id": "sk800-23-8-5-12-6pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:23-8.5-12:6pr",
+          "status": "approved",
+          "page": 1,
+          "statement": "For SK-800 23x8.5-12 6 PR, the official table lists rim 7.0-12, overall diameter 574 mm, section width 213 mm, tread depth 15 mm, inflation pressure 3.40 bar and load capacity 820 kg at 10 km/h.",
+          "statement_es": "Para SK-800 23x8.5-12 6 PR, la tabla oficial indica rin 7.0-12, diámetro exterior 574 mm, ancho de sección 213 mm, profundidad de dibujo 15 mm, presión de inflado 3.40 bar y capacidad de carga 820 kg a 10 km/h."
+        },
+        {
+          "id": "sk800-27-8-5-15-8pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:27-8.5-15:8pr",
+          "status": "approved",
+          "page": 1,
+          "statement": "For SK-800 27x8.5-15 8 PR, the official table lists rim 7.0-15, overall diameter 678 mm, section width 213 mm, tread depth 15 mm, inflation pressure 4.15 bar and load capacity 1305 kg at 10 km/h.",
+          "statement_es": "Para SK-800 27x8.5-15 8 PR, la tabla oficial indica rin 7.0-15, diámetro exterior 678 mm, ancho de sección 213 mm, profundidad de dibujo 15 mm, presión de inflado 4.15 bar y capacidad de carga 1305 kg a 10 km/h."
+        },
+        {
+          "id": "sk800-10-16-5-8pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:10-16.5:8pr",
+          "status": "approved",
+          "page": 1,
+          "statement": "For SK-800 10-16.5 8 PR, the official table lists rim 8.25-16.5, overall diameter 751 mm, section width 270 mm, tread depth 18 mm, inflation pressure 4.10 bar and load capacity 1880 kg at 10 km/h.",
+          "statement_es": "Para SK-800 10-16.5 8 PR, la tabla oficial indica rin 8.25-16.5, diámetro exterior 751 mm, ancho de sección 270 mm, profundidad de dibujo 18 mm, presión de inflado 4.10 bar y capacidad de carga 1880 kg a 10 km/h."
+        },
+        {
+          "id": "sk800-10-16-5-10pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:10-16.5:10pr",
+          "status": "approved",
+          "page": 1,
+          "statement": "For SK-800 10-16.5 10 PR, the official table lists rim 8.25-16.5, overall diameter 751 mm, section width 270 mm, tread depth 18 mm, inflation pressure 5.20 bar and load capacity 2135 kg at 10 km/h.",
+          "statement_es": "Para SK-800 10-16.5 10 PR, la tabla oficial indica rin 8.25-16.5, diámetro exterior 751 mm, ancho de sección 270 mm, profundidad de dibujo 18 mm, presión de inflado 5.20 bar y capacidad de carga 2135 kg a 10 km/h."
+        },
+        {
+          "id": "sk800-12-16-5-10pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:12-16.5:10pr",
+          "status": "approved",
+          "page": 1,
+          "statement": "For SK-800 12-16.5 10 PR, the official table lists rim 9.75-16.5, overall diameter 815 mm, section width 308 mm, tread depth 19 mm, inflation pressure 4.50 bar and load capacity 2540 kg at 10 km/h.",
+          "statement_es": "Para SK-800 12-16.5 10 PR, la tabla oficial indica rin 9.75-16.5, diámetro exterior 815 mm, ancho de sección 308 mm, profundidad de dibujo 19 mm, presión de inflado 4.50 bar y capacidad de carga 2540 kg a 10 km/h."
         }
       ]
     },
@@ -967,6 +1012,132 @@
           "page": 1,
           "statement": "SK-900 ND is designed for maximum performance on concrete, asphalt and other hard surfaces.",
           "statement_es": "SK-900 ND est? dise?ada para m?ximo desempe?o sobre concreto, asfalto y otras superficies duras."
+        },
+        {
+          "id": "sk900-standard-23-8-5-12-12pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:23-8.5-12:12pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 23x8.5-12 12 PR, the official table lists rim 7.0-12, overall diameter 579 mm, section width 213 mm, tread depth 12 mm, inflation pressure 7.30 bar and load capacity 1250 kg at 10 km/h.",
+          "statement_es": "Para SK-900 23x8.5-12 12 PR, la tabla oficial indica rin 7.0-12, diámetro exterior 579 mm, ancho de sección 213 mm, profundidad de dibujo 12 mm, presión de inflado 7.30 bar y capacidad de carga 1250 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-27-10-12-14pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:27-10-12:14pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 27x10-12 14 PR, alternative size 250/75-12, the official table lists rim 8.00G-12, overall diameter 690 mm, section width 255 mm, tread depth 18 mm, inflation pressure 7.00 bar and load capacity 3540 kg at 10 km/h.",
+          "statement_es": "Para SK-900 27x10-12 14 PR, medida alternativa 250/75-12, la tabla oficial indica rin 8.00G-12, diámetro exterior 690 mm, ancho de sección 255 mm, profundidad de dibujo 18 mm, presión de inflado 7.00 bar y capacidad de carga 3540 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-27-10-5-15-16pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:27-10.5-15:16pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 27x10.5-15 16 PR, the official table lists rim W8.0-15, overall diameter 691 mm, section width 259 mm, tread depth 13 mm, inflation pressure 7.10 bar and load capacity 1800 kg at 10 km/h.",
+          "statement_es": "Para SK-900 27x10.5-15 16 PR, la tabla oficial indica rin W8.0-15, diámetro exterior 691 mm, ancho de sección 259 mm, profundidad de dibujo 13 mm, presión de inflado 7.10 bar y capacidad de carga 1800 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-29-12-5-15-8pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:29-12.5-15:8pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 29x12.5-15 8 PR, the official table lists rim 10.0-15, overall diameter 742 mm, section width 310 mm, tread depth 18 mm, inflation pressure 3.20 bar and load capacity 1530 kg at 10 km/h.",
+          "statement_es": "Para SK-900 29x12.5-15 8 PR, la tabla oficial indica rin 10.0-15, diámetro exterior 742 mm, ancho de sección 310 mm, profundidad de dibujo 18 mm, presión de inflado 3.20 bar y capacidad de carga 1530 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-31-15-5-15-8pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:31-15.5-15:8pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 31x15.5-15 8 PR, the official table lists rim 13.0-15, overall diameter 792 mm, section width 391 mm, tread depth 20 mm, inflation pressure 3.10 bar and load capacity 1975 kg at 10 km/h.",
+          "statement_es": "Para SK-900 31x15.5-15 8 PR, la tabla oficial indica rin 13.0-15, diámetro exterior 792 mm, ancho de sección 391 mm, profundidad de dibujo 20 mm, presión de inflado 3.10 bar y capacidad de carga 1975 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-10-16-5-8pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:10-16.5:8pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 10-16.5 8 PR, the official table lists rim 8.25-16.5, overall diameter 773 mm, section width 264 mm, tread depth 19 mm, inflation pressure 4.10 bar and load capacity 1880 kg at 10 km/h.",
+          "statement_es": "Para SK-900 10-16.5 8 PR, la tabla oficial indica rin 8.25-16.5, diámetro exterior 773 mm, ancho de sección 264 mm, profundidad de dibujo 19 mm, presión de inflado 4.10 bar y capacidad de carga 1880 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-10-16-5-10pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:10-16.5:10pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 10-16.5 10 PR, the official table lists rim 8.25-16.5, overall diameter 773 mm, section width 264 mm, tread depth 19 mm, inflation pressure 5.20 bar and load capacity 2135 kg at 10 km/h.",
+          "statement_es": "Para SK-900 10-16.5 10 PR, la tabla oficial indica rin 8.25-16.5, diámetro exterior 773 mm, ancho de sección 264 mm, profundidad de dibujo 19 mm, presión de inflado 5.20 bar y capacidad de carga 2135 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-31-5-13-16-5-10pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:31.5-13-16.5:10pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 31.5x13-16.5 10 PR, the official table lists rim 9.75-16.5, overall diameter 790 mm, section width 326 mm, tread depth 20 mm, inflation pressure 4.90 bar and load capacity 2575 kg at 10 km/h.",
+          "statement_es": "Para SK-900 31.5x13-16.5 10 PR, la tabla oficial indica rin 9.75-16.5, diámetro exterior 790 mm, ancho de sección 326 mm, profundidad de dibujo 20 mm, presión de inflado 4.90 bar y capacidad de carga 2575 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-12-16-5-10pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:12-16.5:10pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 12-16.5 10 PR, the official table lists rim 9.75-16.5, overall diameter 831 mm, section width 307 mm, tread depth 17 mm, inflation pressure 4.50 bar and load capacity 2540 kg at 10 km/h.",
+          "statement_es": "Para SK-900 12-16.5 10 PR, la tabla oficial indica rin 9.75-16.5, diámetro exterior 831 mm, ancho de sección 307 mm, profundidad de dibujo 17 mm, presión de inflado 4.50 bar y capacidad de carga 2540 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-12-16-5-12pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:12-16.5:12pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 12-16.5 12 PR, the official table lists rim 9.75-16.5, overall diameter 831 mm, section width 307 mm, tread depth 17 mm, inflation pressure 5.50 bar and load capacity 2865 kg at 10 km/h.",
+          "statement_es": "Para SK-900 12-16.5 12 PR, la tabla oficial indica rin 9.75-16.5, diámetro exterior 831 mm, ancho de sección 307 mm, profundidad de dibujo 17 mm, presión de inflado 5.50 bar y capacidad de carga 2865 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-14-17-5-14pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:14-17.5:14pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 14-17.5 14 PR, the official table lists rim 10.50-17.5, overall diameter 921 mm, section width 349 mm, tread depth 22 mm, inflation pressure 5.50 bar and load capacity 3875 kg at 10 km/h.",
+          "statement_es": "Para SK-900 14-17.5 14 PR, la tabla oficial indica rin 10.50-17.5, diámetro exterior 921 mm, ancho de sección 349 mm, profundidad de dibujo 22 mm, presión de inflado 5.50 bar y capacidad de carga 3875 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-standard-15-19-5-14pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:standard:15-19.5:14pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 15-19.5 14 PR, the official table lists rim 11.75-19.5, overall diameter 1019 mm, section width 389 mm, tread depth 22 mm, inflation pressure 4.80 bar and load capacity 4565 kg at 10 km/h.",
+          "statement_es": "Para SK-900 15-19.5 14 PR, la tabla oficial indica rin 11.75-19.5, diámetro exterior 1019 mm, ancho de sección 389 mm, profundidad de dibujo 22 mm, presión de inflado 4.80 bar y capacidad de carga 4565 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-nd-10-16-5-10pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:nd:10-16.5:10pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 ND 10-16.5 10 PR, the official table lists rim 8.25-16.5, overall diameter 773 mm, section width 264 mm, tread depth 27 mm, inflation pressure 5.20 bar and load capacity 2135 kg at 10 km/h.",
+          "statement_es": "Para SK-900 ND 10-16.5 10 PR, la tabla oficial indica rin 8.25-16.5, diámetro exterior 773 mm, ancho de sección 264 mm, profundidad de dibujo 27 mm, presión de inflado 5.20 bar y capacidad de carga 2135 kg a 10 km/h."
+        },
+        {
+          "id": "sk900-nd-12-16-5-12pr-load-table",
+          "category": "load_capacity",
+          "scope": "spec:nd:12-16.5:12pr",
+          "status": "approved",
+          "page": 2,
+          "statement": "For SK-900 ND 12-16.5 12 PR, the official table lists rim 9.75-16.5, overall diameter 831 mm, section width 307 mm, tread depth 33 mm, inflation pressure 5.50 bar and load capacity 2865 kg at 10 km/h.",
+          "statement_es": "Para SK-900 ND 12-16.5 12 PR, la tabla oficial indica rin 9.75-16.5, diámetro exterior 831 mm, ancho de sección 307 mm, profundidad de dibujo 33 mm, presión de inflado 5.50 bar y capacidad de carga 2865 kg a 10 km/h."
         }
       ]
     },

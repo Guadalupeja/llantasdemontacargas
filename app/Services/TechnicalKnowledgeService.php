@@ -306,6 +306,61 @@ class TechnicalKnowledgeService
                 .'pr';
         }
 
+        /*
+         * SK-900 and SK-900 ND share one curated family,
+         * but their official technical tables are not
+         * interchangeable. Build an additional exact
+         * server-controlled scope from the verified model.
+         */
+        if (
+            $familyName === 'SK-900'
+            && $measure !== null
+            && $plyRating !== null
+        ) {
+            $scopeModel =
+                Str::lower(
+                    Str::ascii(
+                        $model
+                    )
+                );
+
+            $scopeModel =
+                preg_replace(
+                    '/[^a-z0-9]+/',
+                    ' ',
+                    $scopeModel
+                );
+
+            $scopeModel =
+                trim(
+                    preg_replace(
+                        '/\s+/',
+                        ' ',
+                        is_string($scopeModel)
+                            ? $scopeModel
+                            : ''
+                    )
+                    ?? ''
+                );
+
+            $sk900Variant =
+                preg_match(
+                    '/(?:^|\s)nd(?:\s|$)/',
+                    $scopeModel
+                ) === 1
+                    ? 'nd'
+                    : 'standard';
+
+            $candidateScopes[] =
+                'spec:'
+                .$sk900Variant
+                .':'
+                .$measure
+                .':'
+                .$plyRating
+                .'pr';
+        }
+
         $normalizedModel =
             $this->normalizeAttribute(
                 $model
