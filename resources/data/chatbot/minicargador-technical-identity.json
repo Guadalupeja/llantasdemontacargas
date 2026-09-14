@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "curated_product_identity",
-  "policy": "Maps verified WooCommerce SKU identity to exact technical size and ply rating. Values are never inferred from customer text, generic measure, model name or editorial site content.",
+  "policy": "Maps verified WooCommerce SKU identity to exact technical attributes or an exact curated technical spec scope. Values are never inferred from customer text, generic measure, model name or editorial site content.",
   "sources": [
     {
       "name": "comparativo_guia_rgx_vs_tienda_15jul2026.xlsx",
@@ -17,6 +17,62 @@
     }
   ],
   "products": {
+    "20000969": {
+      "model": "Brawler HPS SS SF TR TFT",
+      "store_measures": [
+        "10-16.5",
+        "31x10-20/7.5"
+      ],
+      "technical_spec_scope": "spec:hps-solidflex-traction:31x10-20"
+    },
+    "20000977": {
+      "model": "Brawler HPS SS SM",
+      "store_measures": [
+        "12-16.5",
+        "33x12-20/7.5"
+      ],
+      "technical_spec_scope": "spec:hps-smooth:33x12-20"
+    },
+    "20000992": {
+      "model": "Brawler HPS SS SF",
+      "store_measures": [
+        "12-16.5",
+        "33x12-20/7.5"
+      ],
+      "technical_spec_scope": "spec:hps-solidflex-traction:33x12-20"
+    },
+    "20006978": {
+      "model": "Brawler HPS SS SF TR-A",
+      "store_measures": [
+        "10-16.5",
+        "31x10-20/7.5"
+      ],
+      "technical_spec_scope": "spec:hps-solidflex-traction:31x10-20"
+    },
+    "20006980": {
+      "model": "Brawler HPS SS SF TR-A",
+      "store_measures": [
+        "12-16.5",
+        "33x12-20/7.5"
+      ],
+      "technical_spec_scope": "spec:hps-solidflex-traction:33x12-20"
+    },
+    "25017260": {
+      "model": "Brawler HPS SS SF SM-A",
+      "store_measures": [
+        "12-16.5",
+        "33x12-20/7.5"
+      ],
+      "technical_spec_scope": "spec:hps-solidflex-smooth:33x12-20"
+    },
+    "25017265": {
+      "model": "Brawler HPS SS SM-A",
+      "store_measures": [
+        "10-16.5",
+        "31x10-20/7.5"
+      ],
+      "technical_spec_scope": "spec:hps-smooth:31x10-20"
+    },
     "5001514680000": {
       "model": "BIG BOY",
       "technical_measure": "10-16.5",

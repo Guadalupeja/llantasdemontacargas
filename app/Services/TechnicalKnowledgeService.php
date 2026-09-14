@@ -276,6 +276,30 @@ class TechnicalKnowledgeService
 
         $candidateScopes = [];
 
+        $technicalSpecScope =
+            trim(
+                (string) (
+                    $product[
+                        'technical_spec_scope'
+                    ]
+                    ?? ''
+                )
+            );
+
+        if (
+            $technicalSpecScope !== ''
+            && Str::startsWith(
+                $technicalSpecScope,
+                'spec:'
+            )
+            && $this->isServerControlledFactScope(
+                $technicalSpecScope
+            )
+        ) {
+            $candidateScopes[] =
+                $technicalSpecScope;
+        }
+
         $measure =
             $this->normalizeMeasureScope(
                 $product['technical_measure']

@@ -240,6 +240,10 @@ class RuguexStoreCatalogService
                     'ply_rating'
                 ]
                 ?? null,
+            'technical_spec_scope' => $technicalIdentity[
+                    'technical_spec_scope'
+                ]
+                ?? null,
             'type' => $this->normalizeSlugAttribute(
                 $this->attributeValue(
                     $product,
@@ -467,18 +471,53 @@ class RuguexStoreCatalogService
                 ?? 0
             );
 
+        $technicalSpecScope =
+            trim(
+                (string) (
+                    $identity[
+                        'technical_spec_scope'
+                    ]
+                    ?? ''
+                )
+            );
+
+        $hasPneumaticIdentity =
+            $technicalMeasure !== ''
+            && $plyRating > 0;
+
+        $hasExactSpecIdentity =
+            $technicalSpecScope !== ''
+            && Str::startsWith(
+                $technicalSpecScope,
+                'spec:'
+            );
+
         if (
-            $technicalMeasure === ''
-            || $plyRating <= 0
+            ! $hasPneumaticIdentity
+            && ! $hasExactSpecIdentity
         ) {
             return [];
         }
 
-        return [
-            'technical_measure' => $technicalMeasure,
+        $resolved = [];
 
-            'ply_rating' => $plyRating,
-        ];
+        if ($hasPneumaticIdentity) {
+            $resolved[
+                'technical_measure'
+            ] = $technicalMeasure;
+
+            $resolved[
+                'ply_rating'
+            ] = $plyRating;
+        }
+
+        if ($hasExactSpecIdentity) {
+            $resolved[
+                'technical_spec_scope'
+            ] = $technicalSpecScope;
+        }
+
+        return $resolved;
     }
 
     private function resolveTechnicalIdentitySku(
@@ -702,6 +741,7 @@ class RuguexStoreCatalogService
             $product['brand'] ?? '',
             $product['technical_measure'] ?? '',
             $product['ply_rating'] ?? '',
+            $product['technical_spec_scope'] ?? '',
         ];
 
         return collect($parts)

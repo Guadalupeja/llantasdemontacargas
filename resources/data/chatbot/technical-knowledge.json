@@ -821,6 +821,123 @@
           "page": 1,
           "statement": "Its deep lug tread design offers three times more wear than a pneumatic tire.",
           "statement_es": "Su dise?o de banda profunda ofrece hasta tres veces m?s material de desgaste que una llanta neum?tica."
+        },
+        {
+          "id": "brawler-hps-solidflex-traction-30x10-16-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-solidflex-traction:30x10-16",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Solidflex Traction 30x10-16, pneumatic equivalent 10-16.5, the official table lists rim 6.00-16, overall diameter 759 mm, section width 236 mm, tread depth 44 mm and load capacity 3000 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Solidflex Traction 30x10-16, equivalente neumático 10-16.5, la tabla oficial indica rin 6.00-16, diámetro exterior 759 mm, ancho de sección 236 mm, profundidad de dibujo 44 mm y capacidad de carga 3000 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-solidflex-traction-31x10-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-solidflex-traction:31x10-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Solidflex Traction 31x10-20, pneumatic equivalent 10-16.5, the official table lists rim 7.5-20, overall diameter 785 mm, section width 254 mm, tread depth 41 mm and load capacity 2815 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Solidflex Traction 31x10-20, equivalente neumático 10-16.5, la tabla oficial indica rin 7.5-20, diámetro exterior 785 mm, ancho de sección 254 mm, profundidad de dibujo 41 mm y capacidad de carga 2815 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-solidflex-traction-33x12-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-solidflex-traction:33x12-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Solidflex Traction 33x12-20, pneumatic equivalent 12-16.5, the official table lists rim 7.5-20, overall diameter 840 mm, section width 284 mm, tread depth 56 mm and load capacity 2970 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Solidflex Traction 33x12-20, equivalente neumático 12-16.5, la tabla oficial indica rin 7.5-20, diámetro exterior 840 mm, ancho de sección 284 mm, profundidad de dibujo 56 mm y capacidad de carga 2970 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-solidflex-traction-36x14-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-solidflex-traction:36x14-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Solidflex Traction 36x14-20, pneumatic equivalent 14-17.5, the official table lists rim 7.5-20, overall diameter 915 mm, section width 356 mm, tread depth 71 mm and load capacity 3310 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Solidflex Traction 36x14-20, equivalente neumático 14-17.5, la tabla oficial indica rin 7.5-20, diámetro exterior 915 mm, ancho de sección 356 mm, profundidad de dibujo 71 mm y capacidad de carga 3310 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-solidflex-traction-40x14-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-solidflex-traction:40x14-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Solidflex Traction 40x14-20, pneumatic equivalent 15-19.5, the official table lists rim 10.0-20, overall diameter 1015 mm, section width 356 mm, tread depth 94 mm and load capacity 4955 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Solidflex Traction 40x14-20, equivalente neumático 15-19.5, la tabla oficial indica rin 10.0-20, diámetro exterior 1015 mm, ancho de sección 356 mm, profundidad de dibujo 94 mm y capacidad de carga 4955 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-solidflex-smooth-31x10-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-solidflex-smooth:31x10-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Solidflex Smooth 31x10-20, pneumatic equivalent 10-16.5, the official table lists rim 7.5-20, overall diameter 785 mm, section width 254 mm, tread depth 41 mm and load capacity 2815 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Solidflex Smooth 31x10-20, equivalente neumático 10-16.5, la tabla oficial indica rin 7.5-20, diámetro exterior 785 mm, ancho de sección 254 mm, profundidad de dibujo 41 mm y capacidad de carga 2815 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-solidflex-smooth-33x12-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-solidflex-smooth:33x12-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Solidflex Smooth 33x12-20, pneumatic equivalent 12-16.5, the official table lists rim 7.5-20, overall diameter 840 mm, section width 284 mm, tread depth 56 mm and load capacity 2970 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Solidflex Smooth 33x12-20, equivalente neumático 12-16.5, la tabla oficial indica rin 7.5-20, diámetro exterior 840 mm, ancho de sección 284 mm, profundidad de dibujo 56 mm y capacidad de carga 2970 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-solidflex-smooth-36x14-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-solidflex-smooth:36x14-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Solidflex Smooth 36x14-20, pneumatic equivalent 14-17.5, the official table lists rim 7.5-20, overall diameter 915 mm, section width 356 mm, tread depth 71 mm and load capacity 3310 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Solidflex Smooth 36x14-20, equivalente neumático 14-17.5, la tabla oficial indica rin 7.5-20, diámetro exterior 915 mm, ancho de sección 356 mm, profundidad de dibujo 71 mm y capacidad de carga 3310 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-solidflex-smooth-40x14-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-solidflex-smooth:40x14-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Solidflex Smooth 40x14-20, pneumatic equivalent 15-19.5, the official table lists rim 10.0-20, overall diameter 1015 mm, section width 356 mm, tread depth 94 mm and load capacity 4955 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Solidflex Smooth 40x14-20, equivalente neumático 15-19.5, la tabla oficial indica rin 10.0-20, diámetro exterior 1015 mm, ancho de sección 356 mm, profundidad de dibujo 94 mm y capacidad de carga 4955 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-smooth-31x10-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-smooth:31x10-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Smooth 31x10-20, pneumatic equivalent 10-16.5, the official table lists rim 7.5-20, overall diameter 785 mm, section width 254 mm, tread depth 41 mm and load capacity 3755 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Smooth 31x10-20, equivalente neumático 10-16.5, la tabla oficial indica rin 7.5-20, diámetro exterior 785 mm, ancho de sección 254 mm, profundidad de dibujo 41 mm y capacidad de carga 3755 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-smooth-33x12-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-smooth:33x12-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Smooth 33x12-20, pneumatic equivalent 12-16.5, the official table lists rim 7.5-20, overall diameter 840 mm, section width 305 mm, tread depth 56 mm and load capacity 3960 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Smooth 33x12-20, equivalente neumático 12-16.5, la tabla oficial indica rin 7.5-20, diámetro exterior 840 mm, ancho de sección 305 mm, profundidad de dibujo 56 mm y capacidad de carga 3960 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-smooth-36x14-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-smooth:36x14-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Smooth 36x14-20, pneumatic equivalent 14-17.5, the official table lists rim 7.5-20, overall diameter 915 mm, section width 356 mm, tread depth 71 mm and load capacity 4415 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Smooth 36x14-20, equivalente neumático 14-17.5, la tabla oficial indica rin 7.5-20, diámetro exterior 915 mm, ancho de sección 356 mm, profundidad de dibujo 71 mm y capacidad de carga 4415 kg a 10 km/h."
+        },
+        {
+          "id": "brawler-hps-smooth-40x14-20-load-table",
+          "category": "load_capacity",
+          "scope": "spec:hps-smooth:40x14-20",
+          "status": "approved",
+          "page": 2,
+          "statement": "For Brawler HPS HPS Smooth 40x14-20, pneumatic equivalent 15-19.5, the official table lists rim 10.0-20, overall diameter 1015 mm, section width 356 mm, tread depth 94 mm and load capacity 6605 kg at 10 km/h.",
+          "statement_es": "Para Brawler HPS HPS Smooth 40x14-20, equivalente neumático 15-19.5, la tabla oficial indica rin 10.0-20, diámetro exterior 1015 mm, ancho de sección 356 mm, profundidad de dibujo 94 mm y capacidad de carga 6605 kg a 10 km/h."
         }
       ]
     },
