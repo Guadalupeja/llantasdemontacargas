@@ -2626,7 +2626,9 @@ class RgxChatbotService
                 continue;
             }
 
-            $value = trim((string) ($part['text'] ?? ''));
+            $value = $this->normalizeAssistantPlainText(
+                trim((string) ($part['text'] ?? ''))
+            );
 
             if ($value !== '') {
                 $text[] = $value;
@@ -2634,6 +2636,38 @@ class RgxChatbotService
         }
 
         return trim(implode("\n", $text));
+    }
+
+    private function normalizeAssistantPlainText(
+        string $value
+    ): string {
+        $value = str_replace(
+            ['*', chr(96)],
+            '',
+            $value
+        );
+
+        $withoutHeadings = preg_replace(
+            '/^[ 	]{0,3}#{1,6}[ 	]*/m',
+            '',
+            $value
+        );
+
+        if (is_string($withoutHeadings)) {
+            $value = $withoutHeadings;
+        }
+
+        $withoutMarkdownLinks = preg_replace(
+            '/\[([^\]\n]+)\]\(https?:\/\/[^)\s]+\)/u',
+            '$1',
+            $value
+        );
+
+        if (is_string($withoutMarkdownLinks)) {
+            $value = $withoutMarkdownLinks;
+        }
+
+        return trim($value);
     }
 
     private function finalizeAnswer(
