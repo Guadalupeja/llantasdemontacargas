@@ -10,7 +10,6 @@ return [
         120
     ),
 
-
     /*
      * Sitios externos autorizados para consumir
      * el RGX Assistant Core de servidor a servidor.
@@ -24,11 +23,9 @@ return [
                 'RGX_CHATBOT_CORE_TOKEN_MINICARGADORES'
             ),
 
-            'origin' =>
-                'llantasparaminicargadores.com',
+            'origin' => 'llantasparaminicargadores.com',
 
-            'default_vertical' =>
-                'minicargadores',
+            'default_vertical' => 'minicargadores',
         ],
 
         'bobcat' => [
@@ -36,11 +33,19 @@ return [
                 'RGX_CHATBOT_CORE_TOKEN_BOBCAT'
             ),
 
-            'origin' =>
-                'llantasbobcat.com',
+            'origin' => 'llantasbobcat.com',
 
-            'default_vertical' =>
-                'minicargadores',
+            'default_vertical' => 'minicargadores',
+        ],
+
+        'store' => [
+            'token' => env(
+                'RGX_CHATBOT_CORE_TOKEN_STORE'
+            ),
+
+            'origin' => 'llantasdemontacargas.com/tienda-en-linea',
+
+            'default_vertical' => null,
         ],
     ],
 

@@ -82,37 +82,44 @@ class AuthenticateRgxCoreSite
                 )
             );
 
-            $defaultVertical = strtolower(
-                trim(
-                    (string) (
-                        $site[
-                            'default_vertical'
-                        ]
-                        ?? ''
-                    )
-                )
-            );
+            if (! array_key_exists('default_vertical', $site)) {
+                continue;
+            }
+
+            $rawDefaultVertical = $site['default_vertical'];
 
             if (
-                $origin === ''
-                || ! in_array(
-                    $defaultVertical,
-                    [
-                        'montacargas',
-                        'minicargadores',
-                    ],
-                    true
-                )
+                $rawDefaultVertical !== null
+                && ! is_string($rawDefaultVertical)
             ) {
                 continue;
             }
 
+            $defaultVertical = is_string($rawDefaultVertical)
+                ? strtolower(trim($rawDefaultVertical))
+                : null;
+
+            if (
+                $origin === ''
+                || (
+                    $defaultVertical !== null
+                    && ! in_array(
+                        $defaultVertical,
+                        [
+                            'montacargas',
+                            'minicargadores',
+                        ],
+                        true
+                    )
+                )
+            ) {
+                continue;
+            }
             $matches[] = [
                 'site_id' => $siteId,
                 'site_origin' => $origin,
 
-                'default_vertical' =>
-                    $defaultVertical,
+                'default_vertical' => $defaultVertical,
             ];
         }
 

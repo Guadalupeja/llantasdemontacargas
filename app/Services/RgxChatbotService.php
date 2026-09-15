@@ -1090,6 +1090,41 @@ class RgxChatbotService
             ];
         }
 
+        $requestedVertical = $this->productSearch->normalizeVertical(
+            isset($criteria['vertical'])
+                ? (string) $criteria['vertical']
+                : null
+        );
+
+        $contextVertical = $this->productSearch->normalizeVertical(
+            is_string(
+                $siteContext['default_vertical']
+                    ?? null
+            )
+                ? $siteContext['default_vertical']
+                : null
+        );
+
+        if ($requestedVertical !== null) {
+            $criteria['vertical'] = $requestedVertical;
+        } elseif ($contextVertical !== null) {
+            $criteria['vertical'] = $contextVertical;
+        } else {
+            return [
+                'type' => 'tool_result',
+                'tool_use_id' => $toolUseId,
+                'content' => $this->encodeToolResult([
+                    'status' => 'needs_clarification',
+                    'clarification_field' => 'vertical',
+                    'options' => [
+                        'montacargas',
+                        'minicargadores',
+                    ],
+                    'message' => 'Indica si la llanta es para montacargas o minicargador antes de buscar.',
+                ]),
+            ];
+        }
+
         $result = $this->productSearch->resolveForChatbot($criteria);
 
         return [
@@ -2679,19 +2714,32 @@ class RgxChatbotService
             )
         );
 
-        $defaultVertical = trim(
-            (string) (
-                $siteContext['default_vertical']
-                ?? 'montacargas'
-            )
+        $hasDefaultVertical = array_key_exists(
+            'default_vertical',
+            $siteContext
         );
 
-        if (! in_array(
-            $defaultVertical,
-            ['montacargas', 'minicargadores'],
-            true
-        )) {
-            $defaultVertical = 'montacargas';
+        $rawDefaultVertical = $hasDefaultVertical
+            ? $siteContext['default_vertical']
+            : 'montacargas';
+
+        $defaultVertical = is_string($rawDefaultVertical)
+            ? strtolower(trim($rawDefaultVertical))
+            : null;
+
+        if ($defaultVertical === '') {
+            $defaultVertical = null;
+        }
+
+        if (
+            $defaultVertical !== null
+            && ! in_array(
+                $defaultVertical,
+                ['montacargas', 'minicargadores'],
+                true
+            )
+        ) {
+            $defaultVertical = null;
         }
 
         $contextInstruction = match ($defaultVertical) {
@@ -2703,13 +2751,20 @@ class RgxChatbotService
                 .'Una intención explícita de montacargas siempre '
                 .'prevalece sobre el contexto del sitio.',
 
-            default => "El sitio de origen es {$siteOrigin}. "
+            'montacargas' => "El sitio de origen es {$siteOrigin}. "
                 .'Su contexto predeterminado es montacargas. '
                 .'Si el cliente no especifica el tipo de equipo '
                 .'y no existe una señal clara de minicargador, '
                 .'usa vertical=montacargas. '
                 .'Una intención explícita de minicargador siempre '
                 .'prevalece sobre el contexto del sitio.',
+
+            default => "El sitio de origen es {$siteOrigin}. "
+                .'Este sitio no tiene una vertical predeterminada. '
+                .'No asumas montacargas ni minicargadores por el dominio, la ruta o el catálogo. '
+                .'Si el cliente indica claramente montacargas o forklift, usa vertical=montacargas. '
+                .'Si indica minicargador o skid steer, usa vertical=minicargadores. '
+                .'Si sigue ambiguo, pregunta unicamente si la llanta es para montacargas o minicargador antes de usar buscar_producto.',
         };
 
         $contextInstruction .= match ($defaultVertical) {
@@ -2724,7 +2779,7 @@ class RgxChatbotService
                 .'No sugieras XP800, XP1000, PS800, PS1000 ni T-900 '
                 .'mientras siga vigente la vertical minicargadores.',
 
-            default => ' La vertical predeterminada ya esta resuelta por el servidor. '
+            'montacargas' => ' La vertical predeterminada ya esta resuelta por el servidor. '
                 .'Si el cliente no expresa explicitamente minicargador o skid steer, '
                 .'la vertical efectiva sigue siendo montacargas. '
                 .'No preguntes si el equipo es para montacargas o minicargador. '
@@ -2734,8 +2789,12 @@ class RgxChatbotService
                 .'XP800, XP1000, PS800, PS1000 o T-900. '
                 .'No sugieras SK-05, SKS-900, BIG BOY ni Brawler '
                 .'mientras siga vigente la vertical montacargas.',
-        };
 
+            default => ' La vertical no esta resuelta por el servidor. '
+                .'No uses buscar_producto mientras siga ambigua. '
+                .'No mezcles ejemplos de ambas verticales antes de resolver el tipo de equipo. '
+                .'Pregunta unicamente si la llanta es para montacargas o minicargador.',
+        };
         if ($hasSelectedProduct) {
             $contextInstruction .= ' El servidor ya tiene un producto '
                 .'verificado seleccionado para esta conversación. '
@@ -2778,9 +2837,13 @@ equipo.
 
 Si falta alguno de los tres datos principales, pregunta únicamente por los que falten.
 
-La vertical efectiva ya fue determinada por el contexto autenticado del sitio.
-No pidas al cliente elegir entre montacargas y minicargador salvo que su mensaje
-exprese explicitamente una vertical contraria a la predeterminada.
+Si el contexto autenticado del sitio ya incluye una vertical predeterminada,
+usala y no vuelvas a preguntarla salvo que exista una intencion explicita contraria.
+Si el contexto autenticado no tiene vertical predeterminada, no asumas montacargas
+ni minicargadores. Determina la vertical solo cuando el cliente la indique claramente.
+Si sigue siendo ambigua, pregunta unicamente si la llanta es para montacargas o
+minicargador antes de usar buscar_producto.
+
 Cuando ya conozcas tipo, medida y modelo o línea, usa inmediatamente la herramienta buscar_producto. No preguntes al cliente si desea que busques o verifiques.
 
 No inventes valores para completar una llamada a la herramienta.

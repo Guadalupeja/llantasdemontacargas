@@ -537,29 +537,44 @@ class RgxChatbotController extends Controller
                 'llantasdemontacargas.com';
         }
 
-        $defaultVertical =
-            strtolower(
-                trim(
-                    (string) (
-                        $trustedSite['default_vertical']
-                        ?? config(
-                            'rgx-chatbot.local_site.default_vertical',
-                            'montacargas'
-                        )
-                    )
-                )
+        $hasTrustedDefaultVertical = array_key_exists(
+            'default_vertical',
+            $trustedSite
+        );
+
+        $rawDefaultVertical = $hasTrustedDefaultVertical
+            ? $trustedSite['default_vertical']
+            : config(
+                'rgx-chatbot.local_site.default_vertical',
+                'montacargas'
             );
 
-        if (! in_array(
-            $defaultVertical,
-            [
-                'montacargas',
-                'minicargadores',
-            ],
-            true
-        )) {
-            $defaultVertical =
-                'montacargas';
+        $defaultVertical = is_string($rawDefaultVertical)
+            ? strtolower(trim($rawDefaultVertical))
+            : null;
+
+        if ($defaultVertical === '') {
+            $defaultVertical = null;
+        }
+
+        if (
+            $defaultVertical !== null
+            && ! in_array(
+                $defaultVertical,
+                ['montacargas', 'minicargadores'],
+                true
+            )
+        ) {
+            $defaultVertical = $hasTrustedDefaultVertical
+                ? null
+                : 'montacargas';
+        }
+
+        if (
+            ! $hasTrustedDefaultVertical
+            && $defaultVertical === null
+        ) {
+            $defaultVertical = 'montacargas';
         }
 
         return [
