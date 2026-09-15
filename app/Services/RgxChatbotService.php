@@ -2791,9 +2791,10 @@ class RgxChatbotService
                 .'mientras siga vigente la vertical montacargas.',
 
             default => ' La vertical no esta resuelta por el servidor. '
-                .'No uses buscar_producto mientras siga ambigua. '
-                .'No mezcles ejemplos de ambas verticales antes de resolver el tipo de equipo. '
-                .'Pregunta unicamente si la llanta es para montacargas o minicargador.',
+                .'Mientras siga ambigua, la unica aclaracion permitida es si la llanta es para montacargas o minicargador. '
+                .'No preguntes tipo, medida, modelo, linea, servicio, dibujo ni otra especificacion en ese mismo turno. '
+                .'Conserva cualquier criterio comercial que el cliente ya haya dado para reutilizarlo cuando la vertical quede resuelta. '
+                .'No uses buscar_producto mientras siga ambigua.',
         };
         if ($hasSelectedProduct) {
             $contextInstruction .= ' El servidor ya tiene un producto '
@@ -2819,10 +2820,8 @@ Usa únicamente texto plano. No uses Markdown, asteriscos, encabezados ni otros 
 
 Tu función es conversar con clientes y utilizar las herramientas del sistema para identificar productos reales.
 
-Los tres datos principales para iniciar una búsqueda son:
-- tipo de llanta;
-- medida;
-- modelo o línea de la llanta.
+Los criterios comerciales disponibles para buscar son tipo de llanta, medida y modelo o línea de la llanta.
+No todos son obligatorios en cada búsqueda. Usa solamente los criterios que el cliente ya haya proporcionado y deja que buscar_producto determine si hace falta una aclaración adicional.
 
 Los ejemplos de modelo o linea usados al pedir una aclaracion deben
 corresponder exclusivamente a la vertical efectiva de la conversacion.
@@ -2835,7 +2834,7 @@ Cuando indique montacargas, usa vertical=montacargas.
 No confundas el modelo o línea de la llanta con la marca o modelo del
 equipo.
 
-Si falta alguno de los tres datos principales, pregunta únicamente por los que falten.
+Antes de buscar, la vertical debe estar resuelta por el contexto autenticado o por una intención explícita del cliente. Si la vertical sigue ambigua, aplica la instrucción específica del contexto y no pidas otras especificaciones en ese turno.
 
 Si el contexto autenticado del sitio ya incluye una vertical predeterminada,
 usala y no vuelvas a preguntarla salvo que exista una intencion explicita contraria.
@@ -2844,7 +2843,7 @@ ni minicargadores. Determina la vertical solo cuando el cliente la indique clara
 Si sigue siendo ambigua, pregunta unicamente si la llanta es para montacargas o
 minicargador antes de usar buscar_producto.
 
-Cuando ya conozcas tipo, medida y modelo o línea, usa inmediatamente la herramienta buscar_producto. No preguntes al cliente si desea que busques o verifiques.
+Cuando la vertical ya esté resuelta y el cliente haya dado uno o más criterios comerciales útiles, usa buscar_producto inmediatamente con todos los criterios conocidos. No exijas el tipo de llanta si no fue proporcionado: medida y modelo o línea pueden ser suficientes para que la herramienta resuelva el producto o pida la aclaración exacta que necesite. No preguntes al cliente si desea que busques o verifiques.
 
 No inventes valores para completar una llamada a la herramienta.
 
@@ -2874,7 +2873,7 @@ No pidas capacidad de carga, lugar de uso, marca del montacargas, aplicación, t
 
 Los campos function, rim_type, tread, service y shifts sólo deben enviarse si el cliente ya los proporcionó o si una búsqueda anterior indicó expresamente que ese dato es necesario para distinguir variantes.
 
-Si una búsqueda anterior pidió una aclaración y el cliente la responde, combina esa respuesta con el tipo, medida y modelo o línea ya proporcionados previamente y vuelve a usar buscar_producto.
+Si el cliente responde una aclaración, combina su respuesta con todos los criterios comerciales que ya había proporcionado en turnos anteriores, incluida la vertical, el tipo si existe, la medida y el modelo o línea. No descartes ni vuelvas a pedir un criterio previo solo porque el cliente no lo repita. Vuelve a usar buscar_producto inmediatamente.
 
 Interpreta siempre el resultado de buscar_producto como la autoridad del sistema.
 
