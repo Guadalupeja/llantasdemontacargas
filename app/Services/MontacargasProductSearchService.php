@@ -350,6 +350,15 @@ class MontacargasProductSearchService
         }
 
         $attributes = [
+            'measure' => [
+                'question' => '¿Qué medida necesitas?',
+            ],
+            'type' => [
+                'question' => '¿La necesitas neumática, sólida o sólida con arillo?',
+            ],
+            'model' => [
+                'question' => 'Encontré más de una opción. ¿Qué modelo o línea prefieres?',
+            ],
             'function' => [
                 'question' => '¿La necesitas estándar o no manchante?',
             ],
@@ -406,6 +415,17 @@ class MontacargasProductSearchService
     private function variantLabel(string $attribute, string $value): string
     {
         return match ($attribute) {
+            'type' => match ($this->normalizeType($value)) {
+                'neumatica' => 'Neumática',
+                'neumatica_radial' => 'Neumática radial',
+                'solida' => 'Sólida',
+                'solida_con_arillo' => 'Sólida con arillo',
+                default => $value,
+            },
+
+            'measure',
+            'model' => $value,
+
             'function' => match ($value) {
                 'estandar' => 'Estándar',
                 'no_manchante' => 'No manchante',

@@ -571,7 +571,7 @@ class RgxChatbotService
         return [
             [
                 'name' => 'buscar_producto',
-                'description' => 'Busca y verifica una llanta real del catálogo RGX. Debe usarse cuando ya se conocen tipo, medida y modelo o línea de la llanta. Los datos comerciales devueltos por esta herramienta son la única fuente autorizada para SKU, precio, URL y disponibilidad.',
+                'description' => 'Busca y verifica llantas reales del catálogo RGX. Úsala cuando la vertical esté resuelta y el cliente haya proporcionado al menos uno de estos criterios: tipo, medida o modelo/línea. Omite los filtros que el cliente no haya indicado. El servidor devolverá el producto resuelto o la aclaración exacta que todavía haga falta. Los datos comerciales devueltos por esta herramienta son la única fuente autorizada para SKU, precio, URL y disponibilidad.',
                 'input_schema' => [
                     'type' => 'object',
                     'properties' => [
@@ -616,11 +616,7 @@ class RgxChatbotService
                             'description' => 'Turnos de trabajo, únicamente si una búsqueda anterior los solicitó.',
                         ],
                     ],
-                    'required' => [
-                        'type',
-                        'measure',
-                        'model',
-                    ],
+                    'required' => [],
                 ],
             ],
             [
@@ -1070,22 +1066,27 @@ class RgxChatbotService
             $criteria[$field] = mb_substr($value, 0, 120);
         }
 
-        $missing = [];
+        $hasPrimaryCriterion = false;
 
-        foreach (['type', 'measure', 'model'] as $required) {
-            if (empty($criteria[$required])) {
-                $missing[] = $required;
+        foreach (['type', 'measure', 'model'] as $primaryField) {
+            if (! empty($criteria[$primaryField])) {
+                $hasPrimaryCriterion = true;
+                break;
             }
         }
 
-        if ($missing !== []) {
+        if (! $hasPrimaryCriterion) {
             return [
                 'type' => 'tool_result',
                 'tool_use_id' => $toolUseId,
                 'content' => $this->encodeToolResult([
                     'status' => 'missing_required',
-                    'missing_fields' => $missing,
-                    'message' => 'Faltan datos principales para realizar la búsqueda.',
+                    'missing_fields' => [
+                        'type',
+                        'measure',
+                        'model',
+                    ],
+                    'message' => 'Indica al menos tipo, medida o modelo/línea para realizar la búsqueda.',
                 ]),
             ];
         }
@@ -2907,7 +2908,13 @@ No pidas capacidad de carga, lugar de uso, marca del montacargas, aplicación, t
 
 Los campos function, rim_type, tread, service y shifts sólo deben enviarse si el cliente ya los proporcionó o si una búsqueda anterior indicó expresamente que ese dato es necesario para distinguir variantes.
 
-Si el cliente responde una aclaración, combina su respuesta con todos los criterios comerciales que ya había proporcionado en turnos anteriores, incluida la vertical, el tipo si existe, la medida y el modelo o línea. No descartes ni vuelvas a pedir un criterio previo solo porque el cliente no lo repita. Vuelve a usar buscar_producto inmediatamente.
+Si el cliente responde una aclaración, combina su respuesta con los criterios comerciales compatibles que ya había proporcionado en turnos anteriores. No descartes ni vuelvas a pedir un criterio previo solo porque el cliente no lo repita. Vuelve a usar buscar_producto inmediatamente.
+
+Si el cliente corrige o cambia explícitamente un criterio —por ejemplo cambia de montacargas a minicargador, de sólida a neumática o proporciona una medida distinta— el valor más reciente reemplaza al anterior. En ese caso, el criterio nuevo sustituye al anterior aunque éste hubiera aparecido en turnos previos. Nunca conserves simultáneamente valores contradictorios del mismo criterio.
+
+Bobcat y skid steer corresponden a la vertical minicargadores. Si el cliente indica que la llanta es para Bobcat o skid steer, considera resuelta esa vertical y no preguntes si es para montacargas o minicargador.
+
+No llames modelo o línea a la construcción de la llanta. Sólida, sólida con arillo, neumática y neumática radial son tipos de llanta. Modelo o línea son nombres comerciales como BIG BOY, SK-05, PS1000 o equivalentes del catálogo.
 
 Interpreta siempre el resultado de buscar_producto como la autoridad del sistema.
 
