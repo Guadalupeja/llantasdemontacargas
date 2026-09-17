@@ -787,6 +787,9 @@ class MontacargasProductSearchService
                 'status' => 'needs_clarification',
                 'candidate_count' => $candidates->count(),
                 'clarification' => $this->nextClarification($candidates),
+                'candidates' => $this->formatCandidatesForChatbot(
+                    $candidates
+                ),
             ];
         }
 
@@ -805,6 +808,122 @@ class MontacargasProductSearchService
             'candidate_count' => 1,
             'product' => $this->formatProductForChatbot($product),
         ];
+    }
+
+    /**
+     * Expone una vista limitada de candidatos todavía no seleccionados.
+     *
+     * Sirve para orientar aclaraciones y comparaciones entre
+     * opciones reales encontradas por el servidor.
+     * No expone ID, SKU, precio, URL ni autoridad comercial.
+     */
+    private function formatCandidatesForChatbot(
+        Collection $products
+    ): array {
+        $allowedFields = [
+            'brand',
+            'type',
+            'measure',
+            'model',
+            'function',
+            'rim_type',
+            'tread',
+            'service',
+            'shifts',
+            'technical_measure',
+            'ply_rating',
+        ];
+
+        return $products
+            ->values()
+            ->map(function (array $product) use ($allowedFields): array {
+                $candidate = [];
+
+                foreach ($allowedFields as $field) {
+                    $value = $product[$field] ?? null;
+
+                    if ($value === null) {
+                        continue;
+                    }
+
+                    if (is_string($value)) {
+                        $value = trim($value);
+
+                        if ($value === '') {
+                            continue;
+                        }
+                    }
+
+                    if (
+                        ! is_string($value)
+                        && ! is_int($value)
+                        && ! is_float($value)
+                        && ! is_bool($value)
+                    ) {
+                        continue;
+                    }
+
+                    $candidate[$field] = $value;
+                }
+
+                return $candidate;
+            })
+            ->filter(
+                fn (array $candidate): bool => $candidate !== []
+            )
+            ->take(6)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Revalida una selección persistida únicamente por ID y vertical.
+     *
+     * Nunca confía en datos comerciales guardados de turnos anteriores.
+     * La ficha se reconstruye desde el catálogo y vuelve a pasar por
+     * la autoridad actual de precio/disponibilidad.
+     */
+    public function verifiedProductById(
+        int $productId,
+        ?string $vertical
+    ): ?array {
+        if ($productId <= 0) {
+            return null;
+        }
+
+        $vertical = $this->normalizeVertical(
+            $vertical
+        );
+
+        if ($vertical === null) {
+            return null;
+        }
+
+        $candidates = $this->loadProducts(
+            $vertical
+        )
+            ->filter(function (array $product) use ($productId): bool {
+                $woocommerceId = (int) (
+                    $product['woocommerce_id']
+                    ?? $product['id']
+                    ?? 0
+                );
+
+                return $woocommerceId === $productId;
+            })
+            ->values();
+
+        $verified = $this->verifyResolved(
+            $candidates
+        );
+
+        if ($verified === null) {
+            return null;
+        }
+
+        return $this->formatProductForChatbot(
+            $verified
+        );
     }
 
     /**

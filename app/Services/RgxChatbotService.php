@@ -57,6 +57,29 @@ class RgxChatbotService
 
         $response = null;
         $resolvedProduct = null;
+
+        if (
+            $selectedProductId !== null
+            && $selectedProductId > 0
+            && $selectedProductVertical !== null
+            && $this->messageRequestsSelectedProductDisplay(
+                $message
+            )
+        ) {
+            $resolvedProduct =
+                $this->productSearch->verifiedProductById(
+                    $selectedProductId,
+                    $selectedProductVertical
+                );
+        }
+
+        $forceProductReselection =
+            $selectedProductId !== null
+            && $selectedProductId > 0
+            && $this->messageRequestsProductReselection(
+                $message
+            );
+
         $resolvedQuote = null;
         $resolvedQuoteStatus = null;
         $productSearchStatus = null;
@@ -76,7 +99,7 @@ class RgxChatbotService
             );
 
         for ($iteration = 0; $iteration < 3; $iteration++) {
-            $response = $this->anthropic->messages([
+            $requestPayload = [
                 'system' => $this->systemPrompt(
                     $siteContext,
                     $selectedProductId !== null
@@ -86,7 +109,21 @@ class RgxChatbotService
                 'tools' => $this->tools(),
                 'temperature' => 0.2,
                 'max_tokens' => 550,
-            ]);
+            ];
+
+            if (
+                $iteration === 0
+                && $forceProductReselection
+            ) {
+                $requestPayload['tool_choice'] = [
+                    'type' => 'tool',
+                    'name' => 'buscar_producto',
+                ];
+            }
+
+            $response = $this->anthropic->messages(
+                $requestPayload
+            );
 
             $toolUses = $this->extractToolUses($response);
 
@@ -2014,6 +2051,106 @@ class RgxChatbotService
         ];
     }
 
+    private function messageRequestsProductReselection(
+        string $message
+    ): bool {
+        $text = $this->normalizeIntentText(
+            $message
+        );
+
+        foreach ([
+            'me quedo con',
+            'prefiero',
+            'mejor ',
+            'mejor el',
+            'mejor la',
+            'cambio a',
+            'cambiar a',
+            'quiero el modelo',
+            'quiero la ',
+            'elijo ',
+            'selecciono ',
+            'vamos con ',
+        ] as $needle) {
+            if (str_contains($text, $needle)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function messageRequestsSelectedProductDisplay(
+        string $message
+    ): bool {
+        $text = $this->normalizeIntentText(
+            $message
+        );
+
+        $hasDisplayVerb = false;
+
+        foreach ([
+            'muestra',
+            'muestrame',
+            'ensena',
+            'ensename',
+            'ver ',
+            'quiero verlo',
+            'quiero verla',
+            'pasame',
+            'dame ',
+        ] as $needle) {
+            if (str_contains($text, $needle)) {
+                $hasDisplayVerb = true;
+                break;
+            }
+        }
+
+        if (! $hasDisplayVerb) {
+            return false;
+        }
+
+        foreach ([
+            'producto',
+            'item',
+            'tarjeta',
+            'link',
+            'enlace',
+            'tienda',
+            'llanta',
+        ] as $needle) {
+            if (str_contains($text, $needle)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function normalizeIntentText(
+        string $message
+    ): string {
+        $text = mb_strtolower(
+            trim($message)
+        );
+
+        $text = strtr($text, [
+            'á' => 'a',
+            'é' => 'e',
+            'í' => 'i',
+            'ó' => 'o',
+            'ú' => 'u',
+            'ü' => 'u',
+            'ñ' => 'n',
+        ]);
+
+        return preg_replace(
+            '/\\s+/',
+            ' ',
+            $text
+        ) ?? '';
+    }
+
     private function messageRequestsAdvisor(string $message): bool
     {
         $normalized = mb_strtolower(trim($message));
@@ -2879,6 +3016,24 @@ Si sigue siendo ambigua, pregunta unicamente si la llanta es para montacargas o
 minicargador antes de usar buscar_producto.
 
 Cuando la vertical ya esté resuelta y el cliente haya dado uno o más criterios comerciales útiles, usa buscar_producto inmediatamente con todos los criterios conocidos. No exijas el tipo de llanta si no fue proporcionado: medida y modelo o línea pueden ser suficientes para que la herramienta resuelva el producto o pida la aclaración exacta que necesite. No preguntes al cliente si desea que busques o verifiques.
+
+Si buscar_producto devuelve needs_clarification junto con candidates, esos candidates son opciones reales encontradas por el servidor pero todavía no representan un producto seleccionado. Puedes mencionar sus modelos y comparar únicamente los campos que aparezcan explícitamente en esos candidates.
+
+No presupongas que el cliente conoce los modelos. Si pregunta cuál le conviene, cuál es mejor, qué diferencia hay, pide comparar las opciones o expresa que no sabe cuál elegir, usa únicamente las diferencias explícitas presentes en candidates para orientarlo.
+
+No conviertas una diferencia numérica o descriptiva en una ventaja no respaldada. Por ejemplo, un ply_rating mayor no autoriza por sí solo a afirmar que una opción es mejor, soporta más carga, dura más, trabaja más turnos o es adecuada para una aplicación específica.
+
+Tampoco traduzcas automáticamente una diferencia de turnos, ply_rating o servicio a expresiones como uso más intensivo, uso más ligero, mayor exigencia, mayor resistencia, mejor desempeño o mayor durabilidad, salvo que esa conclusión exista explícitamente en información técnica autorizada.
+
+Si los datos de candidates no bastan para orientar una elección según la aplicación del cliente, dilo brevemente y pide el dato de uso realmente necesario en lugar de inventar una conclusión.
+
+La ficha, tarjeta y enlace de un producto verificado pueden mostrarse sin generar una cotización. Nunca digas que el cliente debe cotizar para ver el producto, abrir su enlace o acceder a su tarjeta. La cotización sólo se genera cuando el cliente la solicita explícitamente y proporciona los datos requeridos.
+
+Los candidates de needs_clarification no autorizan precio, SKU, URL, stock, capacidad, desempeño, durabilidad, compatibilidad, beneficios técnicos ni otras especificaciones que no estén presentes explícitamente.
+
+Cuando el cliente elija un modelo mostrado en candidates, vuelve a usar buscar_producto conservando los criterios compatibles ya conocidos y agrega ese modelo para que el servidor resuelva exactamente el producto.
+
+Si el cliente corrige una elección o criterio anterior, la corrección más reciente prevalece. Sustituye el criterio corregido en vez de acumular valores incompatibles.
 
 No inventes valores para completar una llamada a la herramienta.
 
